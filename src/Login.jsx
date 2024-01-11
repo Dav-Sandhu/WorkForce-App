@@ -2,6 +2,7 @@ import "./Login.scss"
 
 import Webcam from 'react-webcam'
 
+import { makeRequest } from "./useDB"
 import { useReducer, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -71,9 +72,19 @@ const Login = () => {
                 onSubmit={(e) => {
                     e.preventDefault()
 
-                    if (state.valid){
-                        state.checked ? localStorage.setItem('password', state.password) : ""
-                        navigate('/Tasks')
+                    const checkInfo = async () => {
+                        const out = await makeRequest(`
+                            USE WorkForce;
+                            SELECT * FROM employee WHERE employee_number = ${state.employee_number}
+                            AND password = ${state.password};
+                        `)
+
+                        console.log(out)
+
+                        if (state.valid){
+                            state.checked ? localStorage.setItem('password', state.password) : ""
+                            navigate('/Tasks')
+                        }
                     }
             }}>
                 <div className="input-group mb-4">
