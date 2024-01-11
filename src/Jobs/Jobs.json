@@ -1,0 +1,20 @@
+[
+    {
+        "name": "Picking"
+    },
+    {
+        "name": "Packing"
+    },
+    {
+        "name": "Forklift"
+    },
+    {
+        "name": "Container Offloading"
+    },
+    {
+        "name": "Putaway/Replenishment"
+    },
+    {
+        "name": "Returns"
+    }
+]
