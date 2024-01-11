@@ -86,6 +86,8 @@ const Login = () => {
                             navigate('/Tasks')
                         }
                     }
+
+                    checkInfo()
             }}>
                 <div className="input-group mb-4">
                     <div className="form-floating">
