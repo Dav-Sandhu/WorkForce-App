@@ -1,7 +1,7 @@
 import FaceScanner from "./FaceScanner"
 
 import { makeRequest } from "./useDB"
-import { useReducer } from "react"
+import { useReducer, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
 const reducer = (state, {type, payload}) => {
@@ -16,10 +16,10 @@ const reducer = (state, {type, payload}) => {
             return {...state, alert: !state.alert}
         case "valid":
             return {...state, valid: !state.valid}
-        case "valid_employee_number":
-            return {...state, valid_employee_number: !state.valid_employee_number}
-        case "valid_password":
-            return {...state, valid_password: !state.valid_password}
+        case "empty_employee_number":
+            return {...state, empty_employee_number: Boolean(payload)}
+        case "empty_password":
+            return {...state, empty_password: Boolean(payload)}
         case "checked":
             return {...state, checked: Boolean(payload)}
         default:
@@ -35,8 +35,8 @@ const Login = () => {
         image: null,
         alert: false,
         valid: true,
-        valid_employee_number: true,
-        valid_password: true
+        empty_employee_number: true,
+        empty_password: true
     })
 
     const handleUpdate = (e) => {
@@ -45,6 +45,9 @@ const Login = () => {
             payload: e.target.value
         })
     }
+
+    const password_box = useRef(null)
+    const employee_number_box = useRef(null)
 
     const navigate = useNavigate()
 
@@ -75,7 +78,9 @@ const Login = () => {
                             values: [state.employee_number, state.password] 
                         }))
                         
-                        if (state.valid && out.length > 0){
+                        if (state.valid && out.length > 0 
+                            && employee_number_box.current.className.includes("is-valid") 
+                            && password_box.current.className.includes("is-valid") ){
 
                             //saves password if box is checked
                             state.checked ? localStorage.setItem('password', state.password) : ""
@@ -92,11 +97,19 @@ const Login = () => {
                     <div className="form-floating">
                         <input
                             id="employee_number"
-                            className={state.valid_employee_number ? "form-control" : ""} 
+                            className={state.empty_employee_number ? "form-control" : state.employee_number.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
                             type="text"
+                            ref={employee_number_box}
                             placeholder="Employee Number" 
                             value={state.employee_number}
-                            onChange={(e) => {handleUpdate(e)}} 
+                            onChange={(e) => {
+                                handleUpdate(e)
+
+                                dispatch({
+                                    type: "empty_employee_number",
+                                    payload: false
+                                })
+                            }} 
                             required 
                         />
                         <label htmlFor="employee_number">Employee Number: </label>
@@ -107,11 +120,19 @@ const Login = () => {
                 <div className="form-floating mb-4">
                     <input
                         id="password" 
-                        className={state.valid_password ? "form-control" : ""} 
+                        className={state.empty_password ? "form-control" : state.password.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
                         type="password"
+                        ref={password_box}
                         placeholder="Password"
                         value={state.password}
-                        onChange={(e) => {handleUpdate(e)}} 
+                        onChange={(e) => {
+                            handleUpdate(e)
+
+                            dispatch({
+                                type: "empty_password",
+                                payload: false
+                            })
+                        }} 
                         required 
                     />
                     <label htmlFor="password">Password: </label>
