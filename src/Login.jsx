@@ -1,5 +1,6 @@
-import { makeRequest } from "./useDB"
 import FaceScanner from "./FaceScanner"
+
+import { makeRequest } from "./useDB"
 import { useReducer } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -27,7 +28,7 @@ const reducer = (state, {type, payload}) => {
 }
 
 const Login = () => {
-    
+
     const [state, dispatch] = useReducer(reducer, {
         employee_number: '',
         password: localStorage.getItem('password') !== null ? localStorage.getItem('password') : "",
@@ -69,17 +70,12 @@ const Login = () => {
 
                     const checkInfo = async () => {
 
-                        /*
-                            query will go through database to see if the employee exists based on the 
-                            given information and will return a list of all places it matches.
-                        */
                         const out = await makeRequest(JSON.stringify({ 
                             type: "find-employee", 
                             values: [state.employee_number, state.password] 
                         }))
                         
-                        
-                        if (state.valid && out.length >= 1){
+                        if (state.valid && out.length > 0){
 
                             //saves password if box is checked
                             state.checked ? localStorage.setItem('password', state.password) : ""

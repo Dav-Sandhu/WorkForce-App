@@ -8,7 +8,6 @@ import { loadModels, compareFaces } from "./FaceRecognition"
 const FaceScanner = ({state, dispatch, makeRequest, navigate}) => {
 
     const camRef = useRef(null)
-    console.log(state.image)
 
     return(
         <>

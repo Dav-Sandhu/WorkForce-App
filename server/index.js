@@ -14,7 +14,7 @@ const queries = (type, values) => {
         return {
           query: `USE WorkForce; SELECT * FROM employee WHERE employee_number=@employee_number AND password=@password`,
           parameters: [
-            { name: 'employee_number', type: TYPES.Int, value: parseInt(values[0]) },
+            { name: 'employee_number', type: TYPES.Int, value: parseInt(values[0] !== NaN ? parseInt(values[0]) : -1) },
             { name: 'password', type: TYPES.VarChar, value: values[1] }
           ]
         };
@@ -74,11 +74,14 @@ app.get('/sql', (req, res) => {
             })  
                 
             request.on("requestCompleted", function(){
-				res.send(output)
+				        res.send(output)
                 connection.close()
             })
     
-            request.on("error", function(err){console.log(err)})
+            request.on("error", function(err){
+              res.send(output)
+              console.log(err)
+            })
             
             connection.execSql(request) 
         }
