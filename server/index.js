@@ -74,18 +74,18 @@ app.get('/sql', (req, res) => {
       })
 
     request.on('row', function(columns){ 
-        let result = {}
+      let result = {}
 
-        columns.forEach(function(column){
-          result[column.metadata.colName] = column.value
-        }) 
+      columns.forEach(function(column){
+        result[column.metadata.colName] = column.value
+      }) 
 
-        output.push(result)
+      output.push(result)
     })  
           
     request.on("requestCompleted", function(){
-        res.send(output)
-        connection.close()
+      res.send(output)
+      connection.close()
     })
 
     request.on("error", function(err){
