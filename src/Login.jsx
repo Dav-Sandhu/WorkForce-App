@@ -102,7 +102,7 @@ const Login = () => {
                             
                             navigate('/Tasks')
                         }else{
-                            alert("Login attempt failed!")
+                            alert("Login attempt failed, please make sure your information is correct!")
                         }
                     }
 
