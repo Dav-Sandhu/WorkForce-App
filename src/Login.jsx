@@ -1,4 +1,4 @@
-import FaceScanner from "./FaceScanner"
+import FaceScanner from "./FaceScanner/FaceScanner"
 
 import { makeRequest } from "./useDB"
 import { useReducer, useRef, useEffect } from "react"
