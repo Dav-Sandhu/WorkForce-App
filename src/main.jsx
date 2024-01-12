@@ -6,7 +6,6 @@ import Login from './Login'
 import Register from './Register'
 import Jobs from './Jobs/Jobs'
 import Task from './Tasks/Task'
-import FaceRecognition from './FaceRecognition'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
@@ -24,11 +23,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route 
                 path="/register"
                 element={<Register />}
-            />
-
-            <Route 
-                path="/face-scan"
-                element={<FaceRecognition />}
             />
 
             <Route 

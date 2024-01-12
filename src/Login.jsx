@@ -6,6 +6,8 @@ import { makeRequest } from "./useDB"
 import { useReducer, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { loadModels, compareFaces } from "./FaceRecognition"
+
 const reducer = (state, {type, payload}) => {
     switch(type){
         case "employee_number":
@@ -79,15 +81,14 @@ const Login = () => {
                             SELECT * FROM employee WHERE employee_number='${state.employee_number}'
                             AND password='${state.password}';
                         `
-                        console.log(request)
 
                         const out = await makeRequest(request)
 
-                        console.log(out)
-
-                        if (state.valid){
+                        if (state.valid && out.length >= 1){
                             state.checked ? localStorage.setItem('password', state.password) : ""
                             navigate('/Tasks')
+                        }else{
+                            alert("Login attempt failed!")
                         }
                     }
 
@@ -157,12 +158,39 @@ const Login = () => {
                 type="button" 
                 className="btn btn-danger"
                 onClick={(e) => {
+
+                    const image = camRef.current.getScreenshot()
+
                     dispatch({
                         type: "image",
-                        payload: camRef.current.getScreenshot()
+                        payload: image
                     })
+
+                    const compareImages = async () => {
+
+                        await loadModels()
+
+                        const get_all_images = `
+                            USE WorkForce;
+                            SELECT picture FROM employee;
+                        `
+
+                        const images_list = await makeRequest(get_all_images)
+
+                        let matches = false
+
+                        for (let i = 0;i < images_list.length;i++){
+                            let match = await compareFaces(image, images_list[i].picture)
+
+                            matches = match ? true : matches
+                        }
+
+                        matches ? navigate('/Tasks') : alert("face not recognized!")
+                    }
+
+                    compareImages()
                 }}>Scan
-            </button>
+            </button><br />
             {state.image === null ? 
                 <Webcam 
                     ref={camRef}
