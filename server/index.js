@@ -17,12 +17,17 @@ const queries = (type, values) => {
             { name: 'employee_number', type: TYPES.Int, value: parseInt(values[0] !== NaN ? parseInt(values[0]) : -1) },
             { name: 'password', type: TYPES.VarChar, value: values[1] }
           ]
-        };
+        }
       case "picture":
         return {
           query: `USE WorkForce; SELECT picture FROM employee;`,
           parameters: []
-        };
+        }
+      case "daily-report":
+        return{
+          query: `USE WorkForce; SELECT * FROM daily_report`,
+          parameters: []
+        }
       default:
         return;
     }
