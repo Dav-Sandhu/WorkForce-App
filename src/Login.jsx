@@ -76,8 +76,7 @@ const Login = () => {
                     <button 
                         className="btn-close"
                         aria-label="close"
-                        data-bs-dismiss="alert"
-                        onClick={(e) => {dispatch({type: "alert"})}}
+                        onClick={() => {dispatch({type: "alert"})}}
                     ></button>
                 </div> : ""
             }
@@ -102,7 +101,7 @@ const Login = () => {
                             
                             navigate('/Tasks')
                         }else{
-                            alert("Login attempt failed, please make sure your information is correct!")
+                            !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
                         }
                     }
 
