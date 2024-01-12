@@ -76,16 +76,21 @@ const Login = () => {
 
                     const checkInfo = async () => {
 
-                        const request = `
-                            USE WorkForce;
-                            SELECT * FROM employee WHERE employee_number='${state.employee_number}'
-                            AND password='${state.password}';
-                        `
-
-                        const out = await makeRequest(request)
-
+                        /*
+                            query will go through database to see if the employee exists based on the 
+                            given information and will return a list of all places it matches.
+                        */
+                        const out = await makeRequest(JSON.stringify({ 
+                            type: "find-employee", 
+                            values: [state.employee_number, state.password] 
+                        }))
+                        
+                        
                         if (state.valid && out.length >= 1){
+
+                            //saves password if box is checked
                             state.checked ? localStorage.setItem('password', state.password) : ""
+                            
                             navigate('/Tasks')
                         }else{
                             alert("Login attempt failed!")
@@ -170,12 +175,10 @@ const Login = () => {
 
                         await loadModels()
 
-                        const get_all_images = `
-                            USE WorkForce;
-                            SELECT picture FROM employee;
-                        `
-
-                        const images_list = await makeRequest(get_all_images)
+                        const images_list = await makeRequest(JSON.stringify({ 
+                            type: "picture", 
+                            values: [] })
+                        )
 
                         let matches = false
 
