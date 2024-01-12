@@ -1,7 +1,7 @@
 import FaceScanner from "./FaceScanner"
 
 import { makeRequest } from "./useDB"
-import { useReducer, useRef } from "react"
+import { useReducer, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
 const reducer = (state, {type, payload}) => {
@@ -15,7 +15,7 @@ const reducer = (state, {type, payload}) => {
         case "alert":
             return {...state, alert: !state.alert}
         case "valid":
-            return {...state, valid: !state.valid}
+            return {...state, valid: Boolean(payload)}
         case "empty_employee_number":
             return {...state, empty_employee_number: Boolean(payload)}
         case "empty_password":
@@ -28,6 +28,9 @@ const reducer = (state, {type, payload}) => {
 }
 
 const Login = () => {
+
+    const password_box = useRef(null)
+    const employee_number_box = useRef(null)
 
     const [state, dispatch] = useReducer(reducer, {
         employee_number: '',
@@ -46,8 +49,21 @@ const Login = () => {
         })
     }
 
-    const password_box = useRef(null)
-    const employee_number_box = useRef(null)
+    useEffect(() => {
+        if(employee_number_box.current.className.includes("is-invalid") || 
+        password_box.current.className.includes("is-invalid")){
+            dispatch({
+                type: "valid",
+                payload: false
+            })
+        }else{
+            dispatch({
+                type: "valid",
+                payload: true
+            })
+        }
+        
+    }, [state.employee_number, state.password])
 
     const navigate = useNavigate()
 
@@ -78,9 +94,8 @@ const Login = () => {
                             values: [state.employee_number, state.password] 
                         }))
                         
-                        if (state.valid && out.length > 0 
-                            && employee_number_box.current.className.includes("is-valid") 
-                            && password_box.current.className.includes("is-valid") ){
+                        //ensures that all the given information is valid
+                        if (state.valid && out.length > 0){
 
                             //saves password if box is checked
                             state.checked ? localStorage.setItem('password', state.password) : ""
