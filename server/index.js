@@ -1,13 +1,16 @@
 import express from 'express'
+import cors from 'cors'
 import { Connection, Request } from 'tedious'
 import { config } from 'dotenv'
 
 const app = express()
 config()
 
-app.get('/sql/:query', (req, res) => {
+app.use(cors())
+
+app.get('/sql', (req, res) => {
     
-    const query = JSON.parse(req.params.query)
+    const query = req.query.query
     let output = []
 
     const connection = new Connection({
@@ -44,6 +47,7 @@ app.get('/sql/:query', (req, res) => {
             })  
                 
             request.on("requestCompleted", function(){
+				res.send(output)
                 connection.close()
             })
     
@@ -52,8 +56,6 @@ app.get('/sql/:query', (req, res) => {
             connection.execSql(request) 
         }
     })
-    
-    res.send(output)
 })
 
 app.listen(3000)

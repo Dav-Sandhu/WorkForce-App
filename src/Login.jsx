@@ -73,11 +73,15 @@ const Login = () => {
                     e.preventDefault()
 
                     const checkInfo = async () => {
-                        const out = await makeRequest(`
+
+                        const request = `
                             USE WorkForce;
-                            SELECT * FROM employee WHERE employee_number = ${state.employee_number}
-                            AND password = ${state.password};
-                        `)
+                            SELECT * FROM employee WHERE employee_number='${state.employee_number}'
+                            AND password='${state.password}';
+                        `
+                        console.log(request)
+
+                        const out = await makeRequest(request)
 
                         console.log(out)
 
