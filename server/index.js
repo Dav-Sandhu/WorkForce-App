@@ -28,6 +28,11 @@ const queries = (type, values) => {
           query: `USE WorkForce; SELECT * FROM daily_report`,
           parameters: []
         }
+      case "email":
+        return{
+          query: `USE WorkForce; SELECT * FROM employee WHERE email=@email`,
+          parameters: [{name: 'email', type: TYPES.VarChar, value: values[0]}]
+        }
       default:
         return;
     }
