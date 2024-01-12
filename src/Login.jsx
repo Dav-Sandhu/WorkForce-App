@@ -1,12 +1,7 @@
-import "./Login.scss"
-
-import Webcam from 'react-webcam'
-
 import { makeRequest } from "./useDB"
-import { useReducer, useRef } from "react"
+import FaceScanner from "./FaceScanner"
+import { useReducer } from "react"
 import { useNavigate } from "react-router-dom"
-
-import { loadModels, compareFaces } from "./FaceRecognition"
 
 const reducer = (state, {type, payload}) => {
     switch(type){
@@ -42,8 +37,6 @@ const Login = () => {
         valid_employee_number: true,
         valid_password: true
     })
-
-    const camRef = useRef(null)
 
     const handleUpdate = (e) => {
         dispatch({
@@ -156,56 +149,12 @@ const Login = () => {
             <a className="mb-4" href="#!">Forgot password?</a>
             <p>Not a member? <a href="/register">Register</a></p>
 
-
-            <h1 className='fw-bold fs-25 mb-1 text-center text-dark title'>Or Scan face to login instead!</h1>
-            
-            <button 
-                type="button" 
-                className="btn btn-danger"
-                onClick={(e) => {
-
-                    const image = camRef.current.getScreenshot()
-
-                    dispatch({
-                        type: "image",
-                        payload: image
-                    })
-
-                    const compareImages = async () => {
-
-                        await loadModels()
-
-                        const images_list = await makeRequest(JSON.stringify({ 
-                            type: "picture", 
-                            values: [] })
-                        )
-
-                        let matches = false
-
-                        for (let i = 0;i < images_list.length;i++){
-                            let match = await compareFaces(image, images_list[i].picture)
-
-                            matches = match ? true : matches
-                        }
-
-                        matches ? navigate('/Tasks') : alert("face not recognized!")
-                    }
-
-                    compareImages()
-                }}>Scan
-            </button><br />
-            {state.image === null ? 
-                <Webcam 
-                    ref={camRef}
-                    screenshotFormat="image/jpeg"
-                    videoConstraints={{
-                        width: 1280,
-                        height: 720,
-                        facingMode: "user"
-                    }}
-                /> :
-                <img className="user-picture" src={state.image} />
-            }
+            <FaceScanner 
+                state={state} 
+                dispatch={dispatch}
+                makeRequest={makeRequest}
+                navigate={navigate} 
+            />
         </div>
     )
 }
