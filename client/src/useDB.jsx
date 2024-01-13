@@ -2,7 +2,9 @@ import axios from "axios"
 
 export const makeRequest = async (req) => {
 
-    const res = await axios.get(`https://workforce-app.azurewebsites.net`, {
+    const url = 'https://workforce-app.azurewebsites.net/sql'
+
+    const res = await axios.get(url, {
         params: {
             query: req
         }

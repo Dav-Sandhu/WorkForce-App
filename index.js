@@ -4,7 +4,7 @@ import queries from './queries.js'
 
 import { Connection, Request } from 'tedious'
 import { config } from 'dotenv'
-import { path, dirname } from 'path'
+import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const app = express()
@@ -33,7 +33,7 @@ app.get('/sql', (req, res) => {
     },
     options: {
       database: process.env.DATABASE,
-      port: parseInt(process.env.PORT),
+      port: parseInt(process.env.DBPORT),
       trustServerCertificate: true,
       encrypt: true
     }
@@ -80,4 +80,4 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"))
 })
 
-app.listen(port)
+app.listen(parseInt(port))
