@@ -4,9 +4,14 @@ import queries from './queries.js'
 
 import { Connection, Request } from 'tedious'
 import { config } from 'dotenv'
+import { path, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
 const app = express()
 config()
+
+const port = process.env.PORT || 3000
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 app.use(cors())
 
@@ -70,4 +75,9 @@ app.get('/sql', (req, res) => {
   })
 })
 
-app.listen(3000)
+app.use(express.static("/client/build"))
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
+})
+
+app.listen(port)
