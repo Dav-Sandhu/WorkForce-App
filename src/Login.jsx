@@ -179,7 +179,7 @@ const Login = () => {
 
             <a className="mb-4" href="#!">Forgot password?</a>
             <p>Not a member? <a href="/register">Register</a></p>
-
+            
             <FaceScanner 
                 state={state} 
                 dispatch={dispatch}
