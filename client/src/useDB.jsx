@@ -2,7 +2,7 @@ import axios from "axios"
 
 export const makeRequest = async (req) => {
 
-    const url = import.meta.env.VITE_SQLDB || 'https://workforce-app.azurewebsites.net/sql'
+    const url = import.meta.env.VITE_SQLDB || '/sql'
 
     const res = await axios.get(url, {
         params: {
