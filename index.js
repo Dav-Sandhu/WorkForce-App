@@ -10,7 +10,7 @@ const path = require('path')
 const app = express()
 config()
 
-const port = process.env.WEBSITES_PORT || 3000
+const port = process.env.PORT || 3000
 
 app.use(cors())
 
@@ -79,4 +79,4 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"))
 })
 
-app.listen(parseInt(port))
+app.listen(port)
