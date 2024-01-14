@@ -1,17 +1,16 @@
-import express from 'express'
-import cors from 'cors'
-import queries from './queries.js'
+const express = require('express')
+const cors = require('cors')
+const queries = require('./queries.js')
 
-import { Connection, Request } from 'tedious'
-import { config } from 'dotenv'
-import path, { dirname } from 'path'
-import { fileURLToPath } from 'url'
+const { Connection, Request } = require('tedious')
+const { config } = require('dotenv')
+const path = require('path')
+
 
 const app = express()
 config()
 
 const port = process.env.PORT || 3000
-const __dirname = dirname(fileURLToPath(import.meta.url))
 
 app.use(cors())
 

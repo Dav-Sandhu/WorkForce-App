@@ -2,7 +2,6 @@
   "name": "server",
   "version": "1.0.0",
   "main": "connect.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js"
   },

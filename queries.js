@@ -1,4 +1,4 @@
-import { TYPES } from "tedious"
+const { TYPES } = require("tedious")
 
 //creates a limited set of actions that the front-end can do in order to prevent a potential sql injection attack
 const queries = (type, values) => {
@@ -27,8 +27,8 @@ const queries = (type, values) => {
           parameters: [{name: 'email', type: TYPES.VarChar, value: values[0]}]
         }
       default:
-        return;
+        return
     }
 }
 
-export default queries
+module.exports = queries
