@@ -7,7 +7,7 @@ const queries = (type, values) => {
         return {
           query: `USE WorkForce; SELECT * FROM employee WHERE employee_number=@employee_number AND password=@password`,
           parameters: [
-            { name: 'employee_number', type: TYPES.Int, value: values[0] },
+            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
             { name: 'password', type: TYPES.VarChar, value: values[1] }
           ]
         }
@@ -44,7 +44,7 @@ const queries = (type, values) => {
           parameters: [
             { name: 'first_name', type: TYPES.VarChar, value: values[0] },
             { name: 'last_name', type: TYPES.VarChar, value: values[1] },
-            { name: 'employee_number', type: TYPES.Int, value: values[2]},
+            { name: 'employee_number', type: TYPES.VarChar, value: values[2]},
             { name: 'email', type: TYPES.VarChar, value: values[3] },
             { name: 'password', type: TYPES.VarChar, value: values[4] },
             { name: 'hourly_wage', type: TYPES.Float, value: values[5] },
@@ -54,7 +54,7 @@ const queries = (type, values) => {
       case "remove-employee":
         return{
           query: `USE WorkForce; DELETE FROM employee WHERE employee_number=@employee_number;`,
-          parameters: [{ name: 'employee_number', type: TYPES.Int, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
         }
       default:
         return
