@@ -4,6 +4,8 @@ import { makeRequest } from "./useDB"
 import { useReducer, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { useUserInfo } from "./UserProvider"
+
 const reducer = (state, {type, payload}) => {
     switch(type){
         case "employee_number":
@@ -32,9 +34,11 @@ const Login = () => {
     const password_box = useRef(null)
     const employee_number_box = useRef(null)
 
+    const user = useUserInfo()
+
     const [state, dispatch] = useReducer(reducer, {
         employee_number: '',
-        password: localStorage.getItem('password') !== null ? localStorage.getItem('password') : "",
+        password: localStorage.getItem('password') || '',
         image: null,
         alert: false,
         valid: true,
@@ -92,14 +96,24 @@ const Login = () => {
                             type: "find-employee", 
                             values: [state.employee_number, state.password] 
                         }))
+
+                        console.log(out)
                         
                         //ensures that all the given information is valid
                         if (state.valid && out.length > 0){
 
-                            //saves password if box is checked
-                            state.checked ? localStorage.setItem('password', state.password) : ""
+                            user.setUserInfo({
+                                employee_number: out[0].employee_number,
+                                first_name: out[0].first_name,
+                                last_name: out[0].last_name,
+                                email: out[0].email,
+                                password: out[0].password,
+                                hourly_wage: out[0].hourly_wage
+                            })
                             
-                            navigate('/Tasks')
+                            state.checked ? localStorage.setItem('password', state.password) : ""
+
+                            navigate('/')
                         }else{
                             !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
                         }

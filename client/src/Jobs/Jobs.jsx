@@ -1,8 +1,22 @@
 import "./Jobs.scss"
 
+import { useEffect } from "react"
+import { useUserInfo } from "../UserProvider"
+import { useNavigate } from "react-router-dom"
+
 import jobsList from "./Jobs.json"
 
 const Jobs = () => {
+
+    const navigate = useNavigate()
+    const user = useUserInfo()
+
+    useEffect(() => {   
+        if(user.userInfo.employee_number.length === 0 || user.userInfo.password.length === 0){
+            navigate('/login')
+        }
+    }, [])
+
     return(
         <div className="jobs-page">
             <h1 className='fw-bold fs-25 mb-1 text-center text-dark title'>What job are you working on?</h1>
