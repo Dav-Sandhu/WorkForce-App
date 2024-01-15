@@ -49,7 +49,8 @@ const FaceScanner = ({state, dispatch, makeRequest, navigate}) => {
 
     return(
         <>
-            <hr className="mt-2 mb-3"/> 
+            <hr className="mt-2 mb-3"/>
+
             {
                 !scanner ? 
                 <div className="d-grid gap-2">
@@ -63,27 +64,25 @@ const FaceScanner = ({state, dispatch, makeRequest, navigate}) => {
                 </div>
 
                 :
-
-                state.image === null ? 
-                    <div
-                        className='camera mb-5'
-                        onClick={scan}>
-                        <Webcam 
-                            ref={camRef}
-                            screenshotFormat="image/jpeg"
-                            onUserMedia={() => {setEnableScanText(true)}}
-                            videoConstraints={{
-                                width: 1280,
-                                height: 720,
-                                facingMode: "user"
-                            }}
-                        />
-                        {enableScanText ? <div className="scan-text">
-                            Scan
-                        </div> : ""}
-                    </div> :
-                <img className="user-picture mb-5" src={state.image} />
-                
+                <div className='image-area'>
+                    {state.image === null ? 
+                        <div
+                            className='camera mb-5'
+                            onClick={scan}>
+                            <Webcam 
+                                ref={camRef}
+                                screenshotFormat="image/jpeg"
+                                onUserMedia={() => { setEnableScanText(true) }}
+                                height={'100%'}
+                                width={'100%'}
+                                videoConstraints={{ facingMode: "user" }}
+                            />
+                            {enableScanText ? <div className="scan-text">
+                                Scan
+                            </div> : ""}
+                        </div> :
+                    <img className="user-picture mb-5" src={state.image} />}
+                </div>
             }
         </>
     )
