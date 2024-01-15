@@ -3,7 +3,7 @@ import Register from './Register'
 import DailyReport from './DailyReport'
 import Jobs from './Jobs/Jobs'
 import Task from './Tasks/Task'
-import Home from './Home'
+import Home from './Home/Home'
 import UserProvider from './UserProvider'
 
 import { Routes, Route, BrowserRouter } from 'react-router-dom'

@@ -108,7 +108,8 @@ const Login = () => {
                                 last_name: out[0].last_name,
                                 email: out[0].email,
                                 password: out[0].password,
-                                hourly_wage: out[0].hourly_wage
+                                hourly_wage: out[0].hourly_wage,
+                                picture: out[0].picture
                             })
                             
                             state.checked ? localStorage.setItem('password', state.password) : ""
@@ -199,6 +200,7 @@ const Login = () => {
                 dispatch={dispatch}
                 makeRequest={makeRequest}
                 navigate={navigate} 
+                user={user}
             />
         </div>
     )

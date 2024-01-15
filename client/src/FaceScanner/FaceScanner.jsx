@@ -5,7 +5,7 @@ import Webcam from 'react-webcam'
 import { useRef, useState } from 'react'
 import { loadModels, compareFaces } from "./FaceRecognition"
 
-const FaceScanner = ({state, dispatch, makeRequest, navigate}) => {
+const FaceScanner = ({state, dispatch, makeRequest, navigate, user}) => {
 
     const [scanner, setScanner] = useState(false)
     const [enableScanText, setEnableScanText] = useState(false)
@@ -31,14 +31,35 @@ const FaceScanner = ({state, dispatch, makeRequest, navigate}) => {
                 )
 
                 let matches = false
+                let match_num = 0
 
                 for (let i = 0;i < images_list.length;i++){
                     let match = await compareFaces(image, images_list[i].picture)
 
                     matches = match ? true : matches
+                    match_num = match ? i : match_num
                 }
 
-                matches ? navigate('/Tasks') : alert("face not recognized!")
+                if (matches){
+                    const out = await makeRequest(JSON.stringify({
+                        type: "employee_number",
+                        values: [images_list[match_num].employee_number]
+                    }))
+
+                    user.setUserInfo({
+                        employee_number: out[0].employee_number,
+                        first_name: out[0].first_name,
+                        last_name: out[0].last_name,
+                        email: out[0].email,
+                        password: out[0].password,
+                        hourly_wage: out[0].hourly_wage,
+                        picture: out[0].picture
+                    })
+
+                    navigate('/')
+                }else{
+                    alert("face not recognized!")
+                }
             }
 
             compareImages()

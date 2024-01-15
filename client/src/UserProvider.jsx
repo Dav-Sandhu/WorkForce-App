@@ -18,7 +18,8 @@ const UserProvider = ({children}) => {
         email: "",
         employee_number: "",
         password: "",
-        hourly_wage: 0.0
+        hourly_wage: 0.0,
+        picture: ""
     })
 
     return(
