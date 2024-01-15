@@ -26,6 +26,37 @@ const queries = (type, values) => {
           query: `USE WorkForce; SELECT * FROM employee WHERE email=@email`,
           parameters: [{name: 'email', type: TYPES.VarChar, value: values[0]}]
         }
+      case "add-employee":
+        return{
+          query: `
+          USE WorkForce;
+          
+          IF @employee_number!=-1
+          BEGIN
+            IF NOT EXISTS(SELECT * FROM employee WHERE employee_number=@employee_number)
+            BEGIN
+              INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture)
+              VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture);
+            END
+          END
+
+          SELECT * FROM employee WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'first_name', type: TYPES.VarChar, value: values[0] },
+            { name: 'last_name', type: TYPES.VarChar, value: values[1] },
+            { name: 'employee_number', type: TYPES.Int, value: parseInt(values[0] !== NaN ? parseInt(values[2]) : -1) },
+            { name: 'email', type: TYPES.VarChar, value: values[3] },
+            { name: 'password', type: TYPES.VarChar, value: values[4] },
+            { name: 'hourly_wage', type: TYPES.Float, value: values[5] },
+            { name: 'picture', type: TYPES.VarChar, value: values[6] }
+          ]
+        }
+      case "remove-employee":
+        return{
+          query: `USE WorkForce; DELETE FROM employee WHERE employee_number=@employee_number;`,
+          parameters: [{ name: 'employee_number', type: TYPES.Int, value: parseInt(values[0] !== NaN ? parseInt(values[0]) : -1) }]
+        }
       default:
         return
     }
