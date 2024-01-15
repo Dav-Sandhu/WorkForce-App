@@ -16,6 +16,8 @@ const port = process.env.PORT || 3000
 app.use(cors())
 
 app.get('/sql', (req, res) => {
+
+  if (!req.query.query){res.send("No Data!")}
     
   const input = JSON.parse(req.query.query)
   const query = queries(input.type, input.values)
