@@ -1,14 +1,8 @@
 import * as faceapi from '@vladmandic/face-api'
 
 export const loadModels = async () => {
-    console.log(window.location.href)
     
-    // /node_modules/@vladmandic/face-api/model
-    // https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist
-    // import.meta.env.VITE_MODELURL
     const MODEL_URL = '/'
-
-    console.log(MODEL_URL)
 
     await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL)
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
