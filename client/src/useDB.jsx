@@ -2,7 +2,7 @@ import axios from "axios"
 
 export const makeRequest = async (req) => {
 
-    const url = import.meta.env.VITE_SQLDB || '/sql'
+    const url = '/sql'
 
     try {
         const res = await axios.get(url, {
@@ -10,7 +10,7 @@ export const makeRequest = async (req) => {
                 query: req
             }
         })
-        
+
         return res.data
     }catch (error) {
         console.error(`Error making request to ${url}:`, error)
