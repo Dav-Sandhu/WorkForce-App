@@ -5,6 +5,7 @@ const queries = require('./queries.js')
 const { Connection, Request } = require('tedious')
 const { config } = require('dotenv')
 const path = require('path')
+const fs = require('fs')
 
 
 const app = express()
@@ -74,6 +75,8 @@ app.get('/sql', (req, res) => {
 })
 
 app.use(express.static(path.resolve(__dirname, "client", "dist")))
+app.use(express.static(path.resolve(__dirname, "client", "dist", "model")))
+
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"))
 })
