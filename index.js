@@ -33,6 +33,7 @@ app.get('/sql', (req, res) => {
     },
     options: {
       database: process.env.DATABASE,
+      port: parseInt(process.env.DBPORT),
       trustServerCertificate: true,
       encrypt: true
     }
