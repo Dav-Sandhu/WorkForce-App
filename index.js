@@ -23,7 +23,7 @@ app.get('/sql', (req, res) => {
   let output = []
 
   const connection = new Connection({
-    server: process.env.domain,
+    server: process.env.SERVER,
     authentication: {
       type: 'default',
       options: {
