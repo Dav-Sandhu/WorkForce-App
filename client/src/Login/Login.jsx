@@ -1,33 +1,11 @@
-import FaceScanner from "./FaceScanner/FaceScanner"
-
-import { makeRequest } from "./useDB"
-import { useReducer, useRef, useEffect } from "react"
+import { useReducer, useRef, useEffect, lazy } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { useUserInfo } from "./UserProvider"
+const FaceScanner = lazy(() => import('../FaceScanner/FaceScanner'))
 
-const reducer = (state, {type, payload}) => {
-    switch(type){
-        case "employee_number":
-            return {...state, employee_number: payload}
-        case "password":
-            return {...state, password: payload}
-        case "image":
-            return {...state, image: payload}
-        case "alert":
-            return {...state, alert: !state.alert}
-        case "valid":
-            return {...state, valid: Boolean(payload)}
-        case "empty_employee_number":
-            return {...state, empty_employee_number: Boolean(payload)}
-        case "empty_password":
-            return {...state, empty_password: Boolean(payload)}
-        case "checked":
-            return {...state, checked: Boolean(payload)}
-        default:
-            return state
-    }
-}
+import { useUserInfo } from "../UserProvider"
+
+import reducer from "./Reducer"
 
 const Login = () => {
 
@@ -92,12 +70,13 @@ const Login = () => {
 
                     const checkInfo = async () => {
 
+                        const module = await import('../useDB')
+                        const makeRequest = module.makeRequest
+
                         const out = await makeRequest(JSON.stringify({ 
                             type: "find-employee", 
                             values: [state.employee_number, state.password] 
                         }))
-
-                        console.log(out)
                         
                         //ensures that all the given information is valid
                         if (state.valid && out.length > 0){
@@ -198,7 +177,6 @@ const Login = () => {
             <FaceScanner 
                 state={state} 
                 dispatch={dispatch}
-                makeRequest={makeRequest}
                 navigate={navigate} 
                 user={user}
             />

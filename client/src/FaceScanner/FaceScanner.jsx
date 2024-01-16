@@ -1,11 +1,10 @@
 import './FaceScanner.scss'
 
-import Webcam from 'react-webcam'
+import { useRef, useState, lazy } from 'react'
 
-import { useRef, useState } from 'react'
-import { loadModels, compareFaces } from "./FaceRecognition"
+const Webcam = lazy(() => import('react-webcam'))
 
-const FaceScanner = ({state, dispatch, makeRequest, navigate, user}) => {
+const FaceScanner = ({state, dispatch, navigate, user}) => {
 
     const [scanner, setScanner] = useState(false)
     const [enableScanText, setEnableScanText] = useState(false)
@@ -23,7 +22,12 @@ const FaceScanner = ({state, dispatch, makeRequest, navigate, user}) => {
 
             const compareImages = async () => {
 
-                await loadModels()
+                const faceModule = await import('./FaceRecognition')
+                const dbModule = await import('../useDB')
+
+                await faceModule.loadModels()
+
+                const makeRequest = dbModule.makeRequest
 
                 const images_list = await makeRequest(JSON.stringify({ 
                     type: "picture", 
@@ -34,13 +38,14 @@ const FaceScanner = ({state, dispatch, makeRequest, navigate, user}) => {
                 let match_num = 0
 
                 for (let i = 0;i < images_list.length;i++){
-                    let match = await compareFaces(image, images_list[i].picture)
+                    let match = await faceModule.compareFaces(image, images_list[i].picture)
 
                     matches = match ? true : matches
                     match_num = match ? i : match_num
                 }
 
                 if (matches){
+
                     const out = await makeRequest(JSON.stringify({
                         type: "employee_number",
                         values: [images_list[match_num].employee_number]
