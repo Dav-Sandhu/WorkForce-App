@@ -16,10 +16,10 @@ const queries = (type, values) => {
           query: `USE WorkForce; SELECT picture, employee_number FROM employee;`,
           parameters: []
         }
-      case "employee_number":
-        return {
-          query: `USE WorkForce; SELECT * FROM employee WHERE employee_number=@employee_number;`,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+      case "facematch":
+        return{
+          query: `USE WorkForce; SELECT * FROM employee WHERE picture=@picture`,
+          parameters: [{ name: 'picture', type: TYPES.VarChar, value: values[0] }]
         }
       case "daily-report":
         return{

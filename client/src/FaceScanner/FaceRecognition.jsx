@@ -27,5 +27,6 @@ export const compareFaces = async (face1, face2) => {
     }
 
     const distance = faceapi.euclideanDistance(detection1.descriptor, detection2.descriptor)
+
     return distance < 0.6
 }

@@ -29,10 +29,7 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                 const makeRequest = dbModule.makeRequest
 
-                const images_list = await makeRequest(JSON.stringify({ 
-                    type: "picture", 
-                    values: [] })
-                )
+                const images_list = await makeRequest( null, '/pictures', null )
 
                 let matches = false
                 let match_num = 0
@@ -46,22 +43,24 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                 if (matches){
 
-                    const out = await makeRequest(JSON.stringify({
-                        type: "employee_number",
-                        values: [images_list[match_num].employee_number]
-                    }))
+                    const token = await makeRequest({ picture: images_list[match_num].picture }, '/facematch', null)
+                    const out = await makeRequest(null, '/userInfo', token)
 
-                    user.setUserInfo({
-                        employee_number: out[0].employee_number,
-                        first_name: out[0].first_name,
-                        last_name: out[0].last_name,
-                        email: out[0].email,
-                        password: out[0].password,
-                        hourly_wage: out[0].hourly_wage,
-                        picture: out[0].picture
-                    })
+                    if (out.length > 0){
+                        sessionStorage.setItem('token', token.token)
 
-                    navigate('/')
+                        user.setUserInfo({
+                            employee_number: out[0].employee_number,
+                            first_name: out[0].first_name,
+                            last_name: out[0].last_name,
+                            email: out[0].email,
+                            password: out[0].password,
+                            hourly_wage: out[0].hourly_wage,
+                            picture: out[0].picture
+                        })
+    
+                        navigate('/')
+                    }else{alert("Something went wrong...")}
                 }else{
                     alert("face not recognized!")
                 }

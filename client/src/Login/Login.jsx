@@ -73,28 +73,36 @@ const Login = () => {
                         const module = await import('../useDB')
                         const makeRequest = module.makeRequest
 
-                        const out = await makeRequest(JSON.stringify({ 
-                            type: "find-employee", 
-                            values: [state.employee_number, state.password] 
-                        }))
-                        
-                        //ensures that all the given information is valid
-                        if (state.valid && out.length > 0){
-
-                            user.setUserInfo({
-                                employee_number: out[0].employee_number,
-                                first_name: out[0].first_name,
-                                last_name: out[0].last_name,
-                                email: out[0].email,
-                                password: out[0].password,
-                                hourly_wage: out[0].hourly_wage,
-                                picture: out[0].picture
-                            })
+                        try{
+                            const token = await makeRequest(
+                                {
+                                    type: "find-employee", 
+                                    values: [state.employee_number, state.password] 
+                                },
+                                '/authenticate',
+                                null
+                            )
+                                    
+                            sessionStorage.setItem('token', token.token)
+                            const token_decoded = await makeRequest(null, '/userInfo', token)
                             
-                            state.checked ? localStorage.setItem('password', state.password) : ""
-
-                            navigate('/')
-                        }else{
+                            if(token_decoded.length > 0){
+                                user.setUserInfo({
+                                    employee_number: token_decoded[0].employee_number,
+                                    first_name: token_decoded[0].first_name,
+                                    last_name: token_decoded[0].last_name,
+                                    email: token_decoded[0].email,
+                                    password: token_decoded[0].password,
+                                    hourly_wage: token_decoded[0].hourly_wage,
+                                    picture: token_decoded[0].picture
+                                })
+                                
+                                state.checked ? localStorage.setItem('password', state.password) : ""
+                            
+                                navigate('/')
+                            }else{alert("Something went wrong...")}
+                            
+                        }catch(e){
                             !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
                         }
                     }

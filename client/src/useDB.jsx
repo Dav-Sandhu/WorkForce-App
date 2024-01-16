@@ -1,24 +1,16 @@
 import axios from "axios"
 
-export const makeRequest = async (req) => {
+export const makeRequest = async (req, url, token) => {
 
-    const url = '/sql'
-
-    try {
-        const res = await axios.get(url, {
-            params: {
-                query: req
-            }
-        })
-
-        return res.data
-    }catch (error) {
-        console.error(`Error making request to ${url}:`, error)
-
-        if (error.response) {
-            console.error('Response data:', error.response.data)
+    const res = token ? await axios.get(url, {
+        headers: {
+            authorization: token.token
+        },
+        params: {
+            query: req
         }
+    }) : await axios.post(url, { data: req })
 
-        return []
-    }
+    return res.data
+
 }

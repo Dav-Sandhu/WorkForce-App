@@ -10,7 +10,7 @@ const AuthUser = ({children}) => {
     const loggedIn = user.userInfo.employee_number.length !== 0 || user.userInfo.password.length !== 0
 
     useEffect(() => {
-        !loggedIn ? navigate("/login") : ""  
+        !loggedIn ? navigate("/login") : ""
     }, [])
 
     return(
