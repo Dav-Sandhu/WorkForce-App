@@ -1,7 +1,6 @@
 import "./Jobs.scss"
 
 import { useEffect } from "react"
-import { useUserInfo } from "../UserProvider"
 import { useNavigate } from "react-router-dom"
 
 import jobsList from "./Jobs.json"
@@ -9,13 +8,6 @@ import jobsList from "./Jobs.json"
 const Jobs = () => {
 
     const navigate = useNavigate()
-    const user = useUserInfo()
-
-    useEffect(() => {   
-        if(user.userInfo.employee_number.length === 0 || user.userInfo.password.length === 0){
-            navigate('/login')
-        }
-    }, [])
 
     return(
         <div className="jobs-page">

@@ -2,16 +2,11 @@ import "./Home.scss"
 
 import { useNavigate } from "react-router-dom"
 import { useUserInfo } from "../UserProvider"
-import { useEffect } from "react"
 
 const Home = () => {
 
     const user = useUserInfo()
     const navigate = useNavigate()
-
-    useEffect(() => {
-        if (user.userInfo.employee_number.length === 0 || user.userInfo.password.length === 0){navigate("/login")}
-    }, [])
 
     return(
         <div className="home">

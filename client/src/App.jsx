@@ -1,6 +1,7 @@
 import UserProvider from './UserProvider'
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import AuthUser from './AuthUser'
 
 const Home = lazy(() => import('./Home/Home'))
 const Login = lazy(() => import('./Login/Login'))
@@ -10,17 +11,27 @@ const Jobs = lazy(() => import('./Jobs/Jobs'))
 const Task = lazy(() => import('./Tasks/Task'))
 
 export default function App(){
+
+    const AuthWrapper = (Component) => {
+        return (
+          <AuthUser>
+            <Component />
+          </AuthUser>
+        )
+      }
+
     return(
         <Suspense fallback={"Loading..."}>
             <UserProvider>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<Home/>}/>
+                        <Route path="/" element={AuthWrapper(Home)}/>
                         <Route path="/login" element={<Login/>}/>
                         <Route path="/register" element={<Register/>}/>
-                        <Route path="/report" element={<DailyReport/>}/>
-                        <Route path="/jobs" element={<Jobs/>}/>
-                        <Route path="/tasks" element={<Task/>}/>
+                        <Route path="/report" element={AuthWrapper(DailyReport)}/>
+                        <Route path="/jobs" element={AuthWrapper(Jobs)}/>
+                        <Route path="/tasks" element={AuthWrapper(Task)}/>
+                        <Route path="*" element={<Login />}/>
                     </Routes>
                 </BrowserRouter>
             </UserProvider>
