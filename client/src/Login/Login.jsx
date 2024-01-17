@@ -84,7 +84,7 @@ const Login = () => {
                             )
                                     
                             sessionStorage.setItem('token', token.token)
-                            const token_decoded = await makeRequest(null, '/userInfo', token)
+                            const token_decoded = await makeRequest(null, '/userinfo', token)
                             
                             if(token_decoded.length > 0){
                                 user.setUserInfo({

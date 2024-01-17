@@ -87,8 +87,6 @@ app.post('/registeremployee', (req, res) => {
 
     const output = await db_query(query.query, query.parameters)
 
-    console.log(output)
-
     if (output.length > 0){
       const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
       return res.json({ token })

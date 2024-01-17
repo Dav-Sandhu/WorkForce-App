@@ -24,7 +24,7 @@ const Home = () => {
                                 <div className="d-flex text-black">
                                     <div className="flex-shrink-0">
                                         <img src={picture}
-                                        alt="" //{user.userInfo.first_name.slice(0,1) + ' ' + user.userInfo.last_name.slice(0,1)} 
+                                        alt="Profile Picture"
                                         className="img-fluid"
                                         style={{width: '180px', borderRadius: '10px'}} />
                                     </div>
