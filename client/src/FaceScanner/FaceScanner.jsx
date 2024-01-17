@@ -35,47 +35,38 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                 let match_num = 0
 
                 for (let i = 0;i < images_list.length;i++){
-                    let match = await faceModule.compareFaces(image, images_list[i].picture)
+                    try{
+                        let match = await faceModule.compareFaces(image, images_list[i].picture)
 
-                    matches = match ? true : matches
-                    match_num = match ? i : match_num
+                        matches = match ? true : matches
+                        match_num = match ? i : match_num
+                    }catch(e){
+                        //profile doesn't have a picture or profile picture is corrupted
+                    }
                 }
 
                 if (matches){
-
                     const token = await makeRequest({ picture: images_list[match_num].picture }, '/facematch', null)
-                    const out = await makeRequest(null, '/userInfo', token)
+                    sessionStorage.setItem('token', token.token)
 
-                    if (out.length > 0){
-                        sessionStorage.setItem('token', token.token)
-
-                        user.setUserInfo({
-                            employee_number: out[0].employee_number,
-                            first_name: out[0].first_name,
-                            last_name: out[0].last_name,
-                            email: out[0].email,
-                            password: out[0].password,
-                            hourly_wage: out[0].hourly_wage,
-                            picture: out[0].picture
-                        })
-    
-                        navigate('/')
-                    }else{alert("Something went wrong...")}
+                    const tokenLogin = await import("../TokenLogin")
+                    tokenLogin.default(token.token, makeRequest, navigate, user)
                 }else{
                     alert("face not recognized!")
+                    window.location.reload()
                 }
             }
 
             compareImages()
         }else{
             alert("Failed to capture picture, try again!")
+            window.location.reload()
         }
     }
 
     return(
         <>
             <hr className="mt-2 mb-3"/>
-
             {
                 !scanner ? 
                 <div className="d-grid gap-2">
@@ -106,7 +97,11 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                                 Scan
                             </div> : ""}
                         </div> :
-                    <img className="user-picture mb-5" src={state.image} />}
+                        <div>
+                            <h2>Loading...</h2>
+                            <img src={state.image} className="img-fluid user-picture mb-5" />
+                        </div>
+                    }
                 </div>
             }
         </>

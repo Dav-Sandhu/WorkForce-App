@@ -16,7 +16,11 @@ export default function App(){
     const AuthWrapper = (Component) => { return (<AuthUser><Component /></AuthUser>) }
 
     return(
-        <Suspense fallback={"Loading..."}>
+        <Suspense fallback={
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        }>
             <UserProvider>
                 <BrowserRouter>
                     <Routes>

@@ -28,7 +28,11 @@ const Login = () => {
 
         request()
 
-        return(<>Loading...</>)
+        return(
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        )
     }
 
     const [state, dispatch] = useReducer(reducer, {
