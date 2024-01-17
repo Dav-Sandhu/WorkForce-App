@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 const FaceScanner = lazy(() => import('../FaceScanner/FaceScanner'))
 
 import { useUserInfo } from "../UserProvider"
+import ResetPassword from "./ResetPassword"
 
 import reducer from "./Reducer"
 
@@ -47,7 +48,8 @@ const Login = () => {
         alert: false,
         valid: true,
         empty_employee_number: true,
-        empty_password: true
+        empty_password: true,
+        reset_password: false
     })
 
     const handleUpdate = (e) => {
@@ -200,7 +202,12 @@ const Login = () => {
                 <input className="btn btn-outline-primary"  type="submit" value="Login" />
             </form>
 
-            <a className="mb-4" href="#!">Forgot password?</a>
+            <a className="mb-4" onClick={() => {
+                dispatch({
+                    type: "reset_password",
+                    payload: ""
+                })
+            }}>Forgot password?</a>
             <p>Not a member? <a href="/register">Register</a></p>
             
             <FaceScanner 
@@ -209,6 +216,10 @@ const Login = () => {
                 navigate={navigate} 
                 user={user}
             />
+
+            <ResetPassword
+                dispatch={dispatch} 
+                reset_password={state.reset_password}/>
         </div>
     )
 }

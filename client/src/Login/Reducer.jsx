@@ -16,6 +16,8 @@ const reducer = (state, {type, payload}) => {
             return {...state, empty_password: Boolean(payload)}
         case "checked":
             return {...state, checked: Boolean(payload)}
+        case "reset_password":
+            return {...state, reset_password: !state.reset_password}
         default:
             return state
     }
