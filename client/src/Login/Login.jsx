@@ -13,6 +13,23 @@ const Login = () => {
     const employee_number_box = useRef(null)
 
     const user = useUserInfo()
+    const token = sessionStorage.getItem('token')
+    const navigate = useNavigate()
+
+    if (token !== null){
+        const request = async () => {
+            const module = await import('../useDB')
+            const makeRequest = module.makeRequest
+
+            const tokenLogin = await import('../TokenLogin')
+
+            tokenLogin.default(token, makeRequest, navigate, user)
+        }
+
+        request()
+
+        return(<>Loading...</>)
+    }
 
     const [state, dispatch] = useReducer(reducer, {
         employee_number: '',
@@ -46,8 +63,6 @@ const Login = () => {
         }
         
     }, [state.employee_number, state.password])
-
-    const navigate = useNavigate()
 
     return(
         <div className="login container">
@@ -84,23 +99,10 @@ const Login = () => {
                             )
                                     
                             sessionStorage.setItem('token', token.token)
-                            const token_decoded = await makeRequest(null, '/userinfo', token)
-                            
-                            if(token_decoded.length > 0){
-                                user.setUserInfo({
-                                    employee_number: token_decoded[0].employee_number,
-                                    first_name: token_decoded[0].first_name,
-                                    last_name: token_decoded[0].last_name,
-                                    email: token_decoded[0].email,
-                                    password: token_decoded[0].password,
-                                    hourly_wage: token_decoded[0].hourly_wage,
-                                    picture: token_decoded[0].picture
-                                })
-                                
-                                state.checked ? localStorage.setItem('password', state.password) : ""
-                            
-                                navigate('/')
-                            }else{alert("Something went wrong...")}
+                            state.checked ? localStorage.setItem('password', state.password) : ""
+
+                            const tokenLogin = await import('../TokenLogin')
+                            tokenLogin.default(token.token, makeRequest, navigate, user)
                             
                         }catch(e){
                             !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
