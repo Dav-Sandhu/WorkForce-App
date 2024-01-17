@@ -4,6 +4,7 @@ export const loadModels = async () => {
     
     const MODEL_URL = '/'
 
+    //loads models needed for face-api library to function
     await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL)
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
@@ -15,6 +16,7 @@ export const loadModels = async () => {
 
 export const compareFaces = async (face1, face2) => {
 
+    //compares the two given faces and returns a value between 1 and 0, the smaller it is the closer alike the faces are
     const img1 = await faceapi.fetchImage(face1)
     const img2 = await faceapi.fetchImage(face2)
 
