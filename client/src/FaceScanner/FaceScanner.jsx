@@ -33,13 +33,14 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                 let matches = false
                 let match_num = 0
+                let closest = 1
 
                 for (let i = 0;i < images_list.length;i++){
                     try{
                         let match = await faceModule.compareFaces(image, images_list[i].picture)
-
-                        matches = match ? true : matches
-                        match_num = match ? i : match_num
+                        matches = (match < 0.6) ? true : matches
+                        match_num = (match < closest) ? i : match_num
+                        closest = (match < closest) ? match : closest
                     }catch(e){
                         //profile doesn't have a picture or profile picture is corrupted
                     }
