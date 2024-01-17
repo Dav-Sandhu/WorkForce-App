@@ -3,14 +3,15 @@ const cors = require('cors')
 const queries = require('./queries.js')
 
 const { config } = require('dotenv')
+const { db_query } = require('./database.js')
+
 const path = require('path')
 const jwt = require('jsonwebtoken')
 const bodyParser = require('body-parser')
-const { db_query } = require('./database.js')
 
+config()
 
 const app = express()
-config()
 
 const port = process.env.PORT || 3000
 
