@@ -11,6 +11,11 @@ const queries = (type, values) => {
             { name: 'password', type: TYPES.VarChar, value: values[1] }
           ]
         }
+      case "employee-number":
+        return {
+          query: `USE WorkForce; SELECT * FROM employee WHERE employee_number=@employee_number;`,
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+        }
       case "picture":
         return {
           query: `USE WorkForce; SELECT picture, employee_number FROM employee;`,
@@ -55,6 +60,28 @@ const queries = (type, values) => {
             { name: 'hourly_wage', type: TYPES.Float, value: values[5] },
             { name: 'picture', type: TYPES.VarChar, value: values[6] }
           ]
+        }
+      case "generate-employee-number":
+        return{
+          query: `
+            USE WorkForce;
+
+            WITH CTE AS (
+              SELECT FLOOR(RAND() * 100000) AS rn
+              UNION ALL
+              SELECT s.rn
+              FROM (
+                SELECT rn
+                FROM CTE
+                WHERE rn NOT IN (SELECT employee_number FROM employee)
+              ) t
+              CROSS JOIN (SELECT FLOOR(RAND() * 100000) AS rn) AS s
+              WHERE t.rn IS NULL
+            )
+            
+            SELECT FORMAT(rn, '00000') AS rn FROM CTE;
+          `,
+          parameters: []
         }
       case "remove-employee":
         return{
