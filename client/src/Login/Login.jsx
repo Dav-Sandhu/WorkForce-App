@@ -16,6 +16,10 @@ const Login = () => {
     const token = sessionStorage.getItem('token')
     const navigate = useNavigate()
 
+    /*
+    if the session storage holds a valid token object, it will bypass the login screen, 
+    to prevent the page going back to login upon refresh
+    */
     if (token !== null){
         const request = async () => {
             const module = await import('../useDB')
@@ -35,6 +39,7 @@ const Login = () => {
         )
     }
 
+    //local state object to handle all of the state updates on this page
     const [state, dispatch] = useReducer(reducer, {
         employee_number: '',
         password: localStorage.getItem('password') || '',
@@ -53,6 +58,7 @@ const Login = () => {
     }
 
     useEffect(() => {
+        //this will let the user know if their input is valid or not (at least one character long)
         if(employee_number_box.current.className.includes("is-invalid") || 
         password_box.current.className.includes("is-invalid")){
             dispatch({
@@ -72,6 +78,7 @@ const Login = () => {
         <div className="login container">
             <h1 className='fw-bold fs-25 mb-1 text-center text-info title'>WorkForce Login</h1>
             {
+                //will let the user know that some fields are empty if they try to sign in without completing the form
                 state.alert ? 
                 <div className="alert alert-danger alert-dismissible" role="alert">Warning: Missing Fields
                     <button 
@@ -87,12 +94,14 @@ const Login = () => {
                 onSubmit={(e) => {
                     e.preventDefault()
 
+                    //when form is submitted it will validate the information to make sure that the user exists in the database
                     const checkInfo = async () => {
 
                         const module = await import('../useDB')
                         const makeRequest = module.makeRequest
 
                         try{
+                            //looks for employee in database
                             const token = await makeRequest(
                                 {
                                     type: "find-employee", 
@@ -101,10 +110,14 @@ const Login = () => {
                                 '/authenticate',
                                 null
                             )
-                                    
+                            
+                            //if found token will be temporarily stored in storage (valid ~1 hour or during current session)
                             sessionStorage.setItem('token', token.token)
+
+                            //if save password is selected it will save the password to local storage for future reference
                             state.checked ? localStorage.setItem('password', state.password) : ""
 
+                            //will decypher token and update the state object for the current session to reference
                             const tokenLogin = await import('../TokenLogin')
                             tokenLogin.default(token.token, makeRequest, navigate, user)
                             
@@ -116,6 +129,7 @@ const Login = () => {
                     checkInfo()
             }}>
                 <div className="input-group mb-4">
+                    {/*form floating reference the placeholder text getting out of the way of the input when the input box is clicked*/}
                     <div className="form-floating">
                         <input
                             id="employee_number"
@@ -127,6 +141,7 @@ const Login = () => {
                             onChange={(e) => {
                                 handleUpdate(e)
 
+                                //this flag is to prevent the input from immediately being invalid when you load the page
                                 dispatch({
                                     type: "empty_employee_number",
                                     payload: false
