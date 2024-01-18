@@ -1,3 +1,5 @@
+import "./Login.scss"
+
 import { useReducer, useState, useRef, useEffect, lazy } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -208,7 +210,7 @@ const Login = () => {
                         <input className="btn btn-outline-primary"  type="submit" value="Login" />
                     </form>
         
-                    <a className="mb-4" onClick={() => {
+                    <a className="mb-4 password-reset"onClick={() => {
                         dispatch({
                             type: "reset_password",
                             payload: ""
