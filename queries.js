@@ -81,7 +81,7 @@ const queries = (type, values) => {
             USE WorkForce;
 
             WITH CTE AS (
-              SELECT FLOOR(RAND() * 100000) AS rn
+              SELECT FLOOR(RAND() * 1000) AS rn
               UNION ALL
               SELECT s.rn
               FROM (
@@ -89,7 +89,7 @@ const queries = (type, values) => {
                 FROM CTE
                 WHERE rn NOT IN (SELECT employee_number FROM employee)
               ) t
-              CROSS JOIN (SELECT FLOOR(RAND() * 100000) AS rn) AS s
+              CROSS JOIN (SELECT FLOOR(RAND() * 1000) AS rn) AS s
               WHERE t.rn IS NULL
             )
             
