@@ -11,6 +11,10 @@ const bodyParser = require('body-parser')
 
 config()
 
+const { EmailClient } = require("@azure/communication-email")
+const connectionString = `endpoint=${process.env.ENDPOINT};accesskey=${process.env.ACCESS_KEY}`
+const client = new EmailClient(connectionString)
+
 const app = express()
 
 const port = process.env.PORT || 3000
@@ -39,6 +43,7 @@ app.post('/authenticate', (req, res) => {
   const query = queries(req.body.data.type, req.body.data.values)
 
   const request = async () => {
+    
     const output = await db_query(query.query, query.parameters)
 
     if (output.length > 0){
@@ -53,11 +58,14 @@ app.post('/authenticate', (req, res) => {
 })
 
 app.get('/userinfo', authenticateToken, (req, res) => {
+  
   res.json(req.output.output)
 })
 
 app.post('/checkemployee', (req, res) => {
+  
   const request = async () => {
+    
     const query = queries('email', [req.body.data.email])
     const output = await db_query(query.query, query.parameters)
    
@@ -67,9 +75,45 @@ app.post('/checkemployee', (req, res) => {
   request()
 })
 
-app.post('/registeremployee', (req, res) => {
+app.post('/sendemail', (req, res) => {
+  
+  const sendInfo = req.body.data.sendInfo
+  const subject = req.body.data.subject
+  const email = req.body.data.email
+  const name = req.body.data.name
+  
   const request = async () => {
+
+    const query = queries('email', [email])
+    const output = await db_query(query.query, query.parameters)
+
+    if (output.length > 0){
+      
+      const message = {
+        senderAddress: process.env.SENDER_ADDRESS,
+        content: { subject: subject, plainText: "Your password is " + output[0].password },
+        recipients: { to: [{ address: email, displayName: name }] },
+      }
+
+      const poller = await client.beginSend(message)
+      await poller.pollUntilDone()
+    
+      res.send("success")
+    }else{
+      res.send("failed")
+    }
+  }
+
+  request()
+})
+
+
+app.post('/registeremployee', (req, res) => {
+  
+  const request = async () => {
+    
     let query = queries('generate-employee-number', [])
+
     const num = await db_query(query.query, query.parameters)
     const generatedEmployeeNumber = num[0].rn
    
@@ -88,9 +132,11 @@ app.post('/registeremployee', (req, res) => {
     const output = await db_query(query.query, query.parameters)
 
     if (output.length > 0){
+      
       const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
       return res.json({ token })
     }else{
+      
       res.send(null)
     }
   }
@@ -99,6 +145,7 @@ app.post('/registeremployee', (req, res) => {
 })
 
 app.post('/pictures', (req, res) => {
+  
   const query = queries('picture', null)
 
   const request = async () => {
@@ -112,6 +159,7 @@ app.post('/pictures', (req, res) => {
 app.post('/facematch', (req, res) => {
 
   const request = async () => {
+    
     const query = queries('facematch', [req.body.data.picture])
     const output = await db_query(query.query, query.parameters)
 

@@ -68,7 +68,7 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                     //decyphers the token and updates the current user state object to the values of the token
                     const tokenLogin = await import("../TokenLogin")
-                    tokenLogin.default(token.token, makeRequest, navigate, user)
+                    tokenLogin.default(token.token, makeRequest, () => navigate('/'), user)
                 }else{
                     //if face is not recognized it will alert the user and refresh the page
                     alert("face not recognized!")
