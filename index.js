@@ -36,25 +36,20 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.post('/authenticate', (req, res) => {
+app.post('/authenticate', async (req, res) => {
 
   if (!req.body.data.type || !req.body.data.values){ return res.send("No Data!") }
 
   const query = queries(req.body.data.type, req.body.data.values)
-
-  const request = async () => {
     
-    const output = await db_query(query.query, query.parameters)
+  const output = await db_query(query.query, query.parameters)
 
-    if (output.length > 0){
-      const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
-      return res.json({ token })
-    }else{
-      res.send(null)
-    }
+  if (output.length > 0){
+    const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
+    return res.json({ token })
+  }else{
+    res.send(null)
   }
-
-  request()
 })
 
 app.get('/userinfo', authenticateToken, (req, res) => {
@@ -62,27 +57,20 @@ app.get('/userinfo', authenticateToken, (req, res) => {
   res.json(req.output.output)
 })
 
-app.post('/checkemployee', (req, res) => {
+app.post('/checkemployee', async (req, res) => {
   
-  const request = async () => {
-    
     const query = queries('email', [req.body.data.email])
     const output = await db_query(query.query, query.parameters)
    
     res.send(output.length === 0)
-  }
-
-  request()
 })
 
-app.post('/sendemail', (req, res) => {
+app.post('/sendemail', async (req, res) => {
   
-  const sendInfo = req.body.data.sendInfo
+  //const sendInfo = req.body.data.sendInfo
   const subject = req.body.data.subject
   const email = req.body.data.email
   const name = req.body.data.name
-  
-  const request = async () => {
 
     const query = queries('email', [email])
     const output = await db_query(query.query, query.parameters)
@@ -98,50 +86,43 @@ app.post('/sendemail', (req, res) => {
       const poller = await client.beginSend(message)
       await poller.pollUntilDone()
     
-      res.send("success")
-    }else{
-      res.send("failed")
+      return res.send("success")
     }
-  }
+    
+    res.send("failed")
 
-  request()
 })
 
 
-app.post('/registeremployee', (req, res) => {
-  
-  const request = async () => {
+app.post('/registeremployee', async (req, res) => {
     
-    let query = queries('generate-employee-number', [])
+  let query = queries('generate-employee-number', [])
 
-    const num = await db_query(query.query, query.parameters)
-    const generatedEmployeeNumber = num[0].rn
-   
-    const state = req.body.data
+  const num = await db_query(query.query, query.parameters)
+  const generatedEmployeeNumber = num[0].rn
+  
+  const state = req.body.data
 
-    query = queries('add-employee', [
-      state.first_name,
-      state.last_name,
-      generatedEmployeeNumber,
-      state.email,
-      state.password,
-      0.0,
-      ""
-    ])
+  query = queries('add-employee', [
+    state.first_name,
+    state.last_name,
+    generatedEmployeeNumber,
+    state.email,
+    state.password,
+    0.0,
+    ""
+  ])
 
-    const output = await db_query(query.query, query.parameters)
+  const output = await db_query(query.query, query.parameters)
 
-    if (output.length > 0){
-      
-      const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
-      return res.json({ token })
-    }else{
-      
-      res.send(null)
-    }
+  if (output.length > 0){
+    
+    const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
+    return res.json({ token })
+  }else{
+    
+    res.send(null)
   }
-
-  request()
 })
 
 app.post('/update-password', async (req, res) => {
@@ -154,41 +135,33 @@ app.post('/update-password', async (req, res) => {
   res.send("operation completed!")
 })
 
-app.post('/pictures', (req, res) => {
+app.post('/pictures', async (req, res) => {
   
   const query = queries('picture', null)
 
-  const request = async () => {
-    const output = await db_query(query.query, query.parameters)
-    res.json(output)
-  }
-
-  request()
+  const output = await db_query(query.query, query.parameters)
+  res.json(output)
 })
 
-app.post('/facematch', (req, res) => {
-
-  const request = async () => {
+app.post('/facematch', async (req, res) => {
     
-    const query = queries('facematch', [req.body.data.picture])
-    const output = await db_query(query.query, query.parameters)
+  const query = queries('facematch', [req.body.data.picture])
+  const output = await db_query(query.query, query.parameters)
 
-    const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
-    return res.json({ token })
-  }
-
-  request()
+  const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
+  return res.json({ token })
 })
 
-app.get('/sql', authenticateToken, (req, res) => {
+app.get('/sql', authenticateToken, async (req, res) => {
 
   if (!req.query.query){ res.send("No Data!") }
     
   const input = JSON.parse(req.query.query)
   const query = queries(input.type, input.values)
 
-  return db_query(query.query, query.parameters)
+  const output = await db_query(query.query, query.parameters)
 
+  res.json(output)
 })
 
 app.use(express.static(path.resolve(__dirname, "client", "dist")))
