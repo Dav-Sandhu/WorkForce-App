@@ -11,6 +11,20 @@ const queries = (type, values) => {
             { name: 'password', type: TYPES.VarChar, value: values[1] }
           ]
         }
+      case "update password":
+          return {
+            query: `
+              USE WorkForce; 
+              
+              UPDATE employee
+              SET password=@password
+              WHERE email=@email;
+            `,
+            parameters: [
+              { name: 'email', type: TYPES.VarChar, value: values[0] },
+              { name: 'password', type: TYPES.VarChar, value: values[1] }
+            ]
+          }
       case "employee-number":
         return {
           query: `USE WorkForce; SELECT * FROM employee WHERE employee_number=@employee_number;`,

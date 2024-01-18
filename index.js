@@ -144,6 +144,16 @@ app.post('/registeremployee', (req, res) => {
   request()
 })
 
+app.post('/update-password', async (req, res) => {
+  const password = req.body.data.password
+  const email = req.body.data.email
+
+  const query = queries(email, password)
+  await db_query(query.query, query.parameters)
+
+  res.send("operation completed!")
+})
+
 app.post('/pictures', (req, res) => {
   
   const query = queries('picture', null)
