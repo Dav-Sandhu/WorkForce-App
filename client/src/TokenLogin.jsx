@@ -13,11 +13,13 @@ const TokenLogin = async (token, makeRequest, navigate, user) => {
             picture: token_decoded[0].picture
         })
 
-        navigate('/')
+        navigate()
     }catch(e){
         sessionStorage.removeItem("token")
         return e
     }
+
+    return true
 }
 
 export default TokenLogin

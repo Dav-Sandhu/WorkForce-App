@@ -1,4 +1,4 @@
-import { useReducer, useRef, useEffect, lazy } from "react"
+import { useReducer, useState, useRef, useEffect, lazy } from "react"
 import { useNavigate } from "react-router-dom"
 
 const FaceScanner = lazy(() => import('../FaceScanner/FaceScanner'))
@@ -6,7 +6,7 @@ const FaceScanner = lazy(() => import('../FaceScanner/FaceScanner'))
 import { useUserInfo } from "../UserProvider"
 import ResetPassword from "./ResetPassword"
 
-import reducer from "./Reducer"
+import reducer from "./LoginReducer"
 
 const Login = () => {
 
@@ -14,31 +14,31 @@ const Login = () => {
     const employee_number_box = useRef(null)
 
     const user = useUserInfo()
-    const token = sessionStorage.getItem('token')
     const navigate = useNavigate()
+
+    const [loading, setLoading] = useState(false)
 
     /*
     if the session storage holds a valid token object, it will bypass the login screen, 
     to prevent the page going back to login upon refresh
     */
-    if (token !== null){
-        const request = async () => {
-            const module = await import('../useDB')
-            const makeRequest = module.makeRequest
+    useEffect(() => {
 
-            const tokenLogin = await import('../TokenLogin')
+        const token = sessionStorage.getItem('token')
 
-            tokenLogin.default(token, makeRequest, navigate, user)
+        if (token !== null){
+            const request = async () => {
+                const module = await import('../useDB')
+                const tokenLogin = await import('../TokenLogin')
+
+                tokenLogin.default(token, module.makeRequest, () => navigate('/'), user)
+            }
+
+            request()
+
+            setLoading(true)
         }
-
-        request()
-
-        return(
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        )
-    }
+    }, [])
 
     //local state object to handle all of the state updates on this page
     const [state, dispatch] = useReducer(reducer, {
@@ -77,150 +77,158 @@ const Login = () => {
     }, [state.employee_number, state.password])
 
     return(
-        <div className="login container">
-            <h1 className='fw-bold fs-25 mb-1 text-center text-info title'>WorkForce Login</h1>
-            {
-                //will let the user know that some fields are empty if they try to sign in without completing the form
-                state.alert ? 
-                <div className="alert alert-danger alert-dismissible" role="alert">Warning: Missing Fields
-                    <button 
-                        className="btn-close"
-                        aria-label="close"
-                        onClick={() => {dispatch({type: "alert"})}}
-                    ></button>
-                </div> : ""
-            }
-            <form 
-                className={state.valid ? "" : "was-validated"}
-                noValidate
-                onSubmit={(e) => {
-                    e.preventDefault()
-
-                    //when form is submitted it will validate the information to make sure that the user exists in the database
-                    const checkInfo = async () => {
-
-                        const module = await import('../useDB')
-                        const makeRequest = module.makeRequest
-
-                        try{
-                            //looks for employee in database
-                            const token = await makeRequest(
-                                {
-                                    type: "find-employee", 
-                                    values: [state.employee_number, state.password] 
-                                },
-                                '/authenticate',
-                                null
-                            )
-                            
-                            //if found token will be temporarily stored in storage (valid ~1 hour or during current session)
-                            sessionStorage.setItem('token', token.token)
-
-                            //if save password is selected it will save the password to local storage for future reference
-                            state.checked ? localStorage.setItem('password', state.password) : ""
-
-                            //will decypher token and update the state object for the current session to reference
-                            const tokenLogin = await import('../TokenLogin')
-                            tokenLogin.default(token.token, makeRequest, navigate, user)
-                            
-                        }catch(e){
-                            !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
-                        }
+        <>
+            {loading ?                 
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                :
+                <div className="login container">
+                    <h1 className='fw-bold fs-25 mb-1 text-center text-info title'>WorkForce Login</h1>
+                    {
+                        //will let the user know that some fields are empty if they try to sign in without completing the form
+                        state.alert ? 
+                        <div className="alert alert-danger alert-dismissible" role="alert">Warning: Missing Fields
+                            <button 
+                                className="btn-close"
+                                aria-label="close"
+                                onClick={() => {dispatch({type: "alert"})}}
+                            ></button>
+                        </div> : ""
                     }
-
-                    checkInfo()
-            }}>
-                <div className="input-group mb-4">
-                    {/*form floating reference the placeholder text getting out of the way of the input when the input box is clicked*/}
-                    <div className="form-floating">
-                        <input
-                            id="employee_number"
-                            className={state.empty_employee_number ? "form-control" : state.employee_number.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
-                            type="text"
-                            ref={employee_number_box}
-                            placeholder="Employee Number" 
-                            value={state.employee_number}
-                            onChange={(e) => {
-                                handleUpdate(e)
-
-                                //this flag is to prevent the input from immediately being invalid when you load the page
-                                dispatch({
-                                    type: "empty_employee_number",
-                                    payload: false
-                                })
-                            }} 
-                            required 
-                        />
-                        <label htmlFor="employee_number">Employee Number: </label>
-                        <div className="invalid-feedback user-invalid">Invalid input</div>
-                    </div>
-                </div>
-
-                <div className="form-floating mb-4">
-                    <input
-                        id="password" 
-                        className={state.empty_password ? "form-control" : state.password.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
-                        type="password"
-                        ref={password_box}
-                        placeholder="Password"
-                        value={state.password}
-                        onChange={(e) => {
-                            handleUpdate(e)
-
-                            dispatch({
-                                type: "empty_password",
-                                payload: false
-                            })
-                        }} 
-                        required 
+                    <form 
+                        className={state.valid ? "" : "was-validated"}
+                        noValidate
+                        onSubmit={(e) => {
+                            e.preventDefault()
+        
+                            //when form is submitted it will validate the information to make sure that the user exists in the database
+                            const checkInfo = async () => {
+        
+                                const module = await import('../useDB')
+                                const makeRequest = module.makeRequest
+        
+                                try{
+                                    //looks for employee in database
+                                    const token = await makeRequest(
+                                        {
+                                            type: "find-employee", 
+                                            values: [state.employee_number, state.password] 
+                                        },
+                                        '/authenticate',
+                                        null
+                                    )
+                                    
+                                    //if found token will be temporarily stored in storage (valid ~1 hour or during current session)
+                                    sessionStorage.setItem('token', token.token)
+        
+                                    //if save password is selected it will save the password to local storage for future reference
+                                    state.checked ? localStorage.setItem('password', state.password) : ""
+        
+                                    //will decypher token and update the state object for the current session to reference
+                                    const tokenLogin = await import('../TokenLogin')
+                                    tokenLogin.default(token.token, makeRequest, () => navigate('/'), user)
+                                    
+                                }catch(e){
+                                    !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
+                                }
+                            }
+        
+                            checkInfo()
+                    }}>
+                        <div className="input-group mb-4">
+                            {/*form floating reference the placeholder text getting out of the way of the input when the input box is clicked*/}
+                            <div className="form-floating">
+                                <input
+                                    id="employee_number"
+                                    className={state.empty_employee_number ? "form-control" : state.employee_number.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
+                                    type="text"
+                                    ref={employee_number_box}
+                                    placeholder="Employee Number" 
+                                    value={state.employee_number}
+                                    onChange={(e) => {
+                                        handleUpdate(e)
+        
+                                        //this flag is to prevent the input from immediately being invalid when you load the page
+                                        dispatch({
+                                            type: "empty_employee_number",
+                                            payload: false
+                                        })
+                                    }} 
+                                    required 
+                                />
+                                <label htmlFor="employee_number">Employee Number: </label>
+                                <div className="invalid-feedback user-invalid">Invalid input</div>
+                            </div>
+                        </div>
+        
+                        <div className="form-floating mb-4">
+                            <input
+                                id="password" 
+                                className={state.empty_password ? "form-control" : state.password.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
+                                type="password"
+                                ref={password_box}
+                                placeholder="Password"
+                                value={state.password}
+                                onChange={(e) => {
+                                    handleUpdate(e)
+        
+                                    dispatch({
+                                        type: "empty_password",
+                                        payload: false
+                                    })
+                                }} 
+                                required 
+                            />
+                            <label htmlFor="password">Password: </label>
+                            <div className="invalid-feedback">Invalid input</div>
+                        </div>
+        
+                        <div className="mb-4">
+                            <div className="form-check">
+                                <input 
+                                    className="form-check-input" 
+                                    type="checkbox" 
+                                    value="" 
+                                    id="savePassword"
+                                    onChange={(e) => {
+                                        dispatch({
+                                            type: "checked",
+                                            payload: e.target.checked
+                                        })
+                                    }} 
+                                />
+        
+                                <label className="form-check-label" htmlFor="savePassword">
+                                    Remember Password
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <input className="btn btn-outline-primary"  type="submit" value="Login" />
+                    </form>
+        
+                    <a className="mb-4" onClick={() => {
+                        dispatch({
+                            type: "reset_password",
+                            payload: ""
+                        })
+                    }}>Forgot password?</a>
+                    <p>Not a member? <a href="/register">Register</a></p>
+                    
+                    <FaceScanner 
+                        state={state} 
+                        dispatch={dispatch}
+                        navigate={navigate} 
+                        user={user}
                     />
-                    <label htmlFor="password">Password: </label>
-                    <div className="invalid-feedback">Invalid input</div>
+        
+                    <ResetPassword
+                        dispatch={dispatch} 
+                        reset_password={state.reset_password}/>
                 </div>
-
-                <div className="mb-4">
-                    <div className="form-check">
-                        <input 
-                            className="form-check-input" 
-                            type="checkbox" 
-                            value="" 
-                            id="savePassword"
-                            onChange={(e) => {
-                                dispatch({
-                                    type: "checked",
-                                    payload: e.target.checked
-                                })
-                            }} 
-                        />
-
-                        <label className="form-check-label" htmlFor="savePassword">
-                            Remember Password
-                        </label>
-                    </div>
-                </div>
-                
-                <input className="btn btn-outline-primary"  type="submit" value="Login" />
-            </form>
-
-            <a className="mb-4" onClick={() => {
-                dispatch({
-                    type: "reset_password",
-                    payload: ""
-                })
-            }}>Forgot password?</a>
-            <p>Not a member? <a href="/register">Register</a></p>
-            
-            <FaceScanner 
-                state={state} 
-                dispatch={dispatch}
-                navigate={navigate} 
-                user={user}
-            />
-
-            <ResetPassword
-                dispatch={dispatch} 
-                reset_password={state.reset_password}/>
-        </div>
+            }
+        </>
     )
 }
 

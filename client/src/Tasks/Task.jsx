@@ -1,20 +1,9 @@
 import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
 import { useUserInfo } from '../UserProvider'
-import { useEffect } from 'react'
 import './Task.scss'
 import tasks from './Tasks.json'
 
 const Task = () => {
-
-    const navigate = useNavigate()
-    const user = useUserInfo()
-
-    useEffect(() => {   
-        if(user.userInfo.employee_number.length === 0 || user.userInfo.password.length === 0){
-            navigate('/login')
-        }
-    }, [])
 
     return(
         <div className="tasks-page">

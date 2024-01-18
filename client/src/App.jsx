@@ -6,7 +6,7 @@ import { lazy, Suspense } from 'react'
 
 const Home = lazy(() => import('./Home/Home'))
 const Login = lazy(() => import('./Login/Login'))
-const Register = lazy(() => import('./Register'))
+const Register = lazy(() => import('./Login/Register'))
 const DailyReport = lazy(() => import('./DailyReport'))
 const Jobs = lazy(() => import('./Jobs/Jobs'))
 const Task = lazy(() => import('./Tasks/Task'))

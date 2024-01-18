@@ -1,13 +1,8 @@
 import "./Jobs.scss"
 
-import { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-
 import jobsList from "./Jobs.json"
 
 const Jobs = () => {
-
-    const navigate = useNavigate()
 
     return(
         <div className="jobs-page">
