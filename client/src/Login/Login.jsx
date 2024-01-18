@@ -211,6 +211,8 @@ const Login = () => {
                     </form>
         
                     <a className="mb-4 password-reset"onClick={() => {
+                        
+                        //turns on/off the password reset box
                         dispatch({
                             type: "reset_password",
                             payload: ""
@@ -225,6 +227,10 @@ const Login = () => {
                         user={user}
                     />
         
+                    {/*
+                    A separate box for sending password reset request to email, this box can be turned on and off 
+                    based on the state variable which is handled by a close button and the link to the password reset.
+                    */}
                     <ResetPassword
                         dispatch={dispatch} 
                         reset_password={state.reset_password}/>

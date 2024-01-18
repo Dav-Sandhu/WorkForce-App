@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { useUserInfo } from '../UserProvider'
 import './Task.scss'
 import tasks from './Tasks.json'
 
