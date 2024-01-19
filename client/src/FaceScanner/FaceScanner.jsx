@@ -8,7 +8,6 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
     const [scanner, setScanner] = useState(false)
     const [enableScanText, setEnableScanText] = useState(false)
-
     const camRef = useRef(null)
 
     const scan = () => {
@@ -28,13 +27,14 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                 const faceModule = await import('./FaceRecognition')
                 const dbModule = await import('../useDB')
 
+                const makeRequest = dbModule.makeRequest
+
                 //models needed for the face-api ai to function
                 await faceModule.loadModels()
 
-                const makeRequest = dbModule.makeRequest
-
                 //retrieves a list of all profile pictures to compare the taken picture to
-                const images_list = await makeRequest( null, '/pictures', null )
+                const res = await makeRequest( null, '/pictures', null )
+                const images_list = res.output
 
                 let matches = false
                 let match_num = 0
@@ -63,16 +63,23 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                 if (matches){
                     //creates a jwt token to reference the database information of the user the picture belongs to
-                    const token = await makeRequest({ picture: images_list[match_num].picture }, '/facematch', null)
-                    sessionStorage.setItem('token', token.token)
+                    const res = await makeRequest({ picture: images_list[match_num].picture }, '/facematch', null)
 
-                    //decyphers the token and updates the current user state object to the values of the token
-                    const tokenLogin = await import("../TokenLogin")
-                    tokenLogin.default(token.token, makeRequest, () => navigate('/'), user)
-                }else{
+                    if (res.status === 1){
+                        const token = res.token
+                    
+                        sessionStorage.setItem('token', token)
+
+                        //decyphers the token and updates the current user state object to the values of the token
+                        const tokenLogin = await import("../TokenLogin")
+                        tokenLogin.default(token, makeRequest, () => navigate('/'), user)
+                    }else{matches = false}
+                }
+
+                if (!matches){
                     //if face is not recognized it will alert the user and refresh the page
                     alert("face not recognized!")
-                    window.location.reload()
+                    window.location.reload()  
                 }
             }
 

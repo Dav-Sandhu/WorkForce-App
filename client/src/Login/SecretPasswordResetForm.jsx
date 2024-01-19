@@ -15,10 +15,15 @@ const SecretPasswordResetForm = ({email, navigate}) => {
                     const module = await import('../useDB')
                     const makeRequest = module.makeRequest
                     
-                    await makeRequest({ email, password }, '/update-password', null)
+                    const res = await makeRequest({ email, password }, '/update-password', null)
+                    const status = res.status
 
-                    alert("Password Updated!")
-                    navigate("/login")
+                    if (res.status === 1){
+                        alert("Password Updated!")
+                        navigate("/login")
+                    }else{
+                        alert("Failed to update password, please try again!")
+                    }
                 }
 
                 request()

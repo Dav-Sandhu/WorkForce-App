@@ -33,7 +33,12 @@ const Login = () => {
                 const module = await import('../useDB')
                 const tokenLogin = await import('../TokenLogin')
 
-                tokenLogin.default(token, module.makeRequest, () => navigate('/'), user)
+                const res = await tokenLogin.default(token, module.makeRequest, () => navigate('/'), user)
+
+                if (res.status === -1){
+                    sessionStorage.removeItem('token')
+                    window.location.reload()
+                }
             }
 
             request()
@@ -110,30 +115,33 @@ const Login = () => {
                                 const module = await import('../useDB')
                                 const makeRequest = module.makeRequest
         
-                                try{
-                                    //looks for employee in database
-                                    const token = await makeRequest(
-                                        {
-                                            type: "find-employee", 
-                                            values: [state.employee_number, state.password] 
-                                        },
-                                        '/authenticate',
-                                        null
-                                    )
+                                //looks for employee in database
+                                const res = await makeRequest(
+                                    {
+                                        type: "find-employee", 
+                                        values: [state.employee_number, state.password] 
+                                    },
+                                    '/authenticate',
+                                    null
+                                )
+
+                                if (res.status === 1){
+
+                                    const token = res.token
                                     
                                     //if found token will be temporarily stored in storage (valid ~1 hour or during current session)
-                                    sessionStorage.setItem('token', token.token)
+                                    sessionStorage.setItem('token', token)
         
                                     //if save password is selected it will save the password to local storage for future reference
                                     state.checked ? localStorage.setItem('password', state.password) : ""
         
                                     //will decypher token and update the state object for the current session to reference
                                     const tokenLogin = await import('../TokenLogin')
-                                    tokenLogin.default(token.token, makeRequest, () => navigate('/'), user)
-                                    
-                                }catch(e){
+                                    tokenLogin.default(token, makeRequest, () => navigate('/'), user)
+                                }else{
                                     !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
                                 }
+                                    
                             }
         
                             checkInfo()

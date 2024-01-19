@@ -24,8 +24,7 @@ export const compareFaces = async (face1, face2) => {
     const detection2 = await faceapi.detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor()
 
     if (!detection1 || !detection2) {
-        console.error('No face Detected!')
-        return false
+        return 1
     }
 
     const distance = faceapi.euclideanDistance(detection1.descriptor, detection2.descriptor)

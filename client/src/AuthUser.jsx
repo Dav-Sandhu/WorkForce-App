@@ -14,15 +14,20 @@ const AuthUser = ({children}) => {
             const token = sessionStorage.getItem('token')
 
             let check = false
-
+            
             if (token !== null){
                 const module = await import('./useDB')
                 const tokenLogin = await import('./TokenLogin')
+                const res = await tokenLogin.default(token, module.makeRequest, () => {}, user)
 
-                check = await tokenLogin.default(token, module.makeRequest, () => {}, user)
+                check = (res.status === 1)
+                check ? setLoggedIn(true) : sessionStorage.removeItem('token')
             }
 
-            !check ? navigate("/login") : !loggedIn ? setLoggedIn(true) : ""
+            if (!check){
+                navigate('/login')
+                loggedIn ? setLoggedIn(false) : ""
+            }
         }
 
         request()

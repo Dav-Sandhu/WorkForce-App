@@ -1,1 +1,0 @@
-const o=async(r,t,a,n)=>{try{const e=await t(null,"/userinfo",{token:r});n.setUserInfo({employee_number:e[0].employee_number,first_name:e[0].first_name,last_name:e[0].last_name,email:e[0].email,password:e[0].password,hourly_wage:e[0].hourly_wage,picture:e[0].picture}),a()}catch(e){return sessionStorage.removeItem("token"),e}return!0};export{o as default};

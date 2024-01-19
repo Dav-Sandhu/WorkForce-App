@@ -38,13 +38,19 @@ const Register = () => {
                 const module = await import('../useDB')
                 const tokenLogin = await import('../TokenLogin')
 
-                tokenLogin.default(token, module.makeRequest, () => navigate('/'), user)
+                const res = await tokenLogin.default(token, module.makeRequest, () => navigate('/'), user)
+
+                if (res.status === -1){
+                    sessionStorage.removeItem('token')
+                    window.location.reload()
+                }
             }
 
             request()
 
             setLoading(true)
-        }
+    }
+
     }, [])
 
     return(
@@ -76,14 +82,19 @@ const Register = () => {
                                                             email: state.email
                                                         }, '/checkemployee', null)
 
-                                                        if (check){
-                                                            const token = await makeRequest(state, '/registeremployee', null)
+                                                        if (check.status === 1 && check.found){
+                                                            const res = await makeRequest(state, '/registeremployee', null)
 
-                                                            sessionStorage.setItem('token', token.token)
+                                                            if (res.status === 1){
+                                                                const token = res.token
 
-                                                            const tokenLogin = await import('../TokenLogin')
+                                                                sessionStorage.setItem('token', token)
 
-                                                            tokenLogin.default(token.token, makeRequest, () => navigate('/'), user)
+                                                                const tokenLogin = await import('../TokenLogin')
+                                                                tokenLogin.default(token, makeRequest, () => navigate('/'), user)
+                                                            }else{
+                                                                alert("Failed to register employee")
+                                                            }
                                                         }else{
                                                             alert("Email already registered!")
                                                         }

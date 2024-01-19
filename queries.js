@@ -93,7 +93,7 @@ const queries = (type, values) => {
               WHERE t.rn IS NULL
             )
             
-            SELECT FORMAT(rn, '00000') AS rn FROM CTE;
+            SELECT FORMAT(rn, '000') AS rn FROM CTE;
           `,
           parameters: []
         }

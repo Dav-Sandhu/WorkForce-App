@@ -2,15 +2,18 @@ import axios from "axios"
 
 export const makeRequest = async (req, url, token) => {
 
-    const res = token ? await axios.get(url, {
-        headers: {
-            authorization: token.token
-        },
-        params: {
-            query: req
-        }
-    }) : await axios.post(url, { data: req })
+    try{
+        const res = token ? await axios.get(url, {
+            headers: {
+                authorization: token.token
+            },
+            params: {
+                query: req
+            }
+        }) : await axios.post(url, { data: req })
 
-    return res.data
-
+        return res.data
+    }catch(e){
+        return { status: -1 }
+    }
 }
