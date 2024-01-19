@@ -1,9 +1,55 @@
-.jobs{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.jobs-page{
 
-    button{
-        margin-left: 5px;
+    min-height: 100vh;
+
+    .jobs-title {
+        position: relative;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+
+        @media(min-width: 769px){
+            position: fixed;
+        }   
+    }
+      
+    .jobs{
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+
+        @media(min-width: 769px){
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button{
+            margin-left: 3px;
+            width: 15vw;
+            height: 40px;
+
+            @media(max-width: 1200px){
+                font-size: 1vw;
+            }
+
+            @media(max-width: 992px){
+                font-size: 0.5em;
+            }
+
+            @media(max-width: 768px){
+                font-size: 6vw;
+                width: 80vw;
+                height: 15vw;
+                margin-bottom: 5px;
+            }
+        }
     }
 }

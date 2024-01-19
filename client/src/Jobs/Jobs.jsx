@@ -1,12 +1,13 @@
 import "./Jobs.scss"
-
+import UserButton from '../UserButton/UserButton'
 import jobsList from "./Jobs.json"
 
 const Jobs = () => {
 
     return(
         <div className="jobs-page">
-            <h1 className='fw-bold fs-25 mb-1 text-center text-dark title'>What job are you working on?</h1>
+            <UserButton /> <br />
+            <h1 className='jobs-title fw-bold fs-25 mb-1 text-center text-dark title'>What job are you working on?</h1>
 
             <div className="jobs">
                 {jobsList.map(j => {
