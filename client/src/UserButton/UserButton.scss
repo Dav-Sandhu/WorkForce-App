@@ -1,0 +1,37 @@
+.user-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    .left-section{
+        img{
+            border-radius: 50%;
+            border: 1px solid black;
+            padding: 1px;
+            background-color: white;
+
+            height: 2vw;
+            width: 2vw;
+
+            @media(max-width: 1200px){
+                height: 3vw;
+                width: 3vw;
+            }
+
+            @media(max-width: 992px){
+                height: 5vw;
+                width: 5vw;
+            }
+
+            @media(max-width: 768px){
+                height: 8vw;
+                width: 8vw;
+            }
+
+            @media(max-width: 576px){
+                height: 10vw;
+                width: 10vw;
+            }
+        }
+    }
+}

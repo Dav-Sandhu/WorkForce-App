@@ -16,7 +16,6 @@ const SecretPasswordResetForm = ({email, navigate}) => {
                     const makeRequest = module.makeRequest
                     
                     const res = await makeRequest({ email, password }, '/update-password', null)
-                    const status = res.status
 
                     if (res.status === 1){
                         alert("Password Updated!")

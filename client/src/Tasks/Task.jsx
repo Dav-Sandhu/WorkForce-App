@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
 import './Task.scss'
 import tasks from './Tasks.json'
+import UserButton from '../UserButton/UserButton'
 
 const Task = () => {
 
     return(
         <div className="tasks-page">
-            <h1 className='tasks-title fw-bold fs-25 mb-1 text-center text-dark title'>What do you want to do?</h1>
+            <UserButton /> <br />
+            <h1 className='tasks-title fw-bold fs-25 mb-1 text-center text-dark title'>What do you want to do?</h1> <br />
             
             <div className='tasks'>
 

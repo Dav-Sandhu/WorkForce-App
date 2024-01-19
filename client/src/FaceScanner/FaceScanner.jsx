@@ -45,7 +45,6 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                     //since some users don't have images this try and catch block ensures there is no error
                     try{
-
                         /*
                         compares the images and returns a number, the smaller the number is the more the two faces are alike
                         if the number is smaller than 0.6 there is a high likelyhood that the two faces belong to the same person,

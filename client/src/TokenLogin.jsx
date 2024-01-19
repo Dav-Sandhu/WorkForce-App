@@ -1,9 +1,18 @@
+/*
+method is for front-end components to verify that the user is registered before proceeding
+with potentially sensitive information.
+*/
 const TokenLogin = async (token, makeRequest, navigate, user) => {
 
     try{
-        const res = await makeRequest(null, '/userinfo', { token })
+        /*
+        backend method is used to authenticate the token and will return an object with
+        a status property that is set to either 1 for success or -1 for failure.
+        */
+        const res = await makeRequest(null, '/userinfo', token)
         const token_decoded = res.output
 
+        //if the user is verified it will set the user context to the given information
         if (res.status === 1){
             user.setUserInfo({
                 employee_number: token_decoded[0].employee_number,
@@ -15,12 +24,14 @@ const TokenLogin = async (token, makeRequest, navigate, user) => {
                 picture: token_decoded[0].picture
             })
     
+            //calls the given callback function to navigate to a given page
             navigate()
 
             return { status: 1 }
         }
 
     }catch(e){
+        //if there is an issue with authentication it will clear the token in storage and return a failure object
         sessionStorage.removeItem("token")
         return { error: e, status: -1 }
     }
