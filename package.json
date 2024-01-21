@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@azure/communication-email": "^1.0.0",
-    "@tensorflow/tfjs-node": "npm:@tensorflow/tfjs-node@^4.16.0 --arch=x64",
+    "@tensorflow/tfjs-node": "^4.16.0",
     "@vladmandic/face-api": "^1.7.13",
     "body-parser": "^1.20.2",
     "canvas": "^2.11.2",
@@ -30,6 +30,9 @@
   "engines": {
     "node": "18.3.0"
   },
+  "cpu" : [ 
+    "x64"
+  ],
   "author": "Davanjit Sandhu",
   "license": "ISC",
   "description": "For testing out SQL on a Node.js backend."
