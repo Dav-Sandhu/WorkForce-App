@@ -27,6 +27,9 @@
     "MSSQL",
     "Databases"
   ],
+  "engines": {
+    "node": "18.x"
+  },
   "author": "Davanjit Sandhu",
   "license": "ISC",
   "description": "For testing out SQL on a Node.js backend."
