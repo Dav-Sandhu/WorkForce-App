@@ -28,7 +28,7 @@
     "Databases"
   ],
   "engines": {
-    "node": "18.16.1"
+    "node": "18.3.0"
   },
   "author": "Davanjit Sandhu",
   "license": "ISC",
