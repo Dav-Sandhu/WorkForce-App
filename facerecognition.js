@@ -1,4 +1,4 @@
-const tf = require('@tensorflow/tfjs-node')
+const tf = require('@tensorflow/tfjs')
 const faceapi = require('@vladmandic/face-api')
 const { Image, createCanvas, loadImage } = require('canvas')
 faceapi.env.monkeyPatch({ Canvas: createCanvas, Image })

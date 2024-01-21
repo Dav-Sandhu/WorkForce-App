@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@azure/communication-email": "^1.0.0",
-    "@tensorflow/tfjs-node": "^4.16.0",
+    "@tensorflow/tfjs-node": "npm:@tensorflow/tfjs-node@^4.16.0 --arch=x64",
     "@vladmandic/face-api": "^1.7.13",
     "body-parser": "^1.20.2",
     "canvas": "^2.11.2",
