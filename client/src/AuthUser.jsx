@@ -26,7 +26,13 @@ const AuthUser = ({children}) => {
                 const res = await tokenLogin.default(token, module.makeRequest, () => {}, user)
 
                 check = (res.status === 1)
-                check ? setLoggedIn(true) : sessionStorage.removeItem('token')
+
+                if (check){
+                    setLoggedIn(true)
+                    user.userInfo.clock_in === null && window.location.pathname !== '/' ? navigate('/') : ""
+                }else{
+                    sessionStorage.removeItem('token')
+                }
             }
 
             if (!check){

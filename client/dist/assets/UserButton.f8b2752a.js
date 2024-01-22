@@ -1,1 +1,0 @@
-import{u as t,a as r,b as o,j as e}from"./index.bfe744b7.js";const u=()=>{const s=t(),n=r();return o("button",{className:"user-button btn btn-outline-secondary rounded-pill",onClick:()=>n("/"),children:[e("div",{className:"left-section",children:e("img",{src:s.userInfo.picture,roundedCircle:!0})}),s.userInfo.first_name+" "+s.userInfo.last_name]})};export{u as U};
