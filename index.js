@@ -177,18 +177,6 @@ app.post('/facematch', async (req, res) => {
 
 })
 
-app.get('/sql', authenticateToken, async (req, res) => {
-
-  if (!req.query.query){ res.json({ status: -1 }) }
-    
-  const input = JSON.parse(req.query.query)
-  const query = queries(input.type, input.values)
-
-  const output = await db_query(query.query, query.parameters)
-
-  res.json({ output, status: 1 })
-})
-
 //app.use(express.static(path.resolve(__dirname, "models")))
 app.use(express.static(path.resolve(__dirname, "client", "dist")))
 
