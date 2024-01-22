@@ -9,7 +9,7 @@ const path = require('path')
 const jwt = require('jsonwebtoken')
 const bodyParser = require('body-parser')
 
-const { loadModels, compareFaces } = require('./facerecognition.js')
+//const { loadModels, compareFaces } = require('./facerecognition.js')
 
 config()
 
@@ -136,46 +136,46 @@ app.post('/update-password', async (req, res) => {
   res.json({ status: 1 })
 })
 
-app.post('/facematch', async (req, res) => {
-  const image = req.body.data.image
-  let matches = false
-  let match_num = 0
-  let closest = 1
+// app.post('/facematch', async (req, res) => {
+//   const image = req.body.data.image
+//   let matches = false
+//   let match_num = 0
+//   let closest = 1
 
-  //gets the images from the database
-  const query = queries('picture', null)
-  const images_list = await db_query(query.query, query.parameters)
+//   //gets the images from the database
+//   const query = queries('picture', null)
+//   const images_list = await db_query(query.query, query.parameters)
 
-  //loads the models
-  await loadModels(path)
+//   //loads the models
+//   await loadModels(path)
 
-  //iterates through the images list
-  for (let i = 0;i < images_list.length;i++){
-    /*
-    compares the images and returns a number, the smaller the number is the more the two faces are alike
-    if the number is smaller than 0.6 there is a high likelyhood that the two faces belong to the same person,
-    but as it is imperfect, sometimes it can be wrong which is why there exists a closest value to return only
-    the one match that gave the smallest value.
-    */
-    let match = await compareFaces(image, images_list[i].picture)
-    matches = (match < 0.6) ? true : matches
-    match_num = (match < closest) ? i : match_num
-    closest = (match < closest) ? match : closest
-  }
+//   //iterates through the images list
+//   for (let i = 0;i < images_list.length;i++){
+//     /*
+//     compares the images and returns a number, the smaller the number is the more the two faces are alike
+//     if the number is smaller than 0.6 there is a high likelyhood that the two faces belong to the same person,
+//     but as it is imperfect, sometimes it can be wrong which is why there exists a closest value to return only
+//     the one match that gave the smallest value.
+//     */
+//     let match = await compareFaces(image, images_list[i].picture)
+//     matches = (match < 0.6) ? true : matches
+//     match_num = (match < closest) ? i : match_num
+//     closest = (match < closest) ? match : closest
+//   }
     
-  if (matches){
-    //returns the matched face's profile
-    const getMatchedFace = queries('facematch', [images_list[match_num].picture])
-    const faceProfile = await db_query(getMatchedFace.query, getMatchedFace.parameters)
+//   if (matches){
+//     //returns the matched face's profile
+//     const getMatchedFace = queries('facematch', [images_list[match_num].picture])
+//     const faceProfile = await db_query(getMatchedFace.query, getMatchedFace.parameters)
 
-    //creates a token with the matched face's profile
-    const token = jwt.sign({ output: [{ ...faceProfile[0] }] }, process.env.JWT_KEY, { expiresIn: '1h' })
-    return res.json({ token, status: 1 })
-  }
+//     //creates a token with the matched face's profile
+//     const token = jwt.sign({ output: [{ ...faceProfile[0] }] }, process.env.JWT_KEY, { expiresIn: '1h' })
+//     return res.json({ token, status: 1 })
+//   }
 
-  res.json({ status: -1 })
+//   res.json({ status: -1 })
 
-})
+// })
 
 app.get('/sql', authenticateToken, async (req, res) => {
 
