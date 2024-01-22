@@ -27,9 +27,6 @@
   "engines": {
     "node": "18.3.0"
   },
-  "cpu" : [ 
-    "x64"
-  ],
   "author": "Davanjit Sandhu",
   "license": "ISC",
   "description": "backend for WorkForce app."
