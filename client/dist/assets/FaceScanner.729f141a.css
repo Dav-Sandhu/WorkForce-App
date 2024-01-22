@@ -1,0 +1,1 @@
+.image-area{display:flex;justify-content:center;align-items:center}.image-area .camera{display:flex;justify-content:center;align-items:center;width:100%;height:100%}.image-area .camera:hover{opacity:.5}.image-area .camera .scan-text{position:absolute;font-size:10em}.image-area .user-picture{width:100%}

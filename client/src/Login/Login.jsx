@@ -3,7 +3,7 @@ import "./Login.scss"
 import { useReducer, useState, useRef, useEffect, lazy } from "react"
 import { useNavigate } from "react-router-dom"
 
-//const FaceScanner = lazy(() => import('../FaceScanner/FaceScanner'))
+const FaceScanner = lazy(() => import('../FaceScanner/FaceScanner'))
 
 import { useUserInfo } from "../UserProvider"
 import ResetPassword from "./ResetPassword"
@@ -228,14 +228,12 @@ const Login = () => {
                     }}>Forgot password?</a>
                     <p>Not a member? <a href="/register">Register</a></p>
                     
-                    {/* 
                     <FaceScanner 
                         state={state} 
                         dispatch={dispatch}
                         navigate={navigate} 
                         user={user}
                     />
-                    */}
         
                     {/*
                     A separate box for sending password reset request to email, this box can be turned on and off 
