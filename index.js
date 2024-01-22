@@ -30,6 +30,7 @@ function authenticateToken(req, res, next) {
     if (err) return res.json({ status: -1 })
 
     req.output = output
+
     next()
   })
 }
@@ -38,15 +39,27 @@ app.use(cors())
 app.use(bodyParser.json({ limit: '10mb' }))
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 
-app.post('/authenticate', async (req, res) => {
+app.post('/login', async (req, res) => {
 
-  if (!req.body.data.type || !req.body.data.values){ return res.json({ status: -1 }) }
+  const employee_number = req.body.data.employee_number
+  const password = req.body.data.password
 
-  const query = queries(req.body.data.type, req.body.data.values)
-    
+  const query = queries("find-employee", [employee_number, password])
   const output = await db_query(query.query, query.parameters)
 
   if (output.length > 0){
+
+    const clockInQuery = queries("check-clocked-in", [employee_number])
+    const clockIn = await db_query(clockInQuery.query, clockInQuery.parameters)
+  
+    if (clockIn.length > 0){
+      output[0].clock_in = clockIn[0].clock_in
+      output[0].clock_out = clockIn[0].clock_out || null
+    }else{ 
+      output[0].clock_in = null
+      output[0].clock_out = null
+    }
+
     const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
     return res.json({ token, status: 1 })
   }else{
@@ -117,6 +130,9 @@ app.post('/registeremployee', async (req, res) => {
   const output = await db_query(query.query, query.parameters)
 
   if (output.length > 0){
+
+    output[0].clock_in = null
+    output[0].clock_out = null
     
     const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
     return res.json({ token, status: 1 })
@@ -134,6 +150,40 @@ app.post('/update-password', async (req, res) => {
   await db_query(query.query, query.parameters)
 
   res.json({ status: 1 })
+})
+
+app.post('/clockin', async (req, res) => {
+
+  const query = queries('clock-in', [req.body.data.employee_number])
+  const output = await db_query(query.query, query.parameters)
+
+  res.json({ status: 1, output })
+})
+
+app.post('/clockout', async (req, res) => {
+  
+    const query = queries('clock-out', [req.body.data.employee_number])
+    const output = await db_query(query.query, query.parameters)
+  
+    res.json({ status: 1, output })
+})
+
+app.post('/checkclockin', async (req, res) => {
+    const query = queries('check-clocked-in', [req.body.data.employee_number])
+    const output = await db_query(query.query, query.parameters)
+
+    res.json({ status: 1, output })
+})
+
+app.post('/updateToken', async (req, res) => {
+  // Get the new data from the request
+  const newData = req.body.data
+
+  // Create a new token with the updated data
+  const token = jwt.sign({ output: [newData] }, process.env.JWT_KEY, { expiresIn: '1h' })
+
+  // Send the new token back to the client
+  res.json({ token, status: 1 })
 })
 
 app.post('/facematch', async (req, res) => {
@@ -168,8 +218,21 @@ app.post('/facematch', async (req, res) => {
     const getMatchedFace = queries('facematch', [images_list[match_num].picture])
     const faceProfile = await db_query(getMatchedFace.query, getMatchedFace.parameters)
 
+    const output = {...faceProfile[0]}
+
+    const getClockIn = queries('check-clocked-in', [faceProfile[0].employee_number])
+    const clockIn = await db_query(getClockIn.query, getClockIn.parameters)
+    
+    if (clockIn.length > 0){
+      output.clock_in = clockIn[0].clock_in
+      output.clock_out = clockIn[0].clock_out || null
+    }else{
+      output.clock_in = null
+      output.clock_out = null
+    }
+
     //creates a token with the matched face's profile
-    const token = jwt.sign({ output: [{ ...faceProfile[0] }] }, process.env.JWT_KEY, { expiresIn: '1h' })
+    const token = jwt.sign({ output: [output] }, process.env.JWT_KEY, { expiresIn: '1h' })
     return res.json({ token, status: 1 })
   }
 

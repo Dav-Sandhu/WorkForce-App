@@ -21,7 +21,9 @@ const TokenLogin = async (token, makeRequest, navigate, user) => {
                 email: token_decoded[0].email,
                 password: token_decoded[0].password,
                 hourly_wage: token_decoded[0].hourly_wage,
-                picture: token_decoded[0].picture
+                picture: token_decoded[0].picture,
+                clock_in: token_decoded[0].clock_in,
+                clock_out: token_decoded[0].clock_out
             })
     
             //calls the given callback function to navigate to a given page

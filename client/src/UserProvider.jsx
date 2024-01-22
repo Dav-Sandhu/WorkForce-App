@@ -19,7 +19,9 @@ const UserProvider = ({children}) => {
         employee_number: "",
         password: "",
         hourly_wage: 0.0,
-        picture: ""
+        picture: "",
+        clock_in: null,
+        clock_out: null
     })
 
     return(

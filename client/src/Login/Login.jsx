@@ -118,10 +118,10 @@ const Login = () => {
                                 //looks for employee in database
                                 const res = await makeRequest(
                                     {
-                                        type: "find-employee", 
-                                        values: [state.employee_number, state.password] 
+                                        employee_number: state.employee_number,
+                                        password: state.password
                                     },
-                                    '/authenticate',
+                                    '/login',
                                     null
                                 )
 

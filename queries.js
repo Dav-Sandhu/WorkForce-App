@@ -35,6 +35,37 @@ const queries = (type, values) => {
           query: `USE WorkForce; SELECT picture, employee_number FROM employee;`,
           parameters: []
         }
+      case "check-clocked-in":
+        return{
+          query: `
+            USE WorkForce; 
+            SELECT clock_in, clock_out 
+            FROM clock 
+            WHERE date=CONVERT(DATE, GETDATE()) 
+            AND employee_number=@employee_number;`,
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
+        }
+      case "clock-in":
+        return{
+          query: `
+            USE WorkForce;
+            INSERT INTO clock(employee_number, clock_in, clock_out, date)
+            VALUES (@employee_number, CONVERT(TIME, GETDATE()), NULL, CONVERT(DATE, GETDATE())); 
+            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETDATE()) AND employee_number=@employee_number;
+          `,
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
+        }
+      case "clock-out":
+        return{
+          query: `
+            USE WorkForce;
+            UPDATE clock
+            SET clock_out=CONVERT(TIME, GETDATE())
+            WHERE date=CONVERT(DATE, GETDATE()) AND employee_number=@employee_number;
+            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETDATE()) AND employee_number=@employee_number;
+          `,
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
+        }
       case "facematch":
         return{
           query: `USE WorkForce; SELECT * FROM employee WHERE picture=@picture`,
