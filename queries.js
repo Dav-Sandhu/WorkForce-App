@@ -1,11 +1,17 @@
 const { TYPES } = require("tedious")
 
-//creates a limited set of actions that the front-end can do in order to prevent a potential sql injection attack
+//All SQL queries are stored here
 const queries = (type, values) => {
     switch(type){
       case "find-employee":
         return {
-          query: `USE WorkForce; SELECT * FROM employee WHERE employee_number=@employee_number AND password=@password`,
+          query: `
+            USE WorkForce; 
+
+            SELECT * 
+            FROM employee 
+            WHERE employee_number=@employee_number 
+            AND password=@password;`,
           parameters: [
             { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
             { name: 'password', type: TYPES.VarChar, value: values[1] }
@@ -27,31 +33,56 @@ const queries = (type, values) => {
           }
       case "employee-number":
         return {
-          query: `USE WorkForce; SELECT * FROM employee WHERE employee_number=@employee_number;`,
+          query: `
+            USE WorkForce; 
+
+            SELECT * 
+            FROM employee 
+            WHERE employee_number=@employee_number;`,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
         }
       case "picture":
         return {
-          query: `USE WorkForce; SELECT picture, employee_number FROM employee;`,
+          query: `
+            USE WorkForce; 
+
+            SELECT picture, employee_number 
+            FROM employee;`,
           parameters: []
         }
       case "check-clocked-in":
         return{
           query: `
             USE WorkForce; 
+
             SELECT clock_in, clock_out 
             FROM clock 
             WHERE date=CONVERT(DATE, GETDATE()) 
             AND employee_number=@employee_number;`,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
         }
+      case "check-clocked-out":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT date
+            FROM clock
+            WHERE clock_out=NULL 
+            AND employee_number=@employee_number;
+          `,
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+        }
       case "clock-in":
         return{
           query: `
             USE WorkForce;
+
             INSERT INTO clock(employee_number, clock_in, clock_out, date)
-            VALUES (@employee_number, CONVERT(TIME, GETDATE()), NULL, CONVERT(DATE, GETDATE())); 
-            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETDATE()) AND employee_number=@employee_number;
+            VALUES (@employee_number, GETDATE(), NULL, CONVERT(DATE, GETDATE())); 
+            
+            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETDATE()) 
+            AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
         }
@@ -59,26 +90,45 @@ const queries = (type, values) => {
         return{
           query: `
             USE WorkForce;
+
             UPDATE clock
-            SET clock_out=CONVERT(TIME, GETDATE())
-            WHERE date=CONVERT(DATE, GETDATE()) AND employee_number=@employee_number;
-            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETDATE()) AND employee_number=@employee_number;
+            SET clock_out=GETDATE()
+            WHERE date=CONVERT(DATE, GETDATE()) 
+            AND employee_number=@employee_number;
+
+            SELECT clock_in, clock_out FROM clock 
+            WHERE date=CONVERT(DATE, GETDATE()) 
+            AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
         }
       case "facematch":
         return{
-          query: `USE WorkForce; SELECT * FROM employee WHERE picture=@picture`,
+          query: `
+            USE WorkForce; 
+            
+            SELECT * 
+            FROM employee 
+            WHERE picture=@picture`,
           parameters: [{ name: 'picture', type: TYPES.VarChar, value: values[0] }]
         }
       case "daily-report":
         return{
-          query: `USE WorkForce; SELECT * FROM daily_report`,
+          query: `
+            USE WorkForce; 
+
+            SELECT * 
+            FROM daily_report`,
           parameters: []
         }
       case "email":
         return{
-          query: `USE WorkForce; SELECT * FROM employee WHERE email=@email`,
+          query: `
+            USE WorkForce; 
+
+            SELECT * 
+            FROM employee 
+            WHERE email=@email`,
           parameters: [{name: 'email', type: TYPES.VarChar, value: values[0]}]
         }
       case "add-employee":
@@ -130,7 +180,11 @@ const queries = (type, values) => {
         }
       case "remove-employee":
         return{
-          query: `USE WorkForce; DELETE FROM employee WHERE employee_number=@employee_number;`,
+          query: `
+            USE WorkForce; 
+            
+            DELETE FROM employee 
+            WHERE employee_number=@employee_number;`,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
         }
       default:

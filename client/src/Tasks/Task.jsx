@@ -1,9 +1,12 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useUserInfo } from '../UserProvider'
 import './Task.scss'
-import tasks from './Tasks.json'
 import UserButton from '../UserButton/UserButton'
 
 const Task = () => {
+
+    const navigate = useNavigate()
+    const user = useUserInfo()
 
     return(
         <div className="tasks-page">
@@ -12,18 +15,57 @@ const Task = () => {
             
             <div className='tasks'>
 
-                {tasks.map(t => {
-                    return(
-                        <Link to={t.route} key={t.name}>
-                            <button
-                                type="button"  
-                                className={"btn btn-lg " + t.color}
-                            >
-                                {t.name}
-                            </button>
-                        </Link>
-                    )
-                })}
+                <button
+                    type="button"
+                    className='btn btn-lg btn-primary'
+                    onClick={() => navigate('/jobs')}>
+                            Join a Job
+                </button>
+
+                <button
+                    type='button'
+                    className='btn btn-lg btn-warning'
+                    >
+                        Ask for a Job
+                </button>
+
+                <button
+                    type='button'
+                    className='btn btn-lg btn-success'
+                    >
+                        Take a Break
+                </button>
+
+                <button
+                    type='button'
+                    className='btn btn-lg btn-danger'
+                    >
+                        Go To Lunch
+                </button>
+
+                <button
+                    type='button'
+                    className='btn btn-lg btn-info'
+                    onClick={() => {
+
+                        const request = async () => {
+
+                            const module = await import('../useDB')
+                            const makeRequest = module.makeRequest
+
+                            const res = await makeRequest({ employee_number: user.userInfo.employee_number }, '/clockout', null)
+
+                            console.log(res)
+                        }
+
+                        request()
+
+                        sessionStorage.removeItem('token')
+                        window.location.reload()
+                    }}
+                    >
+                        Finish Shift
+                </button>
             </div>
         </div>
     )

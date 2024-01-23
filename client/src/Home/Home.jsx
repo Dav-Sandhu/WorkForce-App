@@ -3,6 +3,8 @@ import "./Home.scss"
 import { useNavigate } from "react-router-dom"
 import { useUserInfo } from "../UserProvider"
 
+import Clock, { convertToTime } from "../Clock"
+
 const Home = () => {
 
     const user = useUserInfo()
@@ -16,21 +18,9 @@ const Home = () => {
     const clock_in = user.userInfo.clock_in
     const clock_out = user.userInfo.clock_out
 
-    function convertToTime(dateString) {
-        const date = new Date(dateString)
-        let hours = date.getUTCHours()
-        const minutes = date.getUTCMinutes().toString().padStart(2, '0')
-        const ampm = hours >= 12 ? 'PM' : 'AM'
-    
-        hours = hours % 12
-        hours = hours ? hours : 12
-        hours = hours.toString().padStart(2, '0')
-    
-        return `${hours}:${minutes} ${ampm}`
-    }
-
     return(
         <section className="vh-100" style={{backgroundColor: '#eee'}}>
+            {clock_in !== null && clock_out === null ? <Clock /> : ""}
             <div className="container py-5 h-100">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="col-md-12 col-xl-4">
@@ -41,7 +31,7 @@ const Home = () => {
                                 </div>
                                 <h4 className="mb-2">{name}</h4>
                                 <p className="text-muted mb-4">{email}</p>
-                                <button 
+                                {clock_out === null ? <button 
                                     type="button" 
                                     className="btn btn-primary btn-rounded btn-lg"
                                     onClick={() => {
@@ -70,18 +60,18 @@ const Home = () => {
                                         }
                                     }}> 
                                     {clock_in !== null ? "Tasks" : "Clock In"}
-                                </button>
+                                </button> : "You Are Done For The Day!"}
                                 <div className="d-flex justify-content-between text-center mt-5 mb-2">
                                     <div>
-                                        <p className="mb-2 h5">{employee_number}</p>
+                                        <p className="mb-2 mr-3 h5 text-nowrap ">{employee_number}</p>
                                         <p className="text-muted mb-0">Employee Number</p>
                                     </div>
                                     <div>
-                                        <p className="mb-2 h5">{clock_in !== null ? clock_out !== null ? "Clocked Out" : convertToTime(clock_in) : "-"}</p>
-                                        <p className="text-muted mb-0">Clock In</p>
+                                        <p className="mb-2 mr-3 h5 text-nowrap ">{clock_in === null ? <Clock /> : clock_out === null ? convertToTime(clock_in) : convertToTime(clock_out)}</p>
+                                        <p className="text-muted mb-0">{clock_in === null ? "Current Time" : clock_out === null ? "Clocked In" : "Clocked Out"}</p>
                                     </div>
                                     <div className="px-3">
-                                        <p className="mb-2 h5">{wage}</p>
+                                        <p className="mb-2 mr-3 h5 text-nowrap ">{wage}</p>
                                         <p className="text-muted mb-0">Hourly Wage</p>
                                     </div>
                                 </div>
