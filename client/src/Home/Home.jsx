@@ -27,7 +27,29 @@ const Home = () => {
                         <div className="card" style={{borderRadius: '15px'}}>
                             <div className="card-body text-center">
                                 <div className="mt-3 mb-4">
-                                    <img src={picture} className="rounded-circle img-fluid" style={{width: '100px'}} />
+                                    <img 
+                                        src={picture} 
+                                        className="rounded-circle img-fluid profile-picture" 
+                                        style={{width: '100px'}}
+                                        onClick={() => {
+                                            // change profile picture
+                                            const fileInput = document.createElement('input')
+                                            fileInput.type = 'file'
+                                            fileInput.accept = 'image/*'
+                                            fileInput.onchange = (e) => {
+                                                const file = e.target.files[0]
+                                                console.log('Uploaded image:', file)
+                                                
+                                                if (file.size <= 1 * 1024 * 1024) { // Check if file size is less than or equal to 1 MB
+                                                    console.log("Successfull upload")
+                                                } else {
+                                                    alert("Image cannot be larger than 1 MB")
+                                                }
+                                            }
+
+                                            fileInput.click()
+                                        }} 
+                                    />
                                 </div>
                                 <h4 className="mb-2">{name}</h4>
                                 <p className="text-muted mb-4">{email}</p>

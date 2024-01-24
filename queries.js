@@ -57,7 +57,7 @@ const queries = (type, values) => {
 
             SELECT clock_in, clock_out 
             FROM clock 
-            WHERE date=CONVERT(DATE, GETDATE()) 
+            WHERE date=CONVERT(DATE, GETUTCDATE()) 
             AND employee_number=@employee_number;`,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
         }
@@ -79,9 +79,9 @@ const queries = (type, values) => {
             USE WorkForce;
 
             INSERT INTO clock(employee_number, clock_in, clock_out, date)
-            VALUES (@employee_number, GETDATE(), NULL, CONVERT(DATE, GETDATE())); 
+            VALUES (@employee_number, GETUTCDATE(), NULL, CONVERT(DATE, GETUTCDATE())); 
             
-            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETDATE()) 
+            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETUTCDATE()) 
             AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
@@ -92,12 +92,12 @@ const queries = (type, values) => {
             USE WorkForce;
 
             UPDATE clock
-            SET clock_out=GETDATE()
-            WHERE date=CONVERT(DATE, GETDATE()) 
+            SET clock_out=GETUTCDATE()
+            WHERE date=CONVERT(DATE, GETUTCDATE()) 
             AND employee_number=@employee_number;
 
             SELECT clock_in, clock_out FROM clock 
-            WHERE date=CONVERT(DATE, GETDATE()) 
+            WHERE date=CONVERT(DATE, GETUTCDATE()) 
             AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  

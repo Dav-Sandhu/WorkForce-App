@@ -4,25 +4,18 @@ import { useUserInfo } from './UserProvider'
 
 export function convertToTime(dateString) {
     const date = new Date(dateString)
-    let hours = date.getUTCHours()
-    const minutes = date.getUTCMinutes().toString().padStart(2, '0')
-    const ampm = hours >= 12 ? 'PM' : 'AM'
+    const hours = date.getHours()
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+    const amOrPm = hours >= 12 ? 'PM' : 'AM'
+    const formattedHours = (hours % 12 || 12).toString().padStart(2, '0')
 
-    hours = hours % 12
-    hours = hours ? hours : 12
-    hours = hours.toString().padStart(2, '0')
-
-    return `${hours}:${minutes} ${ampm}`
+    return `${formattedHours}:${minutes} ${amOrPm}`
 }
 
 export function getClockInTime(clock_in) {
+
     // Create a Date object from the clock_in time
-    const clockInTime = clock_in.split('T')[1]
-    const clockInDate = new Date()
-    
-    clockInDate.setHours(clockInTime.slice(0, 2))
-    clockInDate.setMinutes(clockInTime.slice(3, 5))
-    clockInDate.setSeconds(clockInTime.slice(6, 8))
+    const clockInDate = new Date(clock_in)
 
     // Calculate the difference between the current time and the clock_in time
     const timeDifference = (new Date()) - clockInDate
