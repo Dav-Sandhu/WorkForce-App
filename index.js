@@ -67,6 +67,21 @@ app.post('/login', async (req, res) => {
   }
 })
 
+app.get('/getcustomers', authenticateToken, async (req, res) => {
+
+  const query = queries('get-customers', [])
+  const output = await db_query(query.query, query.parameters)
+
+  res.json({ output, status: 1 })
+})
+
+app.get('/getjobs', authenticateToken , async (req, res) => {
+  const query = queries('get-jobs', [])
+  const output = await db_query(query.query, query.parameters)
+
+  res.json({ output , status: 1  })
+})
+
 app.get('/userinfo', authenticateToken, (req, res) => {
 
   res.json({ output: req.output.output, status: 1 })

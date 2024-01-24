@@ -1,23 +1,63 @@
 import "./Jobs.scss"
 import UserButton from '../UserButton/UserButton'
 import jobsList from "./Jobs.json"
+import Customers from "./Customers" 
+
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 const Jobs = () => {
+
+    const navigate = useNavigate()
+
+    const [jobs, setJobs] = useState([])
+    const [showJobs, setShowJobs] = useState(true)
+
+    useEffect(() => {
+        const request = async () => {
+            const token = sessionStorage.getItem('token')
+
+            if (token !== null) {
+                const module = await import('../useDB')
+                const makeRequest = module.makeRequest
+
+                const output = await makeRequest(null, '/getjobs', token)
+                output.status === 1 ? setJobs(output.output) : navigate('/')
+            }else{navigate('/login')}
+        }
+
+        request()
+    }, [])
 
     return(
         <div className="jobs-page">
             <UserButton /> <br />
-            <h1 className='jobs-title fw-bold fs-25 mb-1 text-center text-dark title'>What job are you working on?</h1>
+            <h1 className='jobs-title fw-bold fs-25 mb-1 text-center text-dark title'>
+                {
+                    showJobs ?
+                    "What job are you working on?" : 
+                    "What customer are you doing the job for?"
+                }
+            </h1>
 
             <div className="jobs">
-                {jobsList.map(j => {
-                    return(
-                        <button className="btn btn-lg btn-secondary" key={j.name}>
-                            {j.name}
-                        </button>
-                    )
-                })}
-            </div>
+                {   !showJobs ? 
+                    <Customers /> :
+                    jobs.map(job => {
+                        return(
+                            <button 
+                                className="btn btn-lg btn-secondary" 
+                                key={job.process_type} 
+                                onClick={() => {
+                                    setShowJobs(false)
+                                }}
+                            >
+                                {job.process_type}
+                            </button>
+                        )
+                    })
+                }
+            </div> 
         </div>
     )
 }

@@ -131,6 +131,24 @@ const queries = (type, values) => {
             WHERE email=@email`,
           parameters: [{name: 'email', type: TYPES.VarChar, value: values[0]}]
         }
+      case "get-jobs":
+        return{
+          query: `
+            USE WorkForce; 
+
+            SELECT process_type FROM internal_process;
+          `,
+          parameters: []
+        }
+      case "get-customers":
+        return{
+          query: `
+            USE WorkForce;
+            
+            SELECT * FROM customers;
+            `,
+          parameters: []
+        }
       case "add-employee":
         return{
           query: `
