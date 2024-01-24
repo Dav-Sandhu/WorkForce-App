@@ -21,7 +21,7 @@ RUN npm install
 # Go back to the root directory
 WORKDIR /app
 
-# Expose the port on which your application listens
+# Expose the port for the application to listen
 EXPOSE 3000
 
 # Start the application
