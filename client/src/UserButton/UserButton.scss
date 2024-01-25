@@ -1,6 +1,7 @@
 .user-button{
     display: flex;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     
     .left-section{

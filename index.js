@@ -87,6 +87,16 @@ app.get('/userinfo', authenticateToken, (req, res) => {
   res.json({ output: req.output.output, status: 1 })
 })
 
+app.get('/getunfinishedprocesses', authenticateToken, async (req, res) => {
+
+  const employee_number = req.query.query.employee_number
+
+  const query = queries('get-unfinished-processes', [employee_number])
+  const output = await db_query(query.query, query.parameters)
+
+  res.json({ output, status: 1 })
+})
+
 app.post('/startjob', async (req, res) => {
 
   const employee_number = req.body.data.employee_number
@@ -98,6 +108,21 @@ app.post('/startjob', async (req, res) => {
   const output = await db_query(startJobQuery.query, startJobQuery.parameters)
 
   return res.json({ output, status: 1 })
+})
+
+app.post('/finishjob', async (req, res) => {
+
+  const employee_number = req.body.data.employee_number
+  const process_type = req.body.data.process_type
+  const business_name = req.body.data.business_name
+  const contact_email = req.body.data.contact_email
+  const start = req.body.data.start
+
+  const finishJobQuery = queries('finish-process', [ employee_number, process_type, business_name, contact_email, start ])
+  const output = await db_query(finishJobQuery.query, finishJobQuery.parameters)
+
+  return res.json({ output, status: 1 })
+
 })
 
 app.post('/checkemployee', async (req, res) => {

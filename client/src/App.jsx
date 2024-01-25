@@ -10,6 +10,7 @@ const Register = lazy(() => import('./Login/Register'))
 const DailyReport = lazy(() => import('./DailyReport'))
 const Jobs = lazy(() => import('./Jobs/Jobs'))
 const Task = lazy(() => import('./Tasks/Task'))
+const Working = lazy(() => import('./Jobs/Working'))
 
 export default function App(){
 
@@ -30,6 +31,7 @@ export default function App(){
                         <Route path="/report" element={AuthWrapper(DailyReport)}/>
                         <Route path="/jobs" element={AuthWrapper(Jobs)}/>
                         <Route path="/tasks" element={AuthWrapper(Task)}/>
+                        <Route path='/working' element={AuthWrapper(Working)} />
                         <Route path="*" element={<Login />}/>
                     </Routes>
                 </BrowserRouter>

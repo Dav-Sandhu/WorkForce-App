@@ -1,3 +1,15 @@
 .profile-picture{
     cursor: pointer;
 }
+
+.home-buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    button{
+        width: 30%;
+        text-wrap: none;
+    }
+}

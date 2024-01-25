@@ -1,9 +1,10 @@
 import "./Jobs.scss"
-import UserButton from '../UserButton/UserButton'
-import Customers from "./Customers" 
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, lazy } from "react"
 import { useNavigate } from "react-router-dom"
+
+const UserButton = lazy(() => import('../UserButton/UserButton'))
+const Customers = lazy(() => import('./Customers'))
 
 const Jobs = () => {
 
@@ -43,6 +44,7 @@ const Jobs = () => {
             <div className="jobs">
                 {   !showJobs ? 
                     <Customers  selectedJob={selectedJob} /> :
+                    jobs.length === 0 ? <h5 className="text-center text-muted">There are no jobs available right now...</h5> :
                     jobs.map(job => {
                         return(
                             <button 

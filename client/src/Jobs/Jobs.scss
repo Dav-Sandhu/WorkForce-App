@@ -20,6 +20,7 @@
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
+        overflow-y: auto;
 
         @media(min-width: 769px){
             position: fixed;

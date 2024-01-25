@@ -139,7 +139,8 @@ const queries = (type, values) => {
             AND date=CONVERT(DATE, GETUTCDATE())
             AND process_type=@process_type
             AND business_name=@business_name
-            AND contact_email=@contact_email;
+            AND contact_email=@contact_email
+            AND start=@start;
 
             SELECT @current_date;
           `,
@@ -148,6 +149,7 @@ const queries = (type, values) => {
             { name: 'process_type', type: TYPES.VarChar, value: values[1] },
             { name: 'business_name', type: TYPES.VarChar, value: values[2] },
             { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
+            { name: 'start', type: TYPES.VarChar, value: values[4] }
           ]
         }
       case "get-processes":
@@ -159,6 +161,18 @@ const queries = (type, values) => {
             WHERE date=CONVERT(DATE, GETUTCDATE());
           `,
           parameters: []
+        }
+      case "get-unfinished-processes":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * 
+            FROM work
+            WHERE finish IS NULL
+            AND employee_number=@employee_number;
+          `, 
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
         }
       case "check-process":
         return{

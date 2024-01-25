@@ -53,36 +53,48 @@ const Home = () => {
                                 </div>
                                 <h4 className="mb-2">{name}</h4>
                                 <p className="text-muted mb-4">{email}</p>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-primary btn-rounded btn-lg"
-                                    onClick={() => {
-                                        
-                                        if (clock_in === null){
-                                            const request = async () => {
+                                <div className="home-buttons">
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-primary btn-rounded btn-lg"
+                                        onClick={() => {
+                                            
+                                            if (clock_in === null){
+                                                const request = async () => {
 
-                                                const module = await import('../useDB')
-                                                const makeRequest = module.makeRequest
-    
-                                                const res = await makeRequest({ employee_number: employee_number }, '/clockin', null)
+                                                    const module = await import('../useDB')
+                                                    const makeRequest = module.makeRequest
+        
+                                                    const res = await makeRequest({ employee_number: employee_number }, '/clockin', null)
 
-                                                const updatedUserValues = { ...user.userInfo, clock_in: res.output[0].clock_in }
+                                                    const updatedUserValues = { ...user.userInfo, clock_in: res.output[0].clock_in }
 
-                                                user.setUserInfo(updatedUserValues)
+                                                    user.setUserInfo(updatedUserValues)
 
-                                                const updatedToken = await makeRequest(updatedUserValues, '/updateToken', null)
+                                                    const updatedToken = await makeRequest(updatedUserValues, '/updateToken', null)
 
-                                                sessionStorage.removeItem('token')
-                                                sessionStorage.setItem('token', updatedToken.token)
+                                                    sessionStorage.removeItem('token')
+                                                    sessionStorage.setItem('token', updatedToken.token)
+                                                }
+        
+                                                request()
+                                            }else{
+                                                navigate('/tasks')
                                             }
-    
-                                            request()
-                                        }else{
-                                            navigate('/tasks')
-                                        }
-                                    }}> 
-                                    {clock_in !== null ? "Tasks" : "Clock In"}
-                                </button>
+                                        }}> 
+                                        {clock_in !== null ? "Tasks" : "Clock In"}
+                                    </button>
+                                    {
+                                        clock_in !== null ? 
+                                        <button 
+                                            className="btn btn-info btn-rounded btn-lg"
+                                            onClick={() => {
+                                                navigate('/working')
+                                            }}
+                                        >Jobs</button> : 
+                                        ""
+                                    }
+                                </div>
                                 <div className="d-flex justify-content-between text-center mt-5 mb-2">
                                     <div>
                                         <p className="mb-2 mr-3 h5 text-nowrap ">{employee_number}</p>

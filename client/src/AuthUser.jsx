@@ -29,7 +29,7 @@ const AuthUser = ({children}) => {
 
                 if (check){
                     setLoggedIn(true)
-                    user.userInfo.clock_in === null && window.location.pathname !== '/' ? navigate('/') : ""
+                    res.clock_in === null && window.location.pathname !== '/' ? navigate('/') : ""
                 }else{
                     sessionStorage.removeItem('token')
                 }

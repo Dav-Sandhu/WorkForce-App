@@ -29,7 +29,7 @@ const TokenLogin = async (token, makeRequest, navigate, user) => {
             //calls the given callback function to navigate to a given page
             navigate()
 
-            return { status: 1 }
+            return { status: 1, clock_in: token_decoded[0].clock_in }
         }
 
     }catch(e){
