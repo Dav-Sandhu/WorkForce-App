@@ -8,6 +8,22 @@ const Task = () => {
     const navigate = useNavigate()
     const user = useUserInfo()
 
+    const takeABreak = async (type) => {
+        const module = await import('../useDB')
+        const makeRequest = module.makeRequest
+
+        await makeRequest(
+            {
+                employee_number: user.userInfo.employee_number,
+                break_type: type
+            },
+            '/startbreak',
+            null
+        )
+
+        navigate('/break')
+    }
+
     return(
         <div className="tasks-page">
             <UserButton /> <br />
@@ -32,6 +48,9 @@ const Task = () => {
                 <button
                     type='button'
                     className='btn btn-lg btn-success'
+                    onClick={() => {
+                        takeABreak('break')
+                    }}
                     >
                         Take a Break
                 </button>
@@ -39,6 +58,9 @@ const Task = () => {
                 <button
                     type='button'
                     className='btn btn-lg btn-danger'
+                    onClick={() => {
+                        takeABreak('lunch')
+                    }}
                     >
                         Go To Lunch
                 </button>

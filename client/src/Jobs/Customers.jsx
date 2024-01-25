@@ -28,7 +28,8 @@ const Customers = ({ selectedJob }) => {
     
     return(
         <>
-            {customers.length === 0 ? <h5 className="text-center text-muted">There are no customers available right now...</h5> : 
+            {customers.length === 0 ? 
+            <h5 className="text-center text-muted">There are no customers available right now...</h5> : 
                 customers.map((customer) => {
                     return(
                         <div
@@ -47,8 +48,6 @@ const Customers = ({ selectedJob }) => {
                                     }, '/startjob', null)
 
                                     if (output.status === 1){
-                                        const date = new Date(output.output[0].start)
-                                        console.log(date)
                                         navigate('/working')
                                     }else{
                                         alert('You already did this job today!')

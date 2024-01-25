@@ -44,7 +44,8 @@ const Jobs = () => {
             <div className="jobs">
                 {   !showJobs ? 
                     <Customers  selectedJob={selectedJob} /> :
-                    jobs.length === 0 ? <h5 className="text-center text-muted">There are no jobs available right now...</h5> :
+                    jobs.length === 0 ? 
+                    <h5 className="text-center text-muted">There are no jobs available right now...</h5> :
                     jobs.map(job => {
                         return(
                             <button 

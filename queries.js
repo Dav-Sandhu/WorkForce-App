@@ -11,7 +11,8 @@ const queries = (type, values) => {
             SELECT * 
             FROM employee 
             WHERE employee_number=@employee_number 
-            AND password=@password;`,
+            AND password=@password;
+          `,
           parameters: [
             { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
             { name: 'password', type: TYPES.VarChar, value: values[1] }
@@ -38,7 +39,8 @@ const queries = (type, values) => {
 
             SELECT * 
             FROM employee 
-            WHERE employee_number=@employee_number;`,
+            WHERE employee_number=@employee_number;
+          `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
         }
       case "picture":
@@ -47,7 +49,8 @@ const queries = (type, values) => {
             USE WorkForce; 
 
             SELECT picture, employee_number 
-            FROM employee;`,
+            FROM employee;
+          `,
           parameters: []
         }
       case "check-clocked-in":
@@ -105,6 +108,50 @@ const queries = (type, values) => {
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
         }
+      case "start-time-off":
+        return{
+          query: `
+            USE WorkForce;
+
+            DECLARE @current_date DATETIME
+            SET @current_date = GETUTCDATE()
+
+            INSERT INTO timeoff(employee_number, break_type, start, finish, date)
+            VALUES(@employee_number, @break_type, @current_date, NULL, CONVERT(DATE, GETUTCDATE()));
+
+            SELECT @current_date AS start;
+          `,
+          parameters: [
+            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'break_type', type: TYPES.Char, value: values[1] }
+          ]
+        }
+      case "finish-time-off":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE timeoff
+            SET finish=GETUTCDATE()
+            WHERE employee_number=@employee_number
+            AND start=@start;
+          `,
+          parameters: [
+            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'start', type: TYPES.DateTime, value: values[1] }
+          ]
+        }
+      case "get-timeoff":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM timeoff
+            WHERE employee_number=@employee_number
+            AND finish IS NULL;
+          `,
+          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+        }
       case "start-process":
         return{
           query: `
@@ -122,7 +169,7 @@ const queries = (type, values) => {
             { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
             { name: 'process_type', type: TYPES.VarChar, value: values[1] },
             { name: 'business_name', type: TYPES.VarChar, value: values[2] },
-            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
+            { name: 'contact_email', type: TYPES.VarChar, value: values[3] }
           ]
         }
       case "finish-process":
@@ -190,7 +237,7 @@ const queries = (type, values) => {
             { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
             { name: 'process_type', type: TYPES.VarChar, value: values[1] },
             { name: 'business_name', type: TYPES.VarChar, value: values[2] },
-            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
+            { name: 'contact_email', type: TYPES.VarChar, value: values[3] }
           ]
         }
       case "facematch":
@@ -200,7 +247,8 @@ const queries = (type, values) => {
             
             SELECT * 
             FROM employee 
-            WHERE picture=@picture`,
+            WHERE picture=@picture;
+          `,
           parameters: [{ name: 'picture', type: TYPES.VarChar, value: values[0] }]
         }
       case "daily-report":
@@ -209,7 +257,8 @@ const queries = (type, values) => {
             USE WorkForce; 
 
             SELECT * 
-            FROM daily_report`,
+            FROM daily_report;
+          `,
           parameters: []
         }
       case "email":
@@ -219,7 +268,8 @@ const queries = (type, values) => {
 
             SELECT * 
             FROM employee 
-            WHERE email=@email`,
+            WHERE email=@email;
+          `,
           parameters: [{name: 'email', type: TYPES.VarChar, value: values[0]}]
         }
       case "get-jobs":
@@ -237,23 +287,23 @@ const queries = (type, values) => {
             USE WorkForce;
             
             SELECT * FROM customers;
-            `,
+          `,
           parameters: []
         }
       case "add-employee":
         return{
           query: `
-          USE WorkForce;
-          
-          BEGIN
-            IF NOT EXISTS(SELECT * FROM employee WHERE employee_number=@employee_number)
+            USE WorkForce;
+            
             BEGIN
-              INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture)
-              VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture);
+              IF NOT EXISTS(SELECT * FROM employee WHERE employee_number=@employee_number)
+              BEGIN
+                INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture)
+                VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture);
+              END
             END
-          END
 
-          SELECT * FROM employee WHERE employee_number=@employee_number;
+            SELECT * FROM employee WHERE employee_number=@employee_number;
           `,
           parameters: [
             { name: 'first_name', type: TYPES.VarChar, value: values[0] },
@@ -293,7 +343,8 @@ const queries = (type, values) => {
             USE WorkForce; 
             
             DELETE FROM employee 
-            WHERE employee_number=@employee_number;`,
+            WHERE employee_number=@employee_number;
+          `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
         }
       default:

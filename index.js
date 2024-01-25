@@ -228,6 +228,30 @@ app.post('/checkclockin', async (req, res) => {
     res.json({ status: 1, output })
 })
 
+app.post('/startbreak', async (req, res) => {
+  
+    const query = queries('start-time-off', [req.body.data.employee_number, req.body.data.break_type])
+    const output = await db_query(query.query, query.parameters)
+
+    res.json({ status: 1, output })
+})
+
+app.post('/endbreak', async (req, res) => {
+
+  const query = queries('finish-time-off', [req.body.data.employee_number, req.body.data.start])
+  const output = await db_query(query.query, query.parameters)
+
+  res.json({ status: 1, output })
+})
+
+app.get('/getbreaks', authenticateToken, async (req, res) => {
+  const query = queries('get-timeoff', [req.query.query.employee_number])
+  const output = await db_query(query.query, query.parameters)
+
+  res.json({ status: 1, output })
+
+})
+
 app.post('/updateToken', async (req, res) => {
   // Get the new data from the request
   const newData = req.body.data
