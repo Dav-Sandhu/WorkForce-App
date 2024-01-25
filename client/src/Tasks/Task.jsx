@@ -11,7 +11,7 @@ const Task = () => {
     return(
         <div className="tasks-page">
             <UserButton /> <br />
-            <h1 className='tasks-title fw-bold fs-25 mb-1 text-center text-dark title'>What do you want to do?</h1> <br />
+            <h1 className='tasks-title fw-bold fs-25 mb-4 text-center text-dark title'>What do you want to do?</h1> <br />
             
             <div className='tasks'>
 

@@ -54,7 +54,7 @@ app.post('/login', async (req, res) => {
   
     if (clockIn.length > 0){
       output[0].clock_in = clockIn[0].clock_in
-      output[0].clock_out = clockIn[0].clock_out || null
+      output[0].clock_out = null
     }else{ 
       output[0].clock_in = null
       output[0].clock_out = null
@@ -85,6 +85,19 @@ app.get('/getjobs', authenticateToken , async (req, res) => {
 app.get('/userinfo', authenticateToken, (req, res) => {
 
   res.json({ output: req.output.output, status: 1 })
+})
+
+app.post('/startjob', async (req, res) => {
+
+  const employee_number = req.body.data.employee_number
+  const process_type = req.body.data.process_type
+  const business_name = req.body.data.business_name
+  const contact_email = req.body.data.contact_email
+
+  const startJobQuery = queries('start-process', [ employee_number, process_type, business_name, contact_email ])
+  const output = await db_query(startJobQuery.query, startJobQuery.parameters)
+
+  return res.json({ output, status: 1 })
 })
 
 app.post('/checkemployee', async (req, res) => {
@@ -240,7 +253,7 @@ app.post('/facematch', async (req, res) => {
     
     if (clockIn.length > 0){
       output.clock_in = clockIn[0].clock_in
-      output.clock_out = clockIn[0].clock_out || null
+      output.clock_out = null
     }else{
       output.clock_in = null
       output.clock_out = null

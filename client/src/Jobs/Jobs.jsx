@@ -1,6 +1,5 @@
 import "./Jobs.scss"
 import UserButton from '../UserButton/UserButton'
-import jobsList from "./Jobs.json"
 import Customers from "./Customers" 
 
 import { useEffect, useState } from "react"
@@ -12,6 +11,7 @@ const Jobs = () => {
 
     const [jobs, setJobs] = useState([])
     const [showJobs, setShowJobs] = useState(true)
+    const [selectedJob, setSelectedJob] = useState("")
 
     useEffect(() => {
         const request = async () => {
@@ -32,7 +32,7 @@ const Jobs = () => {
     return(
         <div className="jobs-page">
             <UserButton /> <br />
-            <h1 className='jobs-title fw-bold fs-25 mb-1 text-center text-dark title'>
+            <h1 className='jobs-title fw-bold fs-25 mb-4 text-center text-dark title'>
                 {
                     showJobs ?
                     "What job are you working on?" : 
@@ -42,13 +42,14 @@ const Jobs = () => {
 
             <div className="jobs">
                 {   !showJobs ? 
-                    <Customers /> :
+                    <Customers  selectedJob={selectedJob} /> :
                     jobs.map(job => {
                         return(
                             <button 
                                 className="btn btn-lg btn-secondary" 
                                 key={job.process_type} 
                                 onClick={() => {
+                                    setSelectedJob(job.process_type)
                                     setShowJobs(false)
                                 }}
                             >

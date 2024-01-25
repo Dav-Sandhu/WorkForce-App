@@ -55,10 +55,11 @@ const queries = (type, values) => {
           query: `
             USE WorkForce; 
 
-            SELECT clock_in, clock_out 
+            SELECT clock_in
             FROM clock 
-            WHERE date=CONVERT(DATE, GETUTCDATE()) 
-            AND employee_number=@employee_number;`,
+            WHERE clock_out IS NULL
+            AND employee_number=@employee_number;
+          `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
         }
       case "check-clocked-out":
@@ -66,9 +67,9 @@ const queries = (type, values) => {
           query: `
             USE WorkForce;
 
-            SELECT date
+            SELECT *
             FROM clock
-            WHERE clock_out=NULL 
+            WHERE clock_out IS NULL 
             AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
@@ -81,7 +82,9 @@ const queries = (type, values) => {
             INSERT INTO clock(employee_number, clock_in, clock_out, date)
             VALUES (@employee_number, GETUTCDATE(), NULL, CONVERT(DATE, GETUTCDATE())); 
             
-            SELECT clock_in, clock_out FROM clock WHERE date=CONVERT(DATE, GETUTCDATE()) 
+            SELECT clock_in 
+            FROM clock 
+            WHERE clock_out IS NULL
             AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
@@ -101,6 +104,80 @@ const queries = (type, values) => {
             AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
+        }
+      case "start-process":
+        return{
+          query: `
+            USE WorkForce;
+
+            DECLARE @current_date DATETIME
+            SET @current_date = GETUTCDATE()
+
+            INSERT INTO work(employee_number, process_type, business_name, contact_email, start, finish, date)
+            VALUES(@employee_number, @process_type, @business_name, @contact_email, @current_date, NULL, CONVERT(DATE, GETUTCDATE()));
+          
+            SELECT @current_date AS start;
+          `,
+          parameters: [
+            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
+            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
+            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
+          ]
+        }
+      case "finish-process":
+        return{
+          query: `
+            USE WorkForce;
+
+            DECLARE @current_date DATETIME
+            SET @current_date = GETUTCDATE()
+
+            UPDATE work
+            SET finish=@current_date
+            WHERE employee_number=@employee_number
+            AND date=CONVERT(DATE, GETUTCDATE())
+            AND process_type=@process_type
+            AND business_name=@business_name
+            AND contact_email=@contact_email;
+
+            SELECT @current_date;
+          `,
+          parameters: [
+            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
+            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
+            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
+          ]
+        }
+      case "get-processes":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM work
+            WHERE date=CONVERT(DATE, GETUTCDATE());
+          `,
+          parameters: []
+        }
+      case "check-process":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM work
+            WHERE date=CONVERT(DATE, GETUTCDATE())
+            AND employee_number=@employee_number
+            AND process_type=@process_type
+            AND business_name=@business_name
+            AND contact_email=@contact_email;
+          `,
+          parameters: [
+            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
+            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
+            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
+          ]
         }
       case "facematch":
         return{

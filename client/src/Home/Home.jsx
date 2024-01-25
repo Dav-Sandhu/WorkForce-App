@@ -53,7 +53,7 @@ const Home = () => {
                                 </div>
                                 <h4 className="mb-2">{name}</h4>
                                 <p className="text-muted mb-4">{email}</p>
-                                {clock_out === null ? <button 
+                                <button 
                                     type="button" 
                                     className="btn btn-primary btn-rounded btn-lg"
                                     onClick={() => {
@@ -82,7 +82,7 @@ const Home = () => {
                                         }
                                     }}> 
                                     {clock_in !== null ? "Tasks" : "Clock In"}
-                                </button> : "You Are Done For The Day!"}
+                                </button>
                                 <div className="d-flex justify-content-between text-center mt-5 mb-2">
                                     <div>
                                         <p className="mb-2 mr-3 h5 text-nowrap ">{employee_number}</p>
