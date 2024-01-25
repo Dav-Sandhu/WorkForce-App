@@ -1,3 +1,5 @@
+import './App.scss'
+
 import UserProvider from './UserProvider'
 import AuthUser from './AuthUser'
 

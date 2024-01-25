@@ -97,7 +97,7 @@ const Home = () => {
                                 </div>
                                 <div className="d-flex justify-content-between text-center mt-5 mb-2">
                                     <div>
-                                        <p className="mb-2 mr-3 h5 text-nowrap ">{employee_number}</p>
+                                        <p className="mb-2 mr-3 h5 text-nowrap ">{'#' + employee_number}</p>
                                         <p className="text-muted mb-0">Employee Number</p>
                                     </div>
                                     <div>
