@@ -12,17 +12,14 @@ const Register = lazy(() => import('./Login/Register'))
 const Jobs = lazy(() => import('./Jobs/Jobs'))
 const Task = lazy(() => import('./Tasks/Task'))
 const Working = lazy(() => import('./Jobs/Working'))
+const Spinner = lazy(() => import('./Spinner'))
 
 export default function App(){
 
     const AuthWrapper = (Component) => { return (<AuthUser><Component /></AuthUser>) }
 
     return(
-        <Suspense fallback={
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        }>
+        <Suspense fallback={<Spinner />}>
             <UserProvider>
                 <BrowserRouter>
                     <Routes>

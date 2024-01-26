@@ -2,12 +2,20 @@ import { useEffect, useState, lazy } from "react"
 import { useNavigate } from "react-router-dom"
 import { useUserInfo } from "../UserProvider"
 
+const Spinner = lazy(() => import('../Spinner'))
+
 const Customers = ({ selectedJob }) => {
     
     const navigate = useNavigate()
     const user = useUserInfo()
 
+    const [loading, setLoading] = useState(true)
     const [customers, setCustomers] = useState([])
+
+    const loaded = (customers) => {
+        setLoading(false)
+        setCustomers(customers)
+    }
 
     useEffect(() => {
 
@@ -19,7 +27,7 @@ const Customers = ({ selectedJob }) => {
                 const makeRequest = module.makeRequest
 
                 const customersList = await makeRequest(null, '/getcustomers', token)
-                customersList.status === 1 ? setCustomers(customersList.output) : navigate('/')
+                customersList.status === 1 ? loaded(customersList.output) : navigate('/')
             }else{navigate('/login')}
         }
 
@@ -28,7 +36,7 @@ const Customers = ({ selectedJob }) => {
     
     return(
         <>
-            {customers.length === 0 ? 
+            {loading ? <Spinner /> : customers.length === 0 ? 
             <h5 className="text-center text-muted">There are no customers available right now...</h5> : 
                 customers.map((customer) => {
                     return(
