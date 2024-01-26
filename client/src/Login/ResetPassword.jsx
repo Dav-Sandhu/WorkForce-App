@@ -13,12 +13,12 @@ const ResetPassword = ({dispatch, reset_password}) => {
             <div className="card text-center reset-password">
                 
                 {/*to close the password reset box*/}
-                <button className="close-button" onClick={() => 
+                <button type="button" className="close-button btn-close" onClick={() => 
                     dispatch({
                         type: "reset_password",
                         payload: ""
                     })
-                }>X</button>
+                }></button>
                 <div className="card-header h5 text-white bg-primary">Password Reset</div>
                 <div className="card-body px-5">
                     <p className="card-text py-2">

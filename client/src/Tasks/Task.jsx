@@ -21,7 +21,7 @@ const Task = () => {
             null
         )
 
-        navigate('/break')
+        navigate('/working')
     }
 
     return(
@@ -75,9 +75,7 @@ const Task = () => {
                             const module = await import('../useDB')
                             const makeRequest = module.makeRequest
 
-                            const res = await makeRequest({ employee_number: user.userInfo.employee_number }, '/clockout', null)
-
-                            console.log(res)
+                            await makeRequest({ employee_number: user.userInfo.employee_number }, '/clockout', null)
                         }
 
                         request()

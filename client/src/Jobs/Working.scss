@@ -16,7 +16,17 @@
             box-shadow: 0px 0px 5px 0px rgba(155, 155, 155, 0.75);
             padding: 5px;
 
-            button{
+            .work-information{
+                .close-button-left{
+                    display: none;
+                }
+
+                .close-button-right{
+                    width: 80vw;
+                }
+            }
+
+            .finish-button{
                 width: 80vw;
             }
         }
@@ -32,7 +42,30 @@
             width: 60vw;
 
             .work-information{
-                text-align: left;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+
+                .close-button-right{
+                    display: none;
+                }
+
+                .close-button-left{
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                .work-description{
+                    text-align: left;
+                }
+
+                &:hover{
+                    .close-button-left{
+                        opacity: 1;
+                        pointer-events: auto;
+                    }
+                }
             }
         }
     }

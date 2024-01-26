@@ -14,7 +14,7 @@ const queries = (type, values) => {
             AND password=@password;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
             { name: 'password', type: TYPES.VarChar, value: values[1] }
           ]
         }
@@ -41,7 +41,7 @@ const queries = (type, values) => {
             FROM employee 
             WHERE employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
         }
       case "picture":
         return {
@@ -63,7 +63,7 @@ const queries = (type, values) => {
             WHERE clock_out IS NULL
             AND employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]  
         }
       case "check-clocked-out":
         return{
@@ -75,22 +75,22 @@ const queries = (type, values) => {
             WHERE clock_out IS NULL 
             AND employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
         }
       case "clock-in":
         return{
           query: `
             USE WorkForce;
 
-            INSERT INTO clock(employee_number, clock_in, clock_out, date)
-            VALUES (@employee_number, GETUTCDATE(), NULL, CONVERT(DATE, GETUTCDATE())); 
+            DECLARE @current_date DATETIME
+            SET @current_date = GETUTCDATE()
+
+            INSERT INTO clock(employee_number, clock_in, clock_out)
+            VALUES (@employee_number, @current_date, NULL); 
             
-            SELECT clock_in 
-            FROM clock 
-            WHERE clock_out IS NULL
-            AND employee_number=@employee_number;
+            SELECT @current_date AS clock_in;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]  
         }
       case "clock-out":
         return{
@@ -99,14 +99,10 @@ const queries = (type, values) => {
 
             UPDATE clock
             SET clock_out=GETUTCDATE()
-            WHERE date=CONVERT(DATE, GETUTCDATE()) 
-            AND employee_number=@employee_number;
-
-            SELECT clock_in, clock_out FROM clock 
-            WHERE date=CONVERT(DATE, GETUTCDATE()) 
+            WHERE clock_out IS NULL
             AND employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]  
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]  
         }
       case "start-time-off":
         return{
@@ -116,13 +112,13 @@ const queries = (type, values) => {
             DECLARE @current_date DATETIME
             SET @current_date = GETUTCDATE()
 
-            INSERT INTO timeoff(employee_number, break_type, start, finish, date)
-            VALUES(@employee_number, @break_type, @current_date, NULL, CONVERT(DATE, GETUTCDATE()));
+            INSERT INTO timeoff(employee_number, break_type, start, finish)
+            VALUES(@employee_number, @break_type, @current_date, NULL);
 
             SELECT @current_date AS start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
             { name: 'break_type', type: TYPES.Char, value: values[1] }
           ]
         }
@@ -137,8 +133,24 @@ const queries = (type, values) => {
             AND start=@start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
             { name: 'start', type: TYPES.DateTime, value: values[1] }
+          ]
+        }
+      case "delete-time-off":
+        return{
+          query: `
+            USE WorkForce;
+
+            DELETE FROM timeoff
+            WHERE employee_number=@employee_number
+            AND break_type=@break_type
+            AND start=@start;
+          `,
+          parameters: [
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
+            { name: 'break_type', type: TYPES.Char, value: values[1] },
+            { name: 'start', type: TYPES.DateTime, value: values[2] }
           ]
         }
       case "get-timeoff":
@@ -150,7 +162,7 @@ const queries = (type, values) => {
             WHERE employee_number=@employee_number
             AND finish IS NULL;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
         }
       case "start-process":
         return{
@@ -160,13 +172,13 @@ const queries = (type, values) => {
             DECLARE @current_date DATETIME
             SET @current_date = GETUTCDATE()
 
-            INSERT INTO work(employee_number, process_type, business_name, contact_email, start, finish, date)
-            VALUES(@employee_number, @process_type, @business_name, @contact_email, @current_date, NULL, CONVERT(DATE, GETUTCDATE()));
+            INSERT INTO work(employee_number, process_type, business_name, contact_email, start, finish)
+            VALUES(@employee_number, @process_type, @business_name, @contact_email, @current_date, NULL);
           
             SELECT @current_date AS start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
             { name: 'process_type', type: TYPES.VarChar, value: values[1] },
             { name: 'business_name', type: TYPES.VarChar, value: values[2] },
             { name: 'contact_email', type: TYPES.VarChar, value: values[3] }
@@ -183,7 +195,6 @@ const queries = (type, values) => {
             UPDATE work
             SET finish=@current_date
             WHERE employee_number=@employee_number
-            AND date=CONVERT(DATE, GETUTCDATE())
             AND process_type=@process_type
             AND business_name=@business_name
             AND contact_email=@contact_email
@@ -192,22 +203,32 @@ const queries = (type, values) => {
             SELECT @current_date;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
             { name: 'process_type', type: TYPES.VarChar, value: values[1] },
             { name: 'business_name', type: TYPES.VarChar, value: values[2] },
             { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
-            { name: 'start', type: TYPES.VarChar, value: values[4] }
+            { name: 'start', type: TYPES.DateTime, value: values[4] }
           ]
         }
-      case "get-processes":
+      case "delete-process":
         return{
           query: `
             USE WorkForce;
 
-            SELECT * FROM work
-            WHERE date=CONVERT(DATE, GETUTCDATE());
+            DELETE FROM work
+            WHERE employee_number=@employee_number
+            AND process_type=@process_type
+            AND business_name=@business_name
+            AND contact_email=@contact_email
+            AND start=@start;
           `,
-          parameters: []
+          parameters: [
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
+            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
+            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
+            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
+            { name: 'start', type: TYPES.DateTime, value: values[4] }
+          ]
         }
       case "get-unfinished-processes":
         return{
@@ -217,9 +238,10 @@ const queries = (type, values) => {
             SELECT * 
             FROM work
             WHERE finish IS NULL
-            AND employee_number=@employee_number;
+            AND employee_number=@employee_number
+            ORDER BY start;
           `, 
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
         }
       case "check-process":
         return{
@@ -227,14 +249,14 @@ const queries = (type, values) => {
             USE WorkForce;
 
             SELECT * FROM work
-            WHERE date=CONVERT(DATE, GETUTCDATE())
-            AND employee_number=@employee_number
+            WHERE employee_number=@employee_number
             AND process_type=@process_type
             AND business_name=@business_name
-            AND contact_email=@contact_email;
+            AND contact_email=@contact_email
+            ORDER BY start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.VarChar, value: values[0] },
+            { name: 'employee_number', type: TYPES.Char, value: values[0] },
             { name: 'process_type', type: TYPES.VarChar, value: values[1] },
             { name: 'business_name', type: TYPES.VarChar, value: values[2] },
             { name: 'contact_email', type: TYPES.VarChar, value: values[3] }
@@ -250,16 +272,6 @@ const queries = (type, values) => {
             WHERE picture=@picture;
           `,
           parameters: [{ name: 'picture', type: TYPES.VarChar, value: values[0] }]
-        }
-      case "daily-report":
-        return{
-          query: `
-            USE WorkForce; 
-
-            SELECT * 
-            FROM daily_report;
-          `,
-          parameters: []
         }
       case "email":
         return{
@@ -308,7 +320,7 @@ const queries = (type, values) => {
           parameters: [
             { name: 'first_name', type: TYPES.VarChar, value: values[0] },
             { name: 'last_name', type: TYPES.VarChar, value: values[1] },
-            { name: 'employee_number', type: TYPES.VarChar, value: values[2]},
+            { name: 'employee_number', type: TYPES.Char, value: values[2]},
             { name: 'email', type: TYPES.VarChar, value: values[3] },
             { name: 'password', type: TYPES.VarChar, value: values[4] },
             { name: 'hourly_wage', type: TYPES.Float, value: values[5] },
@@ -345,7 +357,7 @@ const queries = (type, values) => {
             DELETE FROM employee 
             WHERE employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.VarChar, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
         }
       default:
         return

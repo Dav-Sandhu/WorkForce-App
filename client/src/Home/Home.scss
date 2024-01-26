@@ -11,5 +11,7 @@
     button{
         width: 30%;
         text-wrap: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 }

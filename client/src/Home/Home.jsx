@@ -91,7 +91,7 @@ const Home = () => {
                                             onClick={() => {
                                                 navigate('/working')
                                             }}
-                                        >Jobs</button> : 
+                                        >Agenda</button> : 
                                         ""
                                     }
                                 </div>

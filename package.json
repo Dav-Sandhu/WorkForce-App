@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "connect.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "cd client && npm run build && cd .. && node index.js"
   },
   "dependencies": {
     "@azure/communication-email": "^1.0.0",
