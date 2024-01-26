@@ -50,7 +50,7 @@ const Customers = ({ selectedJob }) => {
                                     if (output.status === 1){
                                         navigate('/working')
                                     }else{
-                                        alert('You already did this job today!')
+                                        alert('Something went wrong...')
                                     }
                                 }
 

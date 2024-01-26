@@ -127,7 +127,6 @@ app.post('/startjob', async (req, res) => {
     return res.json({ output, status: 1 })
   }catch(error){
     return res.json({ status: -1, error })
-  
   }
 })
 
