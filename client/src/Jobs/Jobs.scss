@@ -16,17 +16,22 @@
     .jobs{
 
         position: relative;
+        overflow-y: auto;
+
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: space-around;
         align-items: center;
-        overflow-y: auto;
 
         @media(min-width: 769px){
             position: fixed;
             top: 30%;
             left: 50%;
             transform: translateX(-50%);
+
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            justify-items: center;
 
             flex-direction: row;
             justify-content: center;
@@ -36,16 +41,16 @@
         .customer{
             margin-left: 5vw;
             border-radius: 5px;
+            padding: 5px;
             text-align: center;
             user-select: none;
-            
+
             cursor: pointer;
 
             @media(max-width: 768px) {
                 box-shadow: 0px 0px 5px 0px rgba(155, 155, 155, 0.75);
                 margin-bottom: 10px;
                 width: 80vw;
-                padding: 2px;
             }
 
             @media(min-width: 769px){
@@ -55,25 +60,24 @@
             }
 
             .company-logo{
-                width: 8em;
+                width: 10em;
 
                 @media(max-width: 1200px) {
-                    width: 10vw;
-                }
-
-                @media(max-width: 992px) {
                     width: 15vw;
                 }
 
-                @media(max-width: 768px) {
+                @media(max-width: 992px) {
                     width: 20vw;
                 }
 
+                @media(max-width: 768px) {
+                    width: 25vw;
+                }
+
                 @media(max-width: 576px) {
-                    width: 30vw;
+                    width: 35vw;
                 }
             }
-            
         }
 
         button{

@@ -61,9 +61,9 @@ const Customers = ({ selectedJob }) => {
                                 className="img-fluid company-logo" 
                                 src={customer.logo} 
                                 alt="Company Logo" />
-                            <h4 className="text-nowrap">
+                            <h5 className="text-nowrap">
                                 {customer.business_name}
-                            </h4>
+                            </h5>
                         </div>
                     )
                 })}
