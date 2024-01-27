@@ -18,7 +18,10 @@ export function getClockInTime(clock_in) {
     const clockInDate = new Date(clock_in)
 
     // Calculate the difference between the current time and the clock_in time
-    const timeDifference = (new Date()) - clockInDate
+    let timeDifference = (new Date()) - clockInDate
+
+    //to ensure it is never negative
+    timeDifference = Math.max(0, timeDifference)
 
     const hours = Math.floor(timeDifference / (1000 * 60 * 60)).toString().padStart(2, '0')
     const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
