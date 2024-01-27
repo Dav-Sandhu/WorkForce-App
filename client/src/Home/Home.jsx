@@ -30,6 +30,7 @@ const Home = () => {
                                     <img 
                                         src={picture} 
                                         className="rounded-circle img-fluid profile-picture" 
+                                        loading="lazy"
                                         style={{width: '100px'}}
                                         onClick={() => {
                                             // change profile picture

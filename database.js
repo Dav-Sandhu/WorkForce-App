@@ -1,60 +1,37 @@
-const { Connection, Request } = require('tedious')
-const fs = require('fs')
+const sql = require('mssql')
 
-const db_connect = () => {
-    const connection = new Connection({
-      server: process.env.SERVER,
-      authentication: {
-        type: 'default',
-        options: {
-          userName: process.env.USER,
-          password: process.env.PASSWORD 
-        }
-      },
-      options: {
-        database: process.env.DATABASE,
-        port: parseInt(process.env.DBPORT),
-        trustServerCertificate: true,
-        encrypt: true
-      }
-    })
-  
-    return connection
+const config = {
+  user: process.env.DB_USER,
+  password: process.env.PASSWORD,
+  server: process.env.SERVER,
+  database: process.env.DATABASE,
+  port: parseInt(process.env.DB_PORT),
+  options: {
+    trustServerCertificate: true,
+    encrypt: true
+  },
+  pool: {
+    min: 1,
+    max: 4
+  }
 }
 
-const db_query = async (query, params) => {
-    return new Promise((resolve, reject) => {
-      const connection = db_connect()
-      let output = []
-  
-      connection.connect(err => {
-        if(!err){
-          const request = new Request(query, err => {
-            if (err) {
-              console.log(err)
-              reject(err)
-            }
-          })
-  
-          params.forEach(p => { request.addParameter(p.name, p.type, p.value) })
-  
-          request.on('row', function(columns){
-            let result = {}
-            columns.forEach(function(column){
-              result[column.metadata.colName] = column.value
-            })
-            output.push(result)
-          })
-  
-          request.on("requestCompleted", function(){ resolve(output) })
-          request.on("error", function(err){ reject(err) })
-  
-          connection.execSql(request)
-        } else {
-          reject(err)
-        }
-      })
-    })
-  }
+const pool = new sql.ConnectionPool(config)
+pool.connect()
 
-module.exports = {db_query}
+const db_query = async (query, params) => {
+  return new Promise(async (resolve, reject) => {
+    try{
+      const request = pool.request()
+
+      params.forEach(p => { request.input(p.name, p.type, p.value) })
+
+      const result = await request.query(query)
+      resolve(result.recordset)
+    }catch(err) {
+      reject(err)
+    }
+  })
+}
+
+module.exports = { db_query }

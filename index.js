@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const queries = require('./queries.js')
 
-const { config } = require('dotenv')
+require('dotenv').config()
 const { db_query } = require('./database.js')
 
 const path = require('path')
@@ -10,8 +10,6 @@ const jwt = require('jsonwebtoken')
 const bodyParser = require('body-parser')
 
 const { loadModels, compareFaces } = require('./facerecognition.js')
-
-config()
 
 const { EmailClient } = require("@azure/communication-email")
 const connectionString = `endpoint=${process.env.ENDPOINT};accesskey=${process.env.ACCESS_KEY}`
@@ -24,10 +22,10 @@ const port = process.env.PORT || 3000
 function authenticateToken(req, res, next) {
   const token = req.headers.authorization
 
-  if (token == null) return res.json({ status: -1 })
+  if (token == null) return res.json({ status: -1, error: 'token is NULL' })
   
   jwt.verify(token, process.env.JWT_KEY, (err, output) => {
-    if (err) return res.json({ status: -1 })
+    if (err) return res.json({ status: -1, error: err })
 
     req.output = output
 
@@ -64,7 +62,7 @@ app.post('/login', async (req, res) => {
       const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
       return res.json({ token, status: 1 })
     }else{
-      return res.json({ status: -1 })
+      return res.json({ status: -1, error: 'output is empty' })
     }
   }catch(error){
     return res.json({ status: -1, error })
@@ -203,7 +201,7 @@ app.post('/sendemail', async (req, res) => {
       return res.json({ status: 1 })
     }
   
-    return res.json({ status: -1 })
+    return res.json({ status: -1 , error: 'output is empty' })
   }catch(error){
     return res.json({ status: -1, error })
   }
@@ -241,7 +239,7 @@ app.post('/registeremployee', async (req, res) => {
       return res.json({ token, status: 1 })
     }else{
       
-      return res.json({ status: -1 })
+      return res.json({ status: -1, error: 'output is empty' })
     }
   }catch(error){
     return res.json({ status: -1, error })
@@ -420,7 +418,7 @@ app.post('/facematch', async (req, res) => {
       return res.json({ token, status: 1 })
     }
   
-    return res.json({ status: -1 })
+    return res.json({ status: -1, error: 'no match found' })
   }catch(error){
     return res.json({ status: -1, error })
   }

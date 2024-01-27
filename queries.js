@@ -1,4 +1,4 @@
-const { TYPES } = require("tedious")
+const sql = require('mssql')
 
 //All SQL queries are stored here
 const queries = (type, values) => {
@@ -14,8 +14,8 @@ const queries = (type, values) => {
             AND password=@password;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'password', type: TYPES.VarChar, value: values[1] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'password', type: sql.VarChar, value: values[1] }
           ]
         }
       case "update password":
@@ -28,8 +28,8 @@ const queries = (type, values) => {
               WHERE email=@email;
             `,
             parameters: [
-              { name: 'email', type: TYPES.VarChar, value: values[0] },
-              { name: 'password', type: TYPES.VarChar, value: values[1] }
+              { name: 'email', type: sql.VarChar, value: values[0] },
+              { name: 'password', type: sql.VarChar, value: values[1] }
             ]
           }
       case "employee-number":
@@ -41,7 +41,7 @@ const queries = (type, values) => {
             FROM employee 
             WHERE employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
       case "picture":
         return {
@@ -63,7 +63,7 @@ const queries = (type, values) => {
             WHERE clock_out IS NULL
             AND employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]  
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]  
         }
       case "check-clocked-out":
         return{
@@ -75,7 +75,7 @@ const queries = (type, values) => {
             WHERE clock_out IS NULL 
             AND employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
       case "clock-in":
         return{
@@ -90,7 +90,7 @@ const queries = (type, values) => {
             
             SELECT @current_date AS clock_in;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]  
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]  
         }
       case "clock-out":
         return{
@@ -102,7 +102,7 @@ const queries = (type, values) => {
             WHERE clock_out IS NULL
             AND employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]  
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]  
         }
       case "start-time-off":
         return{
@@ -118,8 +118,8 @@ const queries = (type, values) => {
             SELECT @current_date AS start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'break_type', type: TYPES.Char, value: values[1] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'break_type', type: sql.Char, value: values[1] }
           ]
         }
       case "finish-time-off":
@@ -133,8 +133,8 @@ const queries = (type, values) => {
             AND start=@start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'start', type: TYPES.DateTime, value: values[1] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'start', type: sql.DateTime, value: values[1] }
           ]
         }
       case "delete-time-off":
@@ -148,9 +148,9 @@ const queries = (type, values) => {
             AND start=@start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'break_type', type: TYPES.Char, value: values[1] },
-            { name: 'start', type: TYPES.DateTime, value: values[2] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'break_type', type: sql.Char, value: values[1] },
+            { name: 'start', type: sql.DateTime, value: values[2] }
           ]
         }
       case "get-timeoff":
@@ -162,7 +162,7 @@ const queries = (type, values) => {
             WHERE employee_number=@employee_number
             AND finish IS NULL;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
       case "start-process":
         return{
@@ -178,10 +178,10 @@ const queries = (type, values) => {
             SELECT @current_date AS start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
-            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
-            { name: 'contact_email', type: TYPES.VarChar, value: values[3] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'process_type', type: sql.VarChar, value: values[1] },
+            { name: 'business_name', type: sql.VarChar, value: values[2] },
+            { name: 'contact_email', type: sql.VarChar, value: values[3] }
           ]
         }
       case "finish-process":
@@ -203,11 +203,11 @@ const queries = (type, values) => {
             SELECT @current_date;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
-            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
-            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
-            { name: 'start', type: TYPES.DateTime, value: values[4] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'process_type', type: sql.VarChar, value: values[1] },
+            { name: 'business_name', type: sql.VarChar, value: values[2] },
+            { name: 'contact_email', type: sql.VarChar, value: values[3] },
+            { name: 'start', type: sql.DateTime, value: values[4] }
           ]
         }
       case "delete-process":
@@ -223,11 +223,11 @@ const queries = (type, values) => {
             AND start=@start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
-            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
-            { name: 'contact_email', type: TYPES.VarChar, value: values[3] },
-            { name: 'start', type: TYPES.DateTime, value: values[4] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'process_type', type: sql.VarChar, value: values[1] },
+            { name: 'business_name', type: sql.VarChar, value: values[2] },
+            { name: 'contact_email', type: sql.VarChar, value: values[3] },
+            { name: 'start', type: sql.DateTime, value: values[4] }
           ]
         }
       case "get-unfinished-processes":
@@ -241,7 +241,7 @@ const queries = (type, values) => {
             AND employee_number=@employee_number
             ORDER BY start;
           `, 
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
       case "check-process":
         return{
@@ -256,10 +256,10 @@ const queries = (type, values) => {
             ORDER BY start;
           `,
           parameters: [
-            { name: 'employee_number', type: TYPES.Char, value: values[0] },
-            { name: 'process_type', type: TYPES.VarChar, value: values[1] },
-            { name: 'business_name', type: TYPES.VarChar, value: values[2] },
-            { name: 'contact_email', type: TYPES.VarChar, value: values[3] }
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'process_type', type: sql.VarChar, value: values[1] },
+            { name: 'business_name', type: sql.VarChar, value: values[2] },
+            { name: 'contact_email', type: sql.VarChar, value: values[3] }
           ]
         }
       case "facematch":
@@ -271,7 +271,7 @@ const queries = (type, values) => {
             FROM employee 
             WHERE picture=@picture;
           `,
-          parameters: [{ name: 'picture', type: TYPES.VarChar, value: values[0] }]
+          parameters: [{ name: 'picture', type: sql.VarChar, value: values[0] }]
         }
       case "email":
         return{
@@ -282,7 +282,7 @@ const queries = (type, values) => {
             FROM employee 
             WHERE email=@email;
           `,
-          parameters: [{name: 'email', type: TYPES.VarChar, value: values[0]}]
+          parameters: [{name: 'email', type: sql.VarChar, value: values[0]}]
         }
       case "get-jobs":
         return{
@@ -318,13 +318,13 @@ const queries = (type, values) => {
             SELECT * FROM employee WHERE employee_number=@employee_number;
           `,
           parameters: [
-            { name: 'first_name', type: TYPES.VarChar, value: values[0] },
-            { name: 'last_name', type: TYPES.VarChar, value: values[1] },
-            { name: 'employee_number', type: TYPES.Char, value: values[2]},
-            { name: 'email', type: TYPES.VarChar, value: values[3] },
-            { name: 'password', type: TYPES.VarChar, value: values[4] },
-            { name: 'hourly_wage', type: TYPES.Float, value: values[5] },
-            { name: 'picture', type: TYPES.VarChar, value: values[6] }
+            { name: 'first_name', type: sql.VarChar, value: values[0] },
+            { name: 'last_name', type: sql.VarChar, value: values[1] },
+            { name: 'employee_number', type: sql.Char, value: values[2]},
+            { name: 'email', type: sql.VarChar, value: values[3] },
+            { name: 'password', type: sql.VarChar, value: values[4] },
+            { name: 'hourly_wage', type: sql.Float, value: values[5] },
+            { name: 'picture', type: sql.VarChar, value: values[6] }
           ]
         }
       case "generate-employee-number":
@@ -357,7 +357,7 @@ const queries = (type, values) => {
             DELETE FROM employee 
             WHERE employee_number=@employee_number;
           `,
-          parameters: [{ name: 'employee_number', type: TYPES.Char, value: values[0] }]
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
       default:
         return
