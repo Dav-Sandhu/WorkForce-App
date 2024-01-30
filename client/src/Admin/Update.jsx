@@ -123,7 +123,7 @@ const Update = () => {
             output.status === 1 ? alert("Process Deleted") : alert("Something went wrong")
         }else if (type === "employees"){
             const output = await makeRequest({ 
-                employee_number: employee.employee_number 
+                employee_number: item.employee_number 
             }, '/removeemployee', null)
 
             output.status === 1 ? alert("Employee Deleted") : alert("Something went wrong")
@@ -157,10 +157,10 @@ const Update = () => {
             output.status === 1 ? alert("Process Added") : alert("Something went wrong")
         }else if (view === "employees"){
 
-            const output = await makeRequest({
+            const output = state.employee_number.length > 0 ? await makeRequest({
                 employee_number: state.employee_number,
                 hourly_wage: state.hourly_wage
-            }, '/updateemployeewage', null)
+            }, '/updateemployeewage', null) : { status: -1 }
             
             output.status === 1 ? alert("Employee updated!") : alert("Something went wrong")
         }

@@ -37,6 +37,7 @@ const Admin = () => {
             {
                 profiles.length === 0 ? "" : 
                 <div className="table-responsive">
+                    {headings.length > 0 ? <h3>Daily Staffing Report</h3> : ""}
                     <table className="table">
                         <thead className="table-dark">
                             <tr>
