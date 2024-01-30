@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const queries = require('./queries.js')
+const compression = require('compression')
 
 require('dotenv').config()
 const { db_query } = require('./database.js')
@@ -34,6 +35,7 @@ function authenticateToken(req, res, next) {
 }
 
 app.use(cors())
+app.use(compression())
 app.use(bodyParser.json({ limit: '10mb' }))
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 
@@ -79,6 +81,89 @@ app.get('/getcustomers', authenticateToken, async (req, res) => {
   }catch(error){
     return res.json({ status: -1, error })
   }
+})
+
+app.post('/addcustomer', async (req, res) => {
+
+  try{
+    const business_name = req.body.data.business_name
+    const contact_email = req.body.data.contact_email
+    const contact_name = req.body.data.contact_name
+    const currency = req.body.data.currency
+    const logo = req.body.data.logo
+
+
+    const query = queries('add-customer', [
+      business_name,
+      currency,
+      contact_name,
+      contact_email,
+      logo
+    ])
+  
+    await db_query(query.query, query.parameters)
+  
+    return res.json({ status: 1 })
+  }catch(error){
+    return res.json({ status: -1, error })
+  }
+})
+
+app.post('/deletecustomer', async (req, res) => {
+    
+    try{
+      const business_name = req.body.data.business_name
+      const contact_email = req.body.data.contact_email
+    
+      const query = queries('delete-customer', [business_name, contact_email])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
+app.get('/getinternalprocesses' , authenticateToken, async (req, res) => {
+  
+    try{
+      const query = queries('get-internal-processes', [])
+      const output = await db_query(query.query, query.parameters)
+    
+      return res.json({ output, status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
+app.post('/addinternalprocess', async (req, res) => {
+
+      try{
+        const process_type = req.body.data.process_type
+        const billable = req.body.data.billable
+        const hourly_rate = req.body.data.hourly_rate
+    
+        const query = queries('add-internal-process', [process_type, billable, hourly_rate])
+        await db_query(query.query, query.parameters)
+      
+        return res.json({ status: 1 })
+      }catch(error){
+        return res.json({ status: -1, error })
+      }
+})
+
+app.post('/deleteinternalprocess', async (req, res) => {
+    
+    try{
+      const process_type = req.body.data.process_type
+  
+      const query = queries('delete-internal-process', [process_type])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
 })
 
 app.get('/getjobs', authenticateToken , async (req, res) => {
@@ -162,6 +247,48 @@ app.post('/deletejob', async (req, res) => {
   }catch(error){
     return res.json({ status: -1, error })
   }
+})
+
+app.get('/getemployees', authenticateToken, async (req, res) => {
+
+  try{
+    const query = queries('get-employees', [])
+    const output = await db_query(query.query, query.parameters)
+  
+    return res.json({ output, status: 1 })
+  }catch(error){
+    return res.json({ status: -1, error })
+  
+  }
+})
+
+app.post('/removeemployee', async (req, res) => {
+  
+    try{
+      const employee_number = req.body.data.employee_number
+  
+      const query = queries('delete-employee', [employee_number])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
+app.post('/updatewage', async (req, res) => {
+  
+    try{
+      const employee_number = req.body.data.employee_number
+      const hourly_wage = req.body.data.hourly_wage
+  
+      const query = queries('update-wage', [employee_number, hourly_wage])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
 })
 
 app.post('/checkemployee', async (req, res) => {
@@ -297,6 +424,94 @@ app.post('/checkclockin', async (req, res) => {
   }
 })
 
+app.get('/getreport', authenticateToken, async (req, res) => {
+
+  try{
+
+    let output = {}
+    const date = req.query.query.date
+
+    const clockQuery = queries('get-clock', [date])
+    const clockOutput = await db_query(clockQuery.query, clockQuery.parameters)
+
+    for (const clock of clockOutput){
+      const employeeQuery = queries('employee-number', [clock.employee_number])
+      const employeeOutput = await db_query(employeeQuery.query, employeeQuery.parameters)
+
+      if (employeeOutput.length > 0){
+        const workQuery = queries('get-process', [clock.employee_number, date])
+        const workOutput = await db_query(workQuery.query, workQuery.parameters)
+
+        const breakQuery = queries('get-all-timeoff', [clock.employee_number, date])
+        const breakOutput = await db_query(breakQuery.query, breakQuery.parameters)
+
+        const clocks = { start: clock.clock_in, finish: clock.clock_out }
+
+        if (output.hasOwnProperty(employeeOutput[0].employee_number)){
+          output[employeeOutput[0].employee_number].clock.push(clocks)
+        }else{
+
+          const work = []
+          const breaks = []
+          const clock = [clocks]
+
+          for (let i = 0;i < workOutput.length;i++){
+            work.push({
+              start: workOutput[i].start,
+              finish: workOutput[i].finish,
+              process_type: workOutput[i].process_type,
+              business_name: workOutput[i].business_name,
+              contact_email: workOutput[i].contact_email
+            })
+          }
+  
+          for (let i = 0;i < breakOutput.length;i++){
+            breaks.push({
+              start: breakOutput[i].start,
+              finish: breakOutput[i].finish,
+              break_type: breakOutput[i].break_type
+            })
+          }
+
+          output[employeeOutput[0].employee_number] = {
+            first_name: employeeOutput[0].first_name,
+            last_name: employeeOutput[0].last_name,
+            email: employeeOutput[0].email,
+            hourly_wage: employeeOutput[0].hourly_wage,
+            picture: employeeOutput[0].picture,
+            work,
+            breaks,
+            clock
+          }
+        }
+      }
+    }
+
+    Object.values(output).forEach(o => {
+      o.work.sort((a, b) => {
+        if (a.start < b.start){
+          return -1
+        }else if (a.start > b.start){
+          return 1
+        }
+        return 0
+      })
+    })
+
+    const customersQuery = queries('get-customers', [])
+    const customersOutput = await db_query(customersQuery.query, customersQuery.parameters)
+    const businessNames = customersOutput.map(customer => customer.business_name)
+
+    output['headings'] = ['employee', ...businessNames, 'total']
+
+    return res.json({ status: 1, output })
+
+  }catch(error){
+    console.log(error)
+    return res.json({ status: -1, error })
+  }
+})
+
 app.post('/startbreak', async (req, res) => {
   
   try{
@@ -348,6 +563,21 @@ app.get('/getbreaks', authenticateToken, async (req, res) => {
     return res.json({ status: -1, error })
   }
 
+})
+
+app.post('/updateemployeewage', async (req, res) => {
+
+  try{
+    const employee_number = req.body.data.employee_number
+    const hourly_wage = req.body.data.hourly_wage
+
+    const query = queries('update-employee-wage', [employee_number, hourly_wage])
+    await db_query(query.query, query.parameters)
+  
+    return res.json({ status: 1 })
+  }catch(error){
+    return res.json({ status: -1, error })
+  }
 })
 
 app.post('/updateToken', async (req, res) => {

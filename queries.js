@@ -65,17 +65,16 @@ const queries = (type, values) => {
           `,
           parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]  
         }
-      case "check-clocked-out":
+      case "get-clock":
         return{
           query: `
             USE WorkForce;
 
             SELECT *
             FROM clock
-            WHERE clock_out IS NULL 
-            AND employee_number=@employee_number;
+            WHERE CONVERT(DATE, @date) = CONVERT(DATE, clock_in);
           `,
-          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
+          parameters: [{ name: 'date', type: sql.Date, value: values[0] }]
         }
       case "clock-in":
         return{
@@ -164,6 +163,20 @@ const queries = (type, values) => {
           `,
           parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
+      case "get-all-timeoff":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM timeoff
+            WHERE employee_number=@employee_number
+            AND CONVERT(DATE, @date) = CONVERT(DATE, start);
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'date', type: sql.Date, value: values[1] }
+          ]
+        }
       case "start-process":
         return{
           query: `
@@ -243,6 +256,25 @@ const queries = (type, values) => {
           `, 
           parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
+      case "delete-employee":
+        return{
+          query: `
+            USE WorkForce;
+
+            DELETE FROM clock 
+            WHERE employee_number=@employee_number;
+
+            DELETE FROM work 
+            WHERE employee_number=@employee_number;
+
+            DELETE FROM timeoff
+            WHERE employee_number=@employee_number;
+
+            DELETE FROM employee
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
+        }
       case "check-process":
         return{
           query: `
@@ -260,6 +292,70 @@ const queries = (type, values) => {
             { name: 'process_type', type: sql.VarChar, value: values[1] },
             { name: 'business_name', type: sql.VarChar, value: values[2] },
             { name: 'contact_email', type: sql.VarChar, value: values[3] }
+          ]
+        }
+      case "get-process":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM work
+            WHERE employee_number=@employee_number
+            AND CONVERT(DATE, @date) = CONVERT(DATE, start);
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'date', type: sql.Date, value: values[1] }
+          ]
+        }
+      case "get-internal-processes":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM internal_process;
+          `,
+          parameters: []
+        }
+      case "delete-internal-process":
+        return{
+          query: `
+            USE WorkForce;
+
+            DELETE FROM work
+            WHERE process_type=@process_type;
+
+            DELETE FROM internal_process
+            WHERE process_type=@process_type;
+          `,
+          parameters: [{ name: 'process_type', type: sql.VarChar, value: values[0] }]
+        }
+      case "add-internal-process":
+        return{
+          query: `
+            USE WorkForce;
+
+            INSERT INTO internal_process(process_type, billable, hourly_rate)
+            VALUES(@process_type, @billable, @hourly_rate);
+          `,
+          parameters: [
+            { name: 'process_type', type: sql.VarChar, value: values[0] },
+            { name: 'billable', type: sql.Bit, value: values[1] },
+            { name: 'hourly_rate', type: sql.Float, value: values[2] }
+          ]
+        }
+      case "update-employee-wage":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE employee
+            SET hourly_wage=@hourly_wage
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'hourly_wage', type: sql.Float, value: values[1]}
           ]
         }
       case "facematch":
@@ -301,6 +397,63 @@ const queries = (type, values) => {
             SELECT * FROM customers;
           `,
           parameters: []
+        }
+      case "add-customer":
+        return{
+          query: `
+            USE WorkForce;
+
+            INSERT INTO customers(business_name, currency, contact_name, contact_email, logo)
+            VALUES(@business_name, @currency, @contact_name, @contact_email, @logo);
+          `,
+          parameters: [
+            { name: 'business_name', type: sql.VarChar, value: values[0] },
+            { name: 'currency', type: sql.Char, value: values[1] },
+            { name: 'contact_name', type: sql.VarChar, value: values[2] },
+            { name: 'contact_email', type: sql.VarChar, value: values[3] },
+            { name: 'logo', type: sql.VarChar, value: values[4] }
+          ]
+        }
+      case "delete-customer":
+        return{
+          query: `
+            USE WorkForce;
+
+            DELETE FROM work
+            WHERE business_name=@business_name
+            AND contact_email=@contact_email;
+
+            DELETE FROM customers
+            WHERE business_name=@business_name
+            AND contact_email=@contact_email;
+          `,
+          parameters: [
+            { name: 'business_name', type: sql.VarChar, value: values[0] },
+            { name: 'contact_email', type: sql.VarChar, value: values[1] }
+          ]
+        }
+      case "get-employees":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM employee; 
+          `,
+          parameters: []
+        }
+      case "update-wage":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE employee
+            SET hourly_wage=@hourly_wage
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'hourly_wage', type: sql.Float, value: values[1] }
+          ]
         }
       case "add-employee":
         return{

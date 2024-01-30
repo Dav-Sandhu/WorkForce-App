@@ -13,6 +13,8 @@ const Jobs = lazy(() => import('./Jobs/Jobs'))
 const Task = lazy(() => import('./Tasks/Task'))
 const Working = lazy(() => import('./Jobs/Working'))
 const Spinner = lazy(() => import('./Spinner'))
+const Admin = lazy(() => import('./Admin/Admin'))
+const Update = lazy(() => import('./Admin/Update'))
 
 export default function App(){
 
@@ -29,6 +31,8 @@ export default function App(){
                         <Route path="/jobs" element={AuthWrapper(Jobs)}/>
                         <Route path="/tasks" element={AuthWrapper(Task)}/>
                         <Route path='/working' element={AuthWrapper(Working)} />
+                        <Route path='/admin' element={AuthWrapper(Admin)} />
+                        <Route path='/update' element={AuthWrapper(Update)} />
                         <Route path="*" element={<Login />}/>
                     </Routes>
                 </BrowserRouter>

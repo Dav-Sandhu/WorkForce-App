@@ -1,0 +1,42 @@
+.update-section{
+
+    background-color: #8fc4b7;
+    min-height: 100vh;
+
+    .display-items {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        align-items: center;
+        overflow-x: auto;
+        white-space: nowrap;
+
+        background-color: whitesmoke;
+
+        .logo-section, .profile-picture-section{
+
+            width: 200px;
+            height: 200px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .company-logo, .profile-picture{
+                object-fit: cover;
+                overflow: hidden;
+            }
+        }
+
+        .display-item{ 
+            width: 200px;
+        }
+    }
+
+    @media (min-width: 1025px) {
+        .h-custom {
+            height: 100vh !important;
+        }
+    }
+}

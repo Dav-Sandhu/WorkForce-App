@@ -100,9 +100,13 @@ const Register = () => {
                                                         }
                                                     }
 
-                                                    if (state.password === state.repeat_password && state.password.length > 0){
+                                                    if (
+                                                        state.first_name.length > 0 && state.last_name.length > 0 &&
+                                                        state.email.length > 0 && state.password.length > 0 &&
+                                                        state.password === state.repeat_password
+                                                        ){
                                                         checkEmployee()
-                                                    }
+                                                    }else{alert("Please fill out all fields")}
                                                 }}>
 
                                                     <div className="d-flex flex-row align-items-center mb-4">
