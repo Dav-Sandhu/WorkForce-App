@@ -44,7 +44,10 @@ const Working = () => {
             start: task.start 
         }, '/endbreak', null)
 
-        output.status === 1 ? getTasks() : alert("Something went wrong: please try again later")
+        output.status === 1 ? getTasks() : 
+        import('../Alert').then(async module => {
+            await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
+        })
     }
 
     const removeTask = async (task) => {   
@@ -63,7 +66,10 @@ const Working = () => {
             start: task.start 
         }, '/deletebreak', null)
 
-        output.status === 1 ? getTasks() : alert("Something went wrong: please try again later")
+        output.status === 1 ? getTasks() :
+        import('../Alert').then(async module => {
+            await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
+        })
     }
 
     useEffect(() => {

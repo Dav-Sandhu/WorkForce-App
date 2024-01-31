@@ -58,7 +58,9 @@ const Customers = ({ selectedJob }) => {
                                     if (output.status === 1){
                                         navigate('/working')
                                     }else{
-                                        alert('Something went wrong...')
+                                        import('../Alert').then(async module => {
+                                            await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
+                                        })
                                     }
                                 }
 

@@ -437,7 +437,8 @@ const queries = (type, values) => {
           query: `
             USE WorkForce;
 
-            SELECT * FROM employee; 
+            SELECT * FROM employee
+            WHERE is_admin=0; 
           `,
           parameters: []
         }
@@ -463,8 +464,8 @@ const queries = (type, values) => {
             BEGIN
               IF NOT EXISTS(SELECT * FROM employee WHERE employee_number=@employee_number)
               BEGIN
-                INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture)
-                VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture);
+                INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture, is_admin)
+                VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture, @is_admin);
               END
             END
 
@@ -477,7 +478,8 @@ const queries = (type, values) => {
             { name: 'email', type: sql.VarChar, value: values[3] },
             { name: 'password', type: sql.VarChar, value: values[4] },
             { name: 'hourly_wage', type: sql.Float, value: values[5] },
-            { name: 'picture', type: sql.VarChar, value: values[6] }
+            { name: 'picture', type: sql.VarChar, value: values[6] },
+            { name: 'is_admin', type: sql.Bit, value: values[7]}
           ]
         }
       case "generate-employee-number":

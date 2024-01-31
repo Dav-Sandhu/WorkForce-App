@@ -47,7 +47,9 @@ const ResetPassword = ({dispatch, reset_password}) => {
                                 const module = await import('../useDB')
                                 const makeRequest = module.makeRequest
 
-                                alert("Your password will be sent to your email if it is registered.")
+                                import('../Alert').then(async module => {
+                                    await module.customAlert("Notice", "Your password will be sent to your email if it is in our system.", "info")
+                                })
 
                                 //turns off password reset box
                                 dispatch({

@@ -32,8 +32,11 @@ const ClockTable = ({clocks}) => {
                             <th
                                 className="table-active employee_name"
                                 scope="row" 
-                                onClick={() => alert('Employee Number: ' + clock.employee_number)}
-                                >{clock.name}</th>
+                                onClick={() => {
+                                    import('../Alert').then(async module => {
+                                        await module.customAlert("Employee Number: " + clock.employee_number, "", "info")
+                                    })
+                                }}>{clock.name}</th>
                             <td>{clockIn.toLocaleTimeString()}</td>
                             <td>{clock.finish === null ? "-" : clockOut.toLocaleString()}</td>
                             <td>{clock.finish === null ? "-" : formatTime(diff)}</td>

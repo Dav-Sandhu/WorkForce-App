@@ -29,7 +29,16 @@ const AuthUser = ({children}) => {
 
                 if (check){
                     setLoggedIn(true)
-                    res.clock_in === null && window.location.pathname !== '/' ? navigate('/') : ""
+
+                    const pathName = window.location.pathname
+                    const is_admin = res.is_admin
+                    const clock_in = res.clock_in
+
+                    is_admin ? 
+                    (pathName !== '/admin' && pathName !== '/update' ? navigate('/admin') : "") :  
+                    (clock_in === null && pathName !== '/' ? navigate('/') : 
+                    (pathName === '/admin' || pathName === '/update' ? navigate('/') : ""))
+
                 }else{
                     sessionStorage.removeItem('token')
                 }

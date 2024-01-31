@@ -352,7 +352,8 @@ app.post('/registeremployee', async (req, res) => {
       state.email,
       state.password,
       0.0,
-      ""
+      "",
+      0
     ])
   
     const output = await db_query(query.query, query.parameters)

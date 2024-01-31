@@ -44,7 +44,11 @@ const Home = () => {
                                                 if (file.size <= 1 * 1024 * 1024) { // Check if file size is less than or equal to 1 MB
                                                     console.log("Successfull upload")
                                                 } else {
-                                                    alert("Image cannot be larger than 1 MB")
+
+                                                    import('../Alert').then(async module => {
+                                                        await module.customAlert("Warning", "Image cannot be larger than 1 MB.", "warning")
+                                                    })
+                                                
                                                 }
                                             }
 

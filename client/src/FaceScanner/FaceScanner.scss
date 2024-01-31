@@ -18,8 +18,13 @@
         }
     
         .scan-text {
-            position: absolute; 
-            font-size: 10em;
+            position: absolute;
+            
+            font-size: 8em;
+
+            @media(max-width: 1600px){
+                font-size: 8vw;
+            }
         }
     }
 

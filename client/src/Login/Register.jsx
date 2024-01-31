@@ -14,7 +14,8 @@ const Register = () => {
         last_name: "",
         email: "",
         hourly_wage: 0.0,
-        picture: ""
+        picture: "",
+        is_admin: 0
     })
 
     const [loading, setLoading] = useState(false)
@@ -93,10 +94,14 @@ const Register = () => {
                                                                 const tokenLogin = await import('../TokenLogin')
                                                                 tokenLogin.default(token, makeRequest, () => navigate('/'), user)
                                                             }else{
-                                                                alert("Failed to register employee")
+                                                                import('../Alert').then(async module => {
+                                                                    await module.customAlert("There Was A Problem!", "Failed to register employee.", "error")
+                                                                })
                                                             }
                                                         }else{
-                                                            alert("Email already registered!")
+                                                            import('../Alert').then(async module => {
+                                                                await module.customAlert("Could Not Proceed!", "Email already registered.", "error")
+                                                            })
                                                         }
                                                     }
 
@@ -106,7 +111,11 @@ const Register = () => {
                                                         state.password === state.repeat_password
                                                         ){
                                                         checkEmployee()
-                                                    }else{alert("Please fill out all fields")}
+                                                    }else{
+                                                        import('../Alert').then(async module => {
+                                                            await module.customAlert("Could Not Proceed!", "Please fill out all fields.", "error")
+                                                        })
+                                                    }
                                                 }}>
 
                                                     <div className="d-flex flex-row align-items-center mb-4">

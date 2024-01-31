@@ -20,6 +20,7 @@ const UserProvider = ({children}) => {
         password: "",
         hourly_wage: 0.0,
         picture: "",
+        is_admin: 0,
         clock_in: null,
         clock_out: null
     })

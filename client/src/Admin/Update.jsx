@@ -76,6 +76,7 @@ const Update = () => {
         hourly_rate: 0.0,
         hourly_wage: 0.0,
         employee_number: '',
+        currency: "CAD"
     })
 
     const [view, setView] = useState("customers")
@@ -103,6 +104,18 @@ const Update = () => {
         getInfo()
     }, [view])
 
+    const statusCheck = async (status, msg) => {
+
+        const module = await import('../Alert')
+        const customAlert = module.customAlert
+
+        if (status === 1){
+            await customAlert(msg, "", "success")
+        }else{
+            await customAlert("Something Went Wrong!", "Please try again.", "error")
+        }
+    }
+
     const removeInfo = async (type, item) => {
 
         const module = await import('../useDB')
@@ -114,19 +127,22 @@ const Update = () => {
                 contact_email: item.contact_email
             }, '/deletecustomer', null)
 
-            output.status === 1 ? alert("Customer Deleted") : alert("Something went wrong")
+            await statusCheck(output.status, "Customer Deleted!")
+
         }else if (type === "processes"){
             const output = await makeRequest({
                 process_type: item.process_type
             }, '/deleteinternalprocess', null)
 
-            output.status === 1 ? alert("Process Deleted") : alert("Something went wrong")
+            await statusCheck(output.status, "Process Deleted!")
+
         }else if (type === "employees"){
             const output = await makeRequest({ 
                 employee_number: item.employee_number 
             }, '/removeemployee', null)
 
-            output.status === 1 ? alert("Employee Deleted") : alert("Something went wrong")
+            await statusCheck(output.status, "Employee Deleted!")
+
         }
 
         window.location.reload()
@@ -136,7 +152,11 @@ const Update = () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
 
-        if (view === "customers"){
+        if (view === "customers" 
+            && state.business_name.length > 0 
+                && state.contact_email.length > 0
+                    && state.contact_name.length > 0
+                        && state.currency.length > 0){
             const output = await makeRequest({
                 business_name: state.business_name,
                 logo: state.logo,
@@ -145,8 +165,9 @@ const Update = () => {
                 currency: state.currency
             }, '/addcustomer', null)
 
-            output.status === 1 ? alert("Customer Added") : alert("Something went wrong") 
-        }else if (view === "processes"){
+            await statusCheck(output.status, "Customer Added!")
+
+        }else if (view === "processes" && state.process_type.length > 0){
 
             const output = await makeRequest({
                 process_type: state.process_type,
@@ -154,15 +175,17 @@ const Update = () => {
                 hourly_rate: state.billable ? state.hourly_rate : null 
             }, '/addinternalprocess', null)
 
-            output.status === 1 ? alert("Process Added") : alert("Something went wrong")
-        }else if (view === "employees"){
+            await statusCheck(output.status, "Process Added!")
+
+        }else if (view === "employees" && state.employee_number.length > 0){
 
             const output = state.employee_number.length > 0 ? await makeRequest({
                 employee_number: state.employee_number,
                 hourly_wage: state.hourly_wage
             }, '/updateemployeewage', null) : { status: -1 }
             
-            output.status === 1 ? alert("Employee updated!") : alert("Something went wrong")
+            await statusCheck(output.status, "Employee Updated!")
+
         }
 
         window.location.reload()

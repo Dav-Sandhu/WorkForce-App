@@ -125,7 +125,11 @@ const Admin = () => {
                                                 className="table-active employee_name"
                                                 scope="row" 
                                                 onClick={() => {
-                                                    alert('employee_number: ' + key + '\n' + 'email: ' + profiles[key].email + '\nhourly wage: $' + profiles[key].hourly_wage)
+
+                                                    import('../Alert').then(async module => {
+                                                        await module.customAlert("Employee Information", 'Employee Number: ' + key + '\n' + 'Email: ' + profiles[key].email + '\nHourly Wage: $' + profiles[key].hourly_wage, "info")
+                                                    })
+
                                                 }}>{
                                                     profiles[key].first_name + ' ' + profiles[key].last_name
                                                 }

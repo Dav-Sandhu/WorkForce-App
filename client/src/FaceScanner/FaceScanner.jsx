@@ -32,24 +32,47 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                 const res = await makeRequest({ image }, '/facematch', null)
 
                 if (res.status === 1){
-                    const token = res.token
 
-                    sessionStorage.setItem('token', token)
+                    const alertModule = await import('../Alert')
+                    const customQuestionBox = alertModule.customQuestionBox
 
-                    //decyphers the token and updates the current user state object to the values of the token
-                    const tokenLogin = await import("../TokenLogin")
-                    tokenLogin.default(token, makeRequest, () => navigate('/'), user)
+                    const ans = await customQuestionBox("Is This You?", "Yes", "No")
+                    console.log(ans)
+
+                    if (ans){
+                        const token = res.token
+
+                        sessionStorage.setItem('token', token)
+    
+                        //decyphers the token and updates the current user state object to the values of the token
+                        const tokenLogin = await import("../TokenLogin")
+                        tokenLogin.default(token, makeRequest, () => navigate('/'), user)    
+                    }else{
+                        window.location.reload()
+                    }
+
                 }else{
                     //if face is not recognized it will alert the user and refresh the page
-                    alert("face not recognized!")
-                    window.location.reload()  
+
+                    import('../Alert').then(async module => {
+                        await module.customAlert("Face Was Not Recognized!", "Please try again with better lighting with a more clear view of your face.", "error")
+                        window.location.reload()  
+                    }).catch(err => {
+                        console.log(err)
+                        window.location.reload()  
+                    })
                 }
             }
 
             compareImages()
         }else{
-            alert("Failed to capture picture, try again!")
-            window.location.reload()
+
+            import('../Alert').then(async module => {
+                await module.customAlert("Failed To Capture Picture!", "Please try again.", "error")
+            }).catch(err => {
+                console.log(err)
+                window.location.reload()
+            })
         }
     }
 

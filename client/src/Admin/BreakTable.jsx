@@ -33,7 +33,13 @@ const BreakTable = ({breaks}) => {
                             <th
                                 className="table-active employee_name"
                                 scope="row" 
-                                onClick={() => alert('Employee Number: ' + b.employee_number)}
+                                onClick={() => {
+
+                                    import('../Alert').then(async module => {
+                                        await module.customAlert('Employee Number: ' + b.employee_number, "", "info")
+                                    })
+                                    
+                                }}
                             >{b.name}</th>
                             <td>{b.break_type}</td>
                             <td>{start.toLocaleTimeString()}</td>

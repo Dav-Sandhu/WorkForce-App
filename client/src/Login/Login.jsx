@@ -139,7 +139,10 @@ const Login = () => {
                                     const tokenLogin = await import('../TokenLogin')
                                     tokenLogin.default(token, makeRequest, () => navigate('/'), user)
                                 }else{
-                                    !state.valid ? dispatch({type: "alert"}) : alert("Login attempt failed, please make sure your information is correct!")
+                                    !state.valid ? dispatch({type: "alert"}) : 
+                                    import('../Alert').then(async module => {
+                                        await module.customAlert("Login attempt failed!", "Please make sure your information is correct.", "error")
+                                    })
                                 }
                                     
                             }
