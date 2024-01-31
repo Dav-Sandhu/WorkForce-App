@@ -646,7 +646,7 @@ app.post('/facematch', async (req, res) => {
   
       //creates a token with the matched face's profile
       const token = jwt.sign({ output: [output] }, process.env.JWT_KEY, { expiresIn: '1h' })
-      return res.json({ token, status: 1 })
+      return res.json({ token, status: 1, name: output.first_name + " " + output.last_name })
     }
   
     return res.json({ status: -1, error: 'no match found' })

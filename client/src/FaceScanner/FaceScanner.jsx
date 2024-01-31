@@ -36,8 +36,7 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                     const alertModule = await import('../Alert')
                     const customQuestionBox = alertModule.customQuestionBox
 
-                    const ans = await customQuestionBox("Is This You?", "Yes", "No")
-                    console.log(ans)
+                    const ans = await customQuestionBox("Is This You?", res.name, "Yes", "No")
 
                     if (ans){
                         const token = res.token

@@ -8,9 +8,10 @@ export async function customAlert(title, msg, icon){
     })
 }
 
-export async function customQuestionBox(title, confirmBtn, rejectBtn){
+export async function customQuestionBox(title, msg, confirmBtn, rejectBtn){
     const result = await Swal.fire({
         title: title,
+        text: msg,
         showDenyButton: true,
         confirmButtonText: confirmBtn,
         denyButtonText: rejectBtn
