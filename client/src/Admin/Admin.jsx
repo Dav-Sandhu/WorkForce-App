@@ -1,17 +1,23 @@
 import './Admin.scss'
 
-import { useState } from "react" 
+import { useState, lazy } from "react" 
 
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
+
+const ClockTable = lazy(() => import('./ClockTable'))
+const BreakTable = lazy(() => import('./BreakTable'))
 
 import Navbar from './Navbar'
 
 const Admin = () => {
 
     const [startDate, setStartDate] = useState(new Date())
+    const [clockTimes, setClockTimes] = useState([])
+    const [breakTimes, setBreakTimes] = useState([])
     const [profiles, setProfiles] = useState({})
     const [headings, setHeadings] = useState([])
+
     let footer = []
 
     const getReport = async (selectedDate) => {
@@ -19,18 +25,47 @@ const Admin = () => {
         const makeRequest = module.makeRequest
 
         const output = await makeRequest({ date: selectedDate }, '/getreport', sessionStorage.getItem('token'))
+
         footer = []
 
         if (output.status === 1){
+
+            let tempClock = []
+            let tempBreak = []
+
+            Object.entries(output.output).forEach(([key, value]) => {
+                if(key !== "headings"){
+
+                    const clockValues = value.clock
+                    const breakValues = value.breaks
+
+                    clockValues.forEach(o => {
+                        o.name = value.first_name + ' ' + value.last_name
+                        o.employee_number = key
+                    })
+
+                    breakValues.forEach(o => {
+                        o.name = value.first_name + ' ' + value.last_name
+                        o.employee_number = key
+                    })
+
+                    tempClock = tempClock.concat(clockValues)
+                    tempBreak = tempBreak.concat(breakValues)
+                }
+            })  
+
             setProfiles(output.output)
             setHeadings(output.output.headings)
+            setClockTimes(tempClock)
+            setBreakTimes(tempBreak)
         }
     }
 
     return(
         <>
             <Navbar />
-            <DatePicker selected={startDate} onChange={(date) => {
+            <label htmlFor="datePicker">Select A Date:</label>
+            <DatePicker id="datePicker" selected={startDate} onChange={(date) => {
                 setStartDate(date)
                 getReport((new Date(date.getFullYear(), date.getMonth(), date.getDate())).toISOString().split('T')[0])
             }} />
@@ -118,6 +153,20 @@ const Admin = () => {
                             }
                         </tfoot>
                     </table>
+                    {
+                        clockTimes.length > 0 ? 
+                            <>
+                                <h3>Daily Clock In</h3>
+                                <ClockTable clocks={clockTimes} />
+                            </> : "" 
+                    }
+                    {
+                        breakTimes.length > 0 ?
+                            <>
+                                <h3>Daily Breaks</h3>
+                                <BreakTable breaks={breakTimes} />
+                            </> : ""
+                    }
                 </div>
             }
         </>

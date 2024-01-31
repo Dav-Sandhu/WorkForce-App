@@ -3,6 +3,7 @@ import './FaceScanner.scss'
 import { useRef, useState, lazy } from 'react'
 
 const Webcam = lazy(() => import('react-webcam'))
+const Spinner = lazy(() => import('../Spinner'))
 
 const FaceScanner = ({state, dispatch, navigate, user}) => {
 
@@ -90,11 +91,11 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                                 videoConstraints={{ facingMode: "user" }}
                             />
                             {enableScanText ? <div className="scan-text">
-                                Scan
+                                Click to Scan
                             </div> : ""}
                         </div> :
                         <div>
-                            <h2>Loading...</h2>
+                            <Spinner />
                             <img src={state.image} className="img-fluid user-picture mb-5" />
                         </div>
                     }
