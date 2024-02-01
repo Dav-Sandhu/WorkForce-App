@@ -12,7 +12,7 @@ async function loadImageAndCreateCanvas(url) {
 
         return canvas
     }catch(error) {
-        console.error('Error loading image:', error)
+        console.error('An image was found to be broken.')
     }
 }
 

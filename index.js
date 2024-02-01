@@ -657,16 +657,23 @@ app.post('/facematch', async (req, res) => {
   
     //iterates through the images list
     for (let i = 0;i < images_list.length;i++){
-      /*
-      compares the images and returns a number, the smaller the number is the more the two faces are alike
-      if the number is smaller than 0.6 there is a high likelyhood that the two faces belong to the same person,
-      but as it is imperfect, sometimes it can be wrong which is why there exists a closest value to return only
-      the one match that gave the smallest value.
-      */
-      let match = await compareFaces(image, images_list[i].picture)
-      matches = (match < 0.6) ? true : matches
-      match_num = (match < closest) ? i : match_num
-      closest = (match < closest) ? match : closest
+
+      //extra try and catch to ensure that broken images do not crash the server
+      try{
+
+        /*
+        compares the images and returns a number, the smaller the number is the more the two faces are alike
+        if the number is smaller than 0.6 there is a high likelyhood that the two faces belong to the same person,
+        but as it is imperfect, sometimes it can be wrong which is why there exists a closest value to return only
+        the one match that gave the smallest value.
+        */
+        let match = await compareFaces(image, images_list[i].picture)
+        matches = (match < 0.6) ? true : matches
+        match_num = (match < closest) ? i : match_num
+        closest = (match < closest) ? match : closest
+      }catch(err){
+        continue;
+      }
     }
       
     if (matches){
