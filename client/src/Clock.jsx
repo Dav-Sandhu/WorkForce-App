@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { useUserInfo } from './UserProvider'
 
+//converts the UTC time to local time in the format of HH:MM AM/PM
 export function convertToTime(dateString) {
     const date = new Date(dateString)
     const hours = date.getHours()
@@ -45,6 +46,7 @@ function Clock() {
         "" 
     )
 
+    //updates the clocked in time every second
     useEffect(() => {
         const interval = setInterval(() => {
 

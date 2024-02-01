@@ -20,8 +20,10 @@ const client = new EmailClient(connectionString)
 
 const app = express()
 
+//if the port is not defined in the environment variables, it will default to 3000
 const port = process.env.PORT || 3000
 
+//for checking to see if the token is valid
 function authenticateToken(req, res, next) {
   const token = req.headers.authorization
 
@@ -36,25 +38,31 @@ function authenticateToken(req, res, next) {
   })
 }
 
+//middleware for compression and parsing the body of the request as well as allowing cross origin requests
 app.use(cors())
 app.use(compression())
+//limits the maximum size of the request to 10mb due to the images
 app.use(bodyParser.json({ limit: '10mb' }))
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 
+//for logging in the user
 app.post('/login', async (req, res) => {
 
+  //every request is wrapped in a try and catch to ensure that the server does not crash
   try{
     const employee_number = req.body.data.employee_number
     const password = req.body.data.password
 
-    const query = queries("find-employee", [employee_number, password])
-    const output = await db_query(query.query, query.parameters)
+    //makes sure the employee is in the database
+    const query = queries("find-employee", [employee_number, password]) //queries is for formatting the query with the parameters
+    const output = await db_query(query.query, query.parameters) //db_query is for executing the queries
   
     if (output.length > 0){
   
       const clockInQuery = queries("check-clocked-in", [employee_number])
       const clockIn = await db_query(clockInQuery.query, clockInQuery.parameters)
     
+      //adds the clockin information to the output
       if (clockIn.length > 0){
         output[0].clock_in = clockIn[0].clock_in
         output[0].clock_out = null
@@ -63,16 +71,19 @@ app.post('/login', async (req, res) => {
         output[0].clock_out = null
       }
   
+      //creates a token with the employee's profile
       const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
-      return res.json({ token, status: 1 })
+      return res.json({ token, status: 1 }) //a status flag is added to every response to indicate if the request was successful or not
     }else{
-      return res.json({ status: -1, error: 'output is empty' })
+      //if the employee is not in the database, it will return an error
+      return res.json({ status: -1, error: 'employee does not exist' })
     }
   }catch(error){
     return res.json({ status: -1, error })
   }
 })
 
+//all get requests need to be authenticated
 app.get('/getcustomers', authenticateToken, async (req, res) => {
 
   try{
@@ -258,7 +269,7 @@ app.post('/upload-image', async (req, res) => {
     const employee_number = req.body.data.employee_number
     const name = req.body.data.name
     const file = req.body.data.image
-    const image = Buffer.from(file.split(';base64,').pop(), 'base64')
+    const image = Buffer.from(file.split(';base64,').pop(), 'base64') //converts the image file into a buffer for the azure storage
 
     const endpointsProtocol = process.env.DEFAULT_ENDPOINTS_PROTOCOL
     const endpointsSuffix = process.env.ENDPOINT_SUFFIX
@@ -268,20 +279,25 @@ app.post('/upload-image', async (req, res) => {
 
     const container = process.env.CONTAINER_NAME
 
+    //creates a new client for the azure storage
     const credentials = new StorageSharedKeyCredential(account, accountKey)
     const serviceClient = new BlobServiceClient(`${endpointsProtocol}://${account}.blob.${endpointsSuffix}`, credentials)
 
+    //creates a new container client and a new block blob client
     const containerClient = serviceClient.getContainerClient(container)
     const blockBlobClient = containerClient.getBlockBlobClient(name)
 
+    //uploads the image to the azure storage
     await blockBlobClient.upload(image, image.length, {
       blobHTTPHeaders: {
         blobContentType: 'image/jpeg'
       },
     })
 
+    //returns the url of the image after it is uploaded to azure storage
     const picture = process.env.PICTURE_LOCATION + name
 
+    //updates the employee's profile picture in the database with the new url
     const query = queries('update-picture', [employee_number, picture])
     await db_query(query.query, query.parameters)
 
@@ -349,7 +365,6 @@ app.post('/checkemployee', async (req, res) => {
 app.post('/sendemail', async (req, res) => {
 
   try{
-    //const sendInfo = req.body.data.sendInfo
     const subject = req.body.data.subject
     const email = req.body.data.email
     const name = req.body.data.name
@@ -359,12 +374,14 @@ app.post('/sendemail', async (req, res) => {
 
     if (output.length > 0){
       
+      //formats the email to be sent to the user
       const message = {
         senderAddress: process.env.SENDER_ADDRESS,
         content: { subject: subject, plainText: "Your password is " + output[0].password },
         recipients: { to: [{ address: email, displayName: name }] },
       }
 
+      //sends the email to the user
       const poller = await client.beginSend(message)
       await poller.pollUntilDone()
     
@@ -468,6 +485,7 @@ app.post('/checkclockin', async (req, res) => {
   }
 })
 
+//used by admin to get the daily reports for all the employees
 app.get('/getreport', authenticateToken, async (req, res) => {
 
   try{
@@ -709,6 +727,7 @@ app.post('/facematch', async (req, res) => {
 //app.use(express.static(path.resolve(__dirname, "models")))
 app.use(express.static(path.resolve(__dirname, "client", "dist")))
 
+//serves the index.html file from the client/dist folder
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"))
 })

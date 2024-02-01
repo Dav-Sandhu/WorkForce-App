@@ -3,10 +3,12 @@ import "./Jobs.scss"
 import { useEffect, useState, lazy } from "react"
 import { useNavigate } from "react-router-dom"
 
+//lazy loads the components so that they are only shown when needed
 const UserButton = lazy(() => import('../UserButton/UserButton'))
 const Customers = lazy(() => import('./Customers'))
 const Spinner = lazy(() => import('../Spinner'))
 
+//lists the available jobs to do for the user to select
 const Jobs = () => {
 
     const navigate = useNavigate()
@@ -16,12 +18,15 @@ const Jobs = () => {
     const [showJobs, setShowJobs] = useState(true)
     const [selectedJob, setSelectedJob] = useState("")
 
+    //adds the spinner while the content is loading
     const loaded = (list) => {
         setLoading(false)
         setJobs(list)
     } 
 
     useEffect(() => {
+
+        //loads all the jobs
         const request = async () => {
             const token = sessionStorage.getItem('token')
 

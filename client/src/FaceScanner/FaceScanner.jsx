@@ -12,6 +12,8 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
     const camRef = useRef(null)
 
     const scan = () => {
+
+        //takes a picture of the user's face
         const image = camRef.current.getScreenshot()
        
         if(image){
@@ -52,7 +54,6 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                 }else{
                     //if face is not recognized it will alert the user and refresh the page
-
                     import('../Alert').then(async module => {
                         await module.customAlert("Face Was Not Recognized!", "Please try again with better lighting with a more clear view of your face.", "error")
                         window.location.reload()  
@@ -66,8 +67,10 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
             compareImages()
         }else{
 
+            //if the image was not taken it will alert the user and refresh the page
             import('../Alert').then(async module => {
                 await module.customAlert("Failed To Capture Picture!", "Please try again.", "error")
+                window.location.reload()
             }).catch(err => {
                 console.log(err)
                 window.location.reload()

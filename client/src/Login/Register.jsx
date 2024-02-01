@@ -1,11 +1,15 @@
-import { useReducer, useEffect, useState } from "react"
+import { useReducer, useEffect, useState, lazy } from "react"
 import { useNavigate } from "react-router-dom"
 import { useUserInfo } from "../UserProvider"
 
 import reducer from './RegisterReducer'
 
+const Spinner = lazy(() => import('../Spinner'))
+
+//for registering a new employee
 const Register = () => {
 
+    //holds the given information about the registering user
     const [state, dispatch] = useReducer(reducer, {
         employee_number: "",
         first_name: "",
@@ -18,8 +22,10 @@ const Register = () => {
         is_admin: 0
     })
 
+    //shows a spinner while the page is loading
     const [loading, setLoading] = useState(false)
 
+    //for interacting with the reducer and updating the state
     const handleInput = (e) => {
         dispatch({
             type: e.target.id,
@@ -27,20 +33,27 @@ const Register = () => {
         })
     }
 
+    //user context
     const user = useUserInfo()
+    
+    //for navigating to different pages
     const navigate = useNavigate()
 
     useEffect(() => {
 
+        //checks if the user is logged in
         const token = sessionStorage.getItem('token')
 
         if (token !== null){
+
+            //if the token is not empty it will attempt to log the user in
             const request = async () => {
                 const module = await import('../useDB')
                 const tokenLogin = await import('../TokenLogin')
 
                 const res = await tokenLogin.default(token, module.makeRequest, () => navigate('/'), user)
 
+                //if the token failed to log the user in it will remove the token to ensure the page doesn't keep reloading
                 if (res.status === -1){
                     sessionStorage.removeItem('token')
                     window.location.reload()
@@ -57,9 +70,7 @@ const Register = () => {
     return(
         <>
             {loading ?                 
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+                <Spinner />
                 :
                 <section className="vh-100" style={{backgroundColor: '#eee'}}>
                     <div className="container h-100">
@@ -75,14 +86,17 @@ const Register = () => {
                                                 <form className="mx-1 mx-md-4" onSubmit={(e) => {
                                                     e.preventDefault()
 
+                                                    //checks if the user is already registered before proceeding
                                                     const checkEmployee = async () => {
                                                         const module = await import('../useDB')
                                                         const makeRequest = module.makeRequest
 
+                                                        //checks if the email is already registered
                                                         const check = await makeRequest({ 
                                                             email: state.email
                                                         }, '/checkemployee', null)
 
+                                                        //if the email is not registered it will proceed to register the user
                                                         if (check.status === 1 && check.found){
                                                             const res = await makeRequest(state, '/registeremployee', null)
 
@@ -99,12 +113,15 @@ const Register = () => {
                                                                 })
                                                             }
                                                         }else{
+
+                                                            //if the email is already registered it will alert the user
                                                             import('../Alert').then(async module => {
                                                                 await module.customAlert("Could Not Proceed!", "Email already registered.", "error")
                                                             })
                                                         }
                                                     }
 
+                                                    //checks if all the fields are filled out before proceeding
                                                     if (
                                                         state.first_name.length > 0 && state.last_name.length > 0 &&
                                                         state.email.length > 0 && state.password.length > 0 &&
@@ -112,6 +129,8 @@ const Register = () => {
                                                         ){
                                                         checkEmployee()
                                                     }else{
+
+                                                        //if the fields are not filled out it will alert the user
                                                         import('../Alert').then(async module => {
                                                             await module.customAlert("Could Not Proceed!", "Please fill out all fields.", "error")
                                                         })

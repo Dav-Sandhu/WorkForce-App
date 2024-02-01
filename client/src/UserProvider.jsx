@@ -10,8 +10,10 @@ export const useUserInfo = () => {
     return useContext(UserContext)
 }
 
+//wraps the context of the currently logged in user to all the child components
 const UserProvider = ({children}) => {    
 
+    //holds all the relevant information about the user
     const [userInfo, setUserInfo] = useState({
         first_name: "",
         last_name: "",

@@ -34,6 +34,11 @@ const AuthUser = ({children}) => {
                     const is_admin = res.is_admin
                     const clock_in = res.clock_in
 
+                    /* 
+                    if the user is an admin it will redirect them to the admin page
+                    otherwise it makes sure the user is clocked in before allowing them to 
+                    access other pages besides the home page
+                    */
                     is_admin ? 
                     (pathName !== '/admin' && pathName !== '/update' ? navigate('/admin') : "") :  
                     (clock_in === null && pathName !== '/' ? navigate('/') : 

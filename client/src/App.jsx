@@ -6,6 +6,7 @@ import AuthUser from './AuthUser'
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 
+//lazy loads the components so that they are only loaded when needed
 const Home = lazy(() => import('./Home/Home'))
 const Login = lazy(() => import('./Login/Login'))
 const Register = lazy(() => import('./Login/Register'))
@@ -18,10 +19,12 @@ const Update = lazy(() => import('./Admin/Update'))
 
 export default function App(){
 
+    //wraps the pages in an authentication component which verifies if the user is logged in and what type of user they are
     const AuthWrapper = (Component) => { return (<AuthUser><Component /></AuthUser>) }
 
     return(
         <Suspense fallback={<Spinner />}>
+        {/*will show a spinner while the pages load*/}
             <UserProvider>
                 <BrowserRouter>
                     <Routes>

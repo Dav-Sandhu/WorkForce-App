@@ -4,6 +4,7 @@ import { useUserInfo } from "../UserProvider"
 
 const Spinner = lazy(() => import('../Spinner'))
 
+//customers component for selecting the customer for which the user is doing the job for
 const Customers = ({ selectedJob }) => {
     
     const navigate = useNavigate()
@@ -12,6 +13,7 @@ const Customers = ({ selectedJob }) => {
     const [loading, setLoading] = useState(true)
     const [customers, setCustomers] = useState([])
 
+    //adds the spinner while the content is loading
     const loaded = (customers) => {
         setLoading(false)
         setCustomers(customers)
@@ -19,6 +21,7 @@ const Customers = ({ selectedJob }) => {
 
     useEffect(() => {
 
+        //loads all the customers
         const request = async () => {
             const token = sessionStorage.getItem('token')
 
@@ -36,9 +39,11 @@ const Customers = ({ selectedJob }) => {
     
     return(
         <>
+            {/*while the content is loading it will showcase a spinner*/}
             {loading ? <Spinner /> : customers.length === 0 ? 
             <h5 className="text-center text-muted">There are no customers available right now...</h5> : 
                 customers.map((customer) => {
+                    //outputs all the customers for the user to select from
                     return(
                         <div
                             className='customer' 

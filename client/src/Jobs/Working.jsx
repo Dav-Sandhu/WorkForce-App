@@ -6,6 +6,7 @@ import { useUserInfo } from "../UserProvider"
 const UserButton = lazy(() => import('../UserButton/UserButton'))
 const Spinner = lazy(() => import('../Spinner'))
 
+//showcases what the user is currently working on and allows the user to finish the job or remove said jobs/breaks
 const Working = () => {
 
     const [loading, setLoading] = useState(true)
@@ -14,6 +15,7 @@ const Working = () => {
     const user = useUserInfo()
     const employee_number = user.userInfo.employee_number
 
+    //gets all the tasks/breaks that the user is currently working on
     const getTasks = async () => {
         const module = await import("../useDB")
         const makeRequest = module.makeRequest
@@ -28,6 +30,7 @@ const Working = () => {
         setTasks(output)
     }
 
+    //finishes the selected task/break
     const finishTask = async (task) => {
         const module = await import("../useDB")
         const makeRequest = module.makeRequest
@@ -44,12 +47,14 @@ const Working = () => {
             start: task.start 
         }, '/endbreak', null)
 
+        //alerts the user if something went wrong with the requests
         output.status === 1 ? getTasks() : 
         import('../Alert').then(async module => {
             await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
         })
     }
 
+    //removes the selected task/break
     const removeTask = async (task) => {   
         const module = await import("../useDB")
         const makeRequest = module.makeRequest
@@ -80,6 +85,7 @@ const Working = () => {
         <>
             { loading ? <Spinner /> : 
                 <>
+                    {/*User button allows the user to go back to the home page*/}
                     <UserButton /> <br />
                     <div className="working-container">
                         <h1 className='jobs-title fw-bold fs-25 mb-4 text-center text-dark title'>Currently Working On</h1>
