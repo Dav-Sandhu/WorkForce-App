@@ -110,6 +110,7 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                                 onUserMedia={() => { setEnableScanText(true) }}
                                 height={'100%'}
                                 width={'100%'}
+                                screenshotSize={{ width: 500, height: 500 }}
                                 videoConstraints={{ facingMode: "user" }}
                             />
                             {enableScanText ? <div className="scan-text">
