@@ -69,6 +69,7 @@ const Customers = ({ selectedJob }) => {
                             }}>
                             <img
                                 className="img-fluid company-logo" 
+                                onError={(e) => {e.target.onerror = null; e.target.src="/customers.png"}}
                                 src={customer.logo} 
                                 alt="Company Logo" />
                             <h5 className="text-nowrap">

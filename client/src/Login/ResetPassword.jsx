@@ -19,10 +19,10 @@ const ResetPassword = ({dispatch, reset_password}) => {
                         payload: ""
                     })
                 }></button>
-                <div className="card-header h5 text-white bg-primary">Password Reset</div>
+                <div className="card-header h5 text-white bg-primary">Lost Password</div>
                 <div className="card-body px-5">
                     <p className="card-text py-2">
-                        Enter your email address and we'll send you an email with instructions to reset your password.
+                        Enter your email address and we'll send you your password.
                     </p>
 
                     {/*for entering the email of the employee that needs their password reset*/}

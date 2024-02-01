@@ -241,6 +241,7 @@ const Update = () => {
                                                             <div className="logo-section">
                                                                 <img 
                                                                     className="company-logo card-img-top" 
+                                                                    onError={(e) => {e.target.onerror = null; e.target.src="/customers.png"}}
                                                                     src={item.logo} 
                                                                     alt="Card image cap" />
                                                             </div>
@@ -278,7 +279,8 @@ const Update = () => {
                                                             <div className="profile-picture-section">
                                                                 <img 
                                                                     className="profile-picture card-img-top" 
-                                                                    src={item.picture.length > 0 ? item.picture : "/default profile picture.jpg"} 
+                                                                    src={item.picture} 
+                                                                    onError={(e) => {e.target.onerror = null; e.target.src="/default profile picture.jpg"}}
                                                                     alt="Card image cap" />
                                                             </div>
                                                             <div className="card-body">

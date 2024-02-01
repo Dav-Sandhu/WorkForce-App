@@ -12,6 +12,8 @@ const bodyParser = require('body-parser')
 
 const { loadModels, compareFaces } = require('./facerecognition.js')
 
+const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
+
 const { EmailClient } = require("@azure/communication-email")
 const connectionString = `endpoint=${process.env.ENDPOINT};accesskey=${process.env.ACCESS_KEY}`
 const client = new EmailClient(connectionString)
@@ -244,6 +246,47 @@ app.post('/deletejob', async (req, res) => {
     await db_query(query.query, query.parameters)
 
     return res.json({ status: 1 })
+  }catch(error){
+    return res.json({ status: -1, error })
+  }
+})
+
+app.post('/upload-image', async (req, res) => {
+
+  try{
+
+    const employee_number = req.body.data.employee_number
+    const name = req.body.data.name
+    const file = req.body.data.image
+    const image = Buffer.from(file.split(';base64,').pop(), 'base64')
+
+    const endpointsProtocol = process.env.DEFAULT_ENDPOINTS_PROTOCOL
+    const endpointsSuffix = process.env.ENDPOINT_SUFFIX
+
+    const account = process.env.ACCOUNT_NAME
+    const accountKey = process.env.ACCOUNT_KEY
+
+    const container = process.env.CONTAINER_NAME
+
+    const credentials = new StorageSharedKeyCredential(account, accountKey)
+    const serviceClient = new BlobServiceClient(`${endpointsProtocol}://${account}.blob.${endpointsSuffix}`, credentials)
+
+    const containerClient = serviceClient.getContainerClient(container)
+    const blockBlobClient = containerClient.getBlockBlobClient(name)
+
+    await blockBlobClient.upload(image, image.length, {
+      blobHTTPHeaders: {
+        blobContentType: 'image/jpeg'
+      },
+    })
+
+    const picture = process.env.PICTURE_LOCATION + name
+
+    const query = queries('update-picture', [employee_number, picture])
+    await db_query(query.query, query.parameters)
+
+    return res.json({ status: 1, picture })
+
   }catch(error){
     return res.json({ status: -1, error })
   }

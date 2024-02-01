@@ -1,0 +1,1 @@
+.profile-picture{cursor:pointer;border-radius:50%;border:1px solid black}.profile-picture:hover{opacity:.8}.home-buttons{display:flex;flex-direction:row;justify-content:space-around;align-items:center}.home-buttons button{width:30%;text-wrap:none;white-space:nowrap;text-overflow:ellipsis}

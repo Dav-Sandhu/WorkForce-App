@@ -15,7 +15,10 @@ const UserButton = () => {
             className="user-button btn btn-outline-secondary rounded-pill" 
             onClick={() => navigate('/')}>
                 <div className="left-section mr-2">
-                    <img src={ picture } roundedCircle loading="lazy" />
+                    <img 
+                        src={ picture } 
+                        onError={(e) => {e.target.onerror = null; e.target.src="/default profile picture.jpg"}}
+                        roundedCircle loading="lazy" />
                 </div>
                 <div className="right-section text-center ml-2">
                     {user.userInfo.first_name + ' ' + user.userInfo.last_name}

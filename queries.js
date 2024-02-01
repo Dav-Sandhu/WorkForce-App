@@ -53,6 +53,20 @@ const queries = (type, values) => {
           `,
           parameters: []
         }
+      case "update-picture":
+        return {
+          query: `
+            USE WorkForce;
+
+            UPDATE employee
+            SET picture=@picture
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'picture', type: sql.VarChar, value: values[1] }
+          ]
+        }
       case "check-clocked-in":
         return{
           query: `

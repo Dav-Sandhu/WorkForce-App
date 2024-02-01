@@ -1,0 +1,42 @@
+.webcam-modal {
+    position: fixed; 
+    z-index: 100; 
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.75);
+
+    @media(max-width: 768px){
+        top: 10%;
+        left: 5%;
+        max-width: 90vw;
+
+        .take-picture{
+            position: absolute;
+        }
+    }   
+
+    @media(min-width: 769px){
+        top: 50%; 
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        .take-picture{
+            position: fixed;
+        }
+    }
+
+    .close-webcam-button{
+        cursor: pointer;
+        z-index: 102; 
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .take-picture{
+        top: 50%; 
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}

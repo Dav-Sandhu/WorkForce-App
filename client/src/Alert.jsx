@@ -1,5 +1,6 @@
 import Swal from 'sweetalert2'
 
+//most basic alert
 export async function customAlert(title, msg, icon){
     await Swal.fire({
         title: title,
@@ -8,6 +9,7 @@ export async function customAlert(title, msg, icon){
     })
 }
 
+//creates interactive alert with confirm and reject buttons
 export async function customQuestionBox(title, msg, confirmBtn, rejectBtn){
     const result = await Swal.fire({
         title: title,

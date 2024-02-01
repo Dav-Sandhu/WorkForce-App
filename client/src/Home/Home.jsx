@@ -4,8 +4,14 @@ import { useNavigate } from "react-router-dom"
 import { useUserInfo } from "../UserProvider"
 
 import Clock, { convertToTime } from "../Clock"
+import { lazy, useRef, useState } from "react"
+
+const WebCamModal = lazy(() => import("../Home/WebCamModal"))
 
 const Home = () => {
+
+    const [webcamActive, setWebcamActive] = useState(false)
+    const ref = useRef(null)
 
     const user = useUserInfo()
     const navigate = useNavigate()
@@ -21,6 +27,7 @@ const Home = () => {
     return(
         <section className="vh-100" style={{backgroundColor: '#eee'}}>
             {clock_in !== null && clock_out === null ? <Clock /> : ""}
+            {webcamActive ? <WebCamModal ref={ref} setWebcamActive={setWebcamActive} /> : ""}
             <div className="container py-5 h-100">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="col-md-12 col-xl-4">
@@ -28,31 +35,14 @@ const Home = () => {
                             <div className="card-body text-center">
                                 <div className="mt-3 mb-4">
                                     <img 
-                                        src={picture} 
-                                        className="rounded-circle img-fluid profile-picture" 
+                                        src={ picture } 
+                                        className="img-fluid profile-picture" 
                                         loading="lazy"
                                         style={{width: '100px'}}
+                                        onError={(e) => {e.target.onerror = null; e.target.src="/default profile picture.jpg"}}
                                         onClick={() => {
-                                            // change profile picture
-                                            const fileInput = document.createElement('input')
-                                            fileInput.type = 'file'
-                                            fileInput.accept = 'image/*'
-                                            fileInput.onchange = (e) => {
-                                                const file = e.target.files[0]
-                                                console.log('Uploaded image:', file)
-                                                
-                                                if (file.size <= 1 * 1024 * 1024) { // Check if file size is less than or equal to 1 MB
-                                                    console.log("Successfull upload")
-                                                } else {
+                                            setWebcamActive(true)
 
-                                                    import('../Alert').then(async module => {
-                                                        await module.customAlert("Warning", "Image cannot be larger than 1 MB.", "warning")
-                                                    })
-                                                
-                                                }
-                                            }
-
-                                            fileInput.click()
                                         }} 
                                     />
                                 </div>
