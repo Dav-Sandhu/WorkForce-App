@@ -26,7 +26,7 @@ const BreakTable = ({breaks}) => {
                         const seconds = Math.round((diff / 1000) % 60)
                     
                     
-                        return `${hours}:${minutes}:${seconds}`
+                        return `${hours}h: ${minutes}m: ${seconds}s`
                     }
 
                     return(
@@ -45,7 +45,7 @@ const BreakTable = ({breaks}) => {
                             <td>{b.break_type}</td>
                             <td>{start.toLocaleTimeString()}</td>
                             <td>{b.finish === null ? "-" : finish.toLocaleString()}</td>
-                            <td>{formatTime(diff)}</td>
+                            <td>{b.finish === null ? "-" : formatTime(diff)}</td>
                         </tr>
                     )
                 })

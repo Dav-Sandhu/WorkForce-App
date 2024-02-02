@@ -1,7 +1,7 @@
 const Navbar = () => {
     return(
         <nav className="navbar navbar-expand-md navbar-dark bg-dark">
-            <a className="navbar-brand ms-2">Admin View</a>
+            <a className="navbar-brand ms-2">Admin</a>
 
             <button 
                 className="navbar-toggler" 
