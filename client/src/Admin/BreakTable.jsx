@@ -1,3 +1,4 @@
+//displays the breaks table which keeps track of the employees break times
 const BreakTable = ({breaks}) => {
     
     return(

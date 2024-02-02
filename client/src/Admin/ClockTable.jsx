@@ -1,3 +1,4 @@
+//displays the clock in table which keeps track of the employees clock in and clock out times
 const ClockTable = ({clocks}) => {
 
     return(

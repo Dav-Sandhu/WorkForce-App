@@ -64,6 +64,7 @@ const reducer = (state, {type, payload}) => {
     }
 }
 
+//for viewing and updating the database for customers, processes, and employees
 const Update = () => {
 
     const [state, dispatch] = useReducer(reducer, {
@@ -82,6 +83,7 @@ const Update = () => {
     const [view, setView] = useState("employees")
     const [displayItems, setDisplayItems] = useState([])
 
+    //gets the information from the database
     const getInfo = async () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
@@ -104,6 +106,7 @@ const Update = () => {
         getInfo()
     }, [view])
 
+    //returns the status of the request
     const statusCheck = async (status, msg) => {
 
         const module = await import('../Alert')
@@ -116,6 +119,7 @@ const Update = () => {
         }
     }
 
+    //removes the information from the database
     const removeInfo = async (type, item) => {
 
         const module = await import('../useDB')
@@ -150,6 +154,7 @@ const Update = () => {
         window.location.reload()
     }
 
+    //adds the information to the database
     const addInfo = async () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
@@ -193,6 +198,7 @@ const Update = () => {
         window.location.reload()
     }
 
+    //updates the state
     const handleUpdate = (e) => {
         dispatch({
             type: e.target.id,
@@ -212,6 +218,7 @@ const Update = () => {
                                 type="button" 
                                 className="btn btn-dark btn-lg mb-1"
                                 onClick={() => {
+                                    //switches the view between customers, processes, and employees
                                     setView(prev => {
                                         if (prev === "employees"){return "customers"}
                                         else if (prev === "customers"){return "processes"}
@@ -225,6 +232,7 @@ const Update = () => {
                             <div className="display-items">{
                                 displayItems.map(item => {
                                     
+                                    //determines the type of item to display the correct content
                                     const type = item.hasOwnProperty('business_name') ? "customers" : 
                                     item.hasOwnProperty('process_type') ? "processes" : "employees"
 

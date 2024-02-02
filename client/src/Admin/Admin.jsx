@@ -2,6 +2,7 @@ import './Admin.scss'
 
 import { useState, lazy } from "react" 
 
+//imports the date picker library which is used to select a date for the daily reports
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 
@@ -10,6 +11,7 @@ const BreakTable = lazy(() => import('./BreakTable'))
 
 import Navbar from './Navbar'
 
+//displays the admin page which allows the admin to view the daily staffing report
 const Admin = () => {
 
     const [startDate, setStartDate] = useState(new Date())
@@ -18,21 +20,26 @@ const Admin = () => {
     const [profiles, setProfiles] = useState({})
     const [headings, setHeadings] = useState([])
 
+    //footer section of the daily staffing report table which displays the total hours for each column
     let footer = []
 
+    //gets the reports for the selected date
     const getReport = async (selectedDate) => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
 
         const output = await makeRequest({ date: selectedDate }, '/getreport', sessionStorage.getItem('token'))
 
+        //clears the footer section of the daily staffing report table
         footer = []
 
         if (output.status === 1){
 
+            //clears the clock and break times
             let tempClock = []
             let tempBreak = []
 
+            //loops through the output and adds the clock and break times to the tempClock and tempBreak arrays
             Object.entries(output.output).forEach(([key, value]) => {
                 if(key !== "headings"){
 
@@ -54,6 +61,7 @@ const Admin = () => {
                 }
             })  
 
+            //sets the profiles, headings, clock times, and break times
             setProfiles(output.output)
             setHeadings(output.output.headings)
             setClockTimes(tempClock)
