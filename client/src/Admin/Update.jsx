@@ -64,7 +64,6 @@ const reducer = (state, {type, payload}) => {
     }
 }
 
-//for viewing and updating the database for customers, processes, and employees
 const Update = () => {
 
     const [state, dispatch] = useReducer(reducer, {
@@ -81,30 +80,30 @@ const Update = () => {
     })
 
     const [view, setView] = useState("employees")
-    const [displayItems, setDisplayItems] = useState([])
 
-    //gets the information from the database
-    const getInfo = async () => {
+    const [displayItems, setDisplayItems] = useState({
+        customers: [],
+        employees: [],
+        processes: []
+    })
+
+    //loads the specified data from the database and updates the state
+    const initLoad = async () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
-
+    
         const token = sessionStorage.getItem('token')
-
-        if (view === "customers"){
-            const output = await makeRequest(null, '/getcustomers', token)
-            setDisplayItems(output.output)
-        }else if (view === "processes"){
-            const output = await makeRequest(null, '/getinternalprocesses', token)
-            setDisplayItems(output.output)
-        }else if (view === "employees"){
-            const output = await makeRequest(null, '/getemployees', token)
-            setDisplayItems(output.output)
-        }
+    
+        const getCustomers = await makeRequest(null, '/getcustomers', token)
+        const getEmployees = await makeRequest(null, '/getemployees', token)
+        const getProcesses = await makeRequest(null, '/getinternalprocesses', token)
+    
+        setDisplayItems({
+            customers: getCustomers.output,
+            employees: getEmployees.output,
+            processes: getProcesses.output
+        })
     }
-
-    useEffect(() => {
-        getInfo()
-    }, [view])
 
     //returns the status of the request
     const statusCheck = async (status, msg) => {
@@ -204,13 +203,17 @@ const Update = () => {
             type: e.target.id,
             payload: e.target.value
         })
-    }
+    }    
+
+    //initially loads the employees
+    useEffect(() => {
+        initLoad()
+    }, [])
 
     return(
         <>
             <Navbar />
             <section className="h-100 h-custom update-section">
-
                 <div className="container py-5 h-100">
                     <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="col-lg-8 col-xl-6">
@@ -220,26 +223,30 @@ const Update = () => {
                                 onClick={() => {
                                     //switches the view between customers, processes, and employees
                                     setView(prev => {
-                                        if (prev === "employees"){return "customers"}
-                                        else if (prev === "customers"){return "processes"}
+                                        if(prev === "employees"){
+                                            return "customers"
+                                        }else if(prev === "customers"){
+                                            return "processes"
+                                        }
                                         
                                         return "employees"
                                     })
                                 }}>{
-                                view === "customers" ? "Switch to Processes" : view === "employees" ? "Switch to Customers" : "Switch to Employees"
+                                view === "customers" ? "Switch to Processes" : 
+                                view === "employees" ? "Switch to Customers" : "Switch to Employees"
                             }</button>
-                            
-                            <div className="display-items">{
-                                displayItems.map(item => {
-                                    
-                                    //determines the type of item to display the correct content
-                                    const type = item.hasOwnProperty('business_name') ? "customers" : 
-                                    item.hasOwnProperty('process_type') ? "processes" : "employees"
+                            <div className="display-items">
+                                {
+                                    displayItems[view].map(item => {
+                                        
+                                        //determines the type of item to display the correct content
+                                        const type = item.hasOwnProperty('business_name') ? "customers" : 
+                                        item.hasOwnProperty('process_type') ? "processes" : "employees"
 
-                                    return(
-                                        <div 
-                                            className="display-item"
-                                            key={type === "customers" ? 
+                                        return(
+                                            <div 
+                                                className="display-item"
+                                                key={type === "customers" ? 
                                                 item.business_name + item.contact_email : 
                                                 type === "processes" ? item.process_type :
                                                 item.employee_number
@@ -310,10 +317,11 @@ const Update = () => {
                                                         </div>
                                                     </>
                                                 }
-                                        </div>
-                                    )
-                                })
-                            }</div>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -435,7 +443,7 @@ const Update = () => {
                                                         onChange={handleUpdate}>
                                                             <option>select employee number</option>
                                                             {
-                                                            displayItems.map(item => {
+                                                            displayItems[view].map(item => {
                                                                 return(
                                                                     <option key={item.employee_number} value={item.employee_number}>{item.employee_number}</option>
                                                                 )
