@@ -64,14 +64,19 @@ const WebCamModal = ({ setWebcamActive }, ref) => {
                         
 
                             //once the image is processed and resized it will upload the image to the server
-                            const output = await makeRequest({ name, image: resizedImage, employee_number }, '/upload-image', null)
+                            const output = await makeRequest({ 
+                                name, 
+                                image: resizedImage, 
+                                employee_number, 
+                                token: sessionStorage.getItem('token') 
+                            }, '/upload-image', null)
                             
                             if (output.status === 1){
                                 //if the upload was successful it will update the user's profile picture
-                                user.setUserInfo({
-                                    ...user.userInfo,
-                                    picture: output.picture
-                                })
+                                const token = output.token
+
+                                sessionStorage.removeItem('token')
+                                sessionStorage.setItem('token', token)
 
                                 //alert the user that the picture was updated
                                 const alertModule = await import('../Alert')

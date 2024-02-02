@@ -20,7 +20,7 @@ const Home = () => {
     const navigate = useNavigate()
 
     //user's profile information
-    const picture = user.userInfo.picture.length > 0 ? user.userInfo.picture : "/default profile picture.jpg" 
+    const picture = user.userInfo.picture
     const name = user.userInfo.first_name + ' ' + user.userInfo.last_name
     const email = user.userInfo.email
     const wage = '$' + user.userInfo.hourly_wage + '/hour'

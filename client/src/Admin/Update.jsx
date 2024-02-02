@@ -79,7 +79,7 @@ const Update = () => {
         currency: "CAD"
     })
 
-    const [view, setView] = useState("customers")
+    const [view, setView] = useState("employees")
     const [displayItems, setDisplayItems] = useState([])
 
     const getInfo = async () => {
@@ -138,7 +138,9 @@ const Update = () => {
 
         }else if (type === "employees"){
             const output = await makeRequest({ 
-                employee_number: item.employee_number 
+                employee_number: item.employee_number,
+                first_name: item.first_name,
+                last_name: item.last_name 
             }, '/removeemployee', null)
 
             await statusCheck(output.status, "Employee Deleted!")
@@ -240,7 +242,8 @@ const Update = () => {
                                                         <div className="card">
                                                             <div className="logo-section">
                                                                 <img 
-                                                                    className="company-logo card-img-top" 
+                                                                    className="company-logo card-img-top"
+                                                                    loading="lazy" 
                                                                     onError={(e) => {e.target.onerror = null; e.target.src="/customers.png"}}
                                                                     src={item.logo} 
                                                                     alt="Card image cap" />
@@ -279,6 +282,7 @@ const Update = () => {
                                                             <div className="profile-picture-section">
                                                                 <img 
                                                                     className="profile-picture card-img-top" 
+                                                                    loading="lazy"
                                                                     src={item.picture} 
                                                                     onError={(e) => {e.target.onerror = null; e.target.src="/default profile picture.jpg"}}
                                                                     alt="Card image cap" />

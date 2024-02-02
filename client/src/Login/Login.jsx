@@ -137,7 +137,7 @@ const Login = () => {
         
                                     //will decypher token and update the state object for the current session to reference
                                     const tokenLogin = await import('../TokenLogin')
-                                    tokenLogin.default(token, makeRequest, () => navigate('/'), user)
+                                    await tokenLogin.default(token, makeRequest, () => navigate('/'), user)
                                 }else{
                                     !state.valid ? dispatch({type: "alert"}) : 
                                     import('../Alert').then(async module => {

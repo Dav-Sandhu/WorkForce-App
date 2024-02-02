@@ -267,6 +267,7 @@ app.post('/upload-image', async (req, res) => {
   try{
 
     const employee_number = req.body.data.employee_number
+    const token = req.body.data.token
     const name = req.body.data.name
     const file = req.body.data.image
     const image = Buffer.from(file.split(';base64,').pop(), 'base64') //converts the image file into a buffer for the azure storage
@@ -301,7 +302,16 @@ app.post('/upload-image', async (req, res) => {
     const query = queries('update-picture', [employee_number, picture])
     await db_query(query.query, query.parameters)
 
-    return res.json({ status: 1, picture })
+    jwt.verify(token, process.env.JWT_KEY, (err, output) => {
+      if (err) return res.json({ status: -1, error: err })
+  
+      const profile = output.output[0]
+      profile.picture = picture
+
+      const token = jwt.sign({ output: [profile] }, process.env.JWT_KEY, { expiresIn: '1h' })
+
+      return res.json({ status: 1, token })
+    })
 
   }catch(error){
     return res.json({ status: -1, error })
@@ -325,9 +335,26 @@ app.post('/removeemployee', async (req, res) => {
   
     try{
       const employee_number = req.body.data.employee_number
+      const imageName = req.body.data.first_name + '-' + req.body.data.last_name + '-' + employee_number + '.jpg'
+
+      const connectionString = 'DefaultEndpointsProtocol=' + process.env.DEFAULT_ENDPOINTS_PROTOCOL + 
+      ';AccountName=' + process.env.ACCOUNT_NAME + ';AccountKey=' + process.env.ACCOUNT_KEY + 
+      ';EndpointSuffix=' + process.env.ENDPOINT_SUFFIX
+  
+      const container = process.env.CONTAINER_NAME
+
+      const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
+      const containerClient = blobServiceClient.getContainerClient(container)
+      const blobClient = containerClient.getBlobClient(imageName)
   
       const query = queries('delete-employee', [employee_number])
       await db_query(query.query, query.parameters)
+
+      try{
+        await blobClient.delete()
+      }catch(error){
+        console.log('profile picture does not exist')
+      }
     
       return res.json({ status: 1 })
     }catch(error){
