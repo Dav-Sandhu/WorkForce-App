@@ -18,7 +18,7 @@ const Assign = () => {
         const makeRequest = module.makeRequest
 
         const output = await makeRequest(null, '/getemployees', sessionStorage.getItem('token'))
-        const requestsOutput = await makeRequest(null, '/getrequests', sessionStorage.getItem('token'))
+        const requestsOutput = await makeRequest(null, '/getrequests', sessionStorage.getItem('token')) //gets a list of users who have requested a job
 
         setEmployees(output.output)
         setRequests(requestsOutput.output)

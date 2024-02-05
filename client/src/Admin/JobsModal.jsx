@@ -9,6 +9,7 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
     const [select, setSelect] = useState("")
     const [updated, setUpdated] = useState(false)
 
+    //gets a list of all available jobs and the jobs that are already assigned to the employee
     const getJobs = async () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
@@ -23,6 +24,7 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
         output.output.length > 0 ? setSelect(output.output[0].process_type) : ""
     }
 
+    //adds the selected job to the employee's assigned jobs
     const assignJob = async () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
