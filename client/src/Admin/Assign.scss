@@ -1,7 +1,4 @@
 .employees_list{
-
-    margin: 5px;
-
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -9,6 +6,7 @@
 
     .employee{
 
+        margin-top: 5px;
         padding: 5px;
         width: 80%;
 
@@ -27,7 +25,6 @@
         .left-section{
             .profile-picture{
                 width: 100px;
-                background-color: rgb(81, 206, 255);
                 border: 1px solid black;
                 padding: 1px;
             }
