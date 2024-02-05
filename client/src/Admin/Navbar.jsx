@@ -22,6 +22,14 @@ const Navbar = () => {
                     <li className="nav-item">
                         <a className="nav-link" href="/update">Update Information</a>
                     </li>
+                    <li className="nav-item">
+                        <a className="nav-link" href="/assign">Assign Jobs</a>
+                    </li>
+                    <li className="nav-item">
+                        <a className="nav-link" onClick={() => {
+                            sessionStorage.removeItem("token")
+                        }} href='/login'>Log Out</a>
+                    </li>
                 </ul>
             </div>
         </nav>

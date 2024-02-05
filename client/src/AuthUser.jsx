@@ -40,9 +40,9 @@ const AuthUser = ({children}) => {
                     access other pages besides the home page
                     */
                     is_admin ? 
-                    (pathName !== '/admin' && pathName !== '/update' ? navigate('/admin') : "") :  
+                    (pathName !== '/admin' && pathName !== '/update' && pathName !== '/assign' ? navigate('/admin') : "") :  
                     (clock_in === null && pathName !== '/' ? navigate('/') : 
-                    (pathName === '/admin' || pathName === '/update' ? navigate('/') : ""))
+                    (pathName === '/admin' || pathName === '/update' || pathName === '/assign' ? navigate('/') : ""))
 
                 }else{
                     sessionStorage.removeItem('token')

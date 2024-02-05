@@ -358,6 +358,33 @@ const queries = (type, values) => {
             { name: 'hourly_rate', type: sql.Float, value: values[2] }
           ]
         }
+      case "check-assign-job":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM assign
+            WHERE employee_number=@employee_number
+            AND process_type=@process_type;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'process_type', type: sql.VarChar, value: values[1] }
+          ]
+        }
+      case "assign-job":
+        return{
+          query: `
+            USE WorkForce;
+
+            INSERT INTO assign(employee_number, process_type)
+            VALUES(@employee_number, @process_type);
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'process_type', type: sql.VarChar, value: values[1] }
+          ]
+        }
       case "update-employee-wage":
         return{
           query: `
@@ -399,9 +426,54 @@ const queries = (type, values) => {
           query: `
             USE WorkForce; 
 
-            SELECT process_type FROM internal_process;
+            SELECT process_type 
+            FROM assign
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
+        }
+      case "request-job":
+        return{
+          query: `
+            USE WorkForce;
+
+            INSERT INTO requests(employee_number)
+            VALUES(@employee_number);
+          `,
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
+        }
+      case "delete-job-request":
+        return{
+          query: `
+            USE WorkForce;
+
+            DELETE FROM requests
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
+        }
+      case "get-requests":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM requests;
           `,
           parameters: []
+        }
+      case "delete-assigned-job":
+        return{
+          query: `
+          USE WorkForce;
+
+          DELETE FROM assign
+          WHERE @employee_number=employee_number
+          AND @process_type=process_type;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'process_type', type: sql.VarChar, value: values[1] }
+          ]
         }
       case "get-customers":
         return{

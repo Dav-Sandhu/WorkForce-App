@@ -2,6 +2,7 @@ import "./Jobs.scss"
 
 import { useEffect, useState, lazy } from "react"
 import { useNavigate } from "react-router-dom"
+import { useUserInfo } from "../UserProvider" 
 
 //lazy loads the components so that they are only shown when needed
 const UserButton = lazy(() => import('../UserButton/UserButton'))
@@ -12,6 +13,7 @@ const Spinner = lazy(() => import('../Spinner'))
 const Jobs = () => {
 
     const navigate = useNavigate()
+    const user = useUserInfo()
 
     const [loading, setLoading] = useState(true)
     const [jobs, setJobs] = useState([])
@@ -34,7 +36,7 @@ const Jobs = () => {
                 const module = await import('../useDB')
                 const makeRequest = module.makeRequest
 
-                const output = await makeRequest(null, '/getjobs', token)
+                const output = await makeRequest({ employee_number: user.userInfo.employee_number }, '/getjobs', token)
                 output.status === 1 ? loaded(output.output) : navigate('/')
             }else{navigate('/login')}
         }
@@ -48,19 +50,22 @@ const Jobs = () => {
             <>
                 <div className="jobs-page">
                     <UserButton /> <br />
-                    <h1 className='jobs-title fw-bold fs-25 mb-4 text-center text-dark title'>
+                    <div className="jobs-title">
+                        <h1 className='fw-bold fs-25 mb-4 text-center text-dark title'>
+                            {
+                                showJobs ?
+                                "What job are you working on?" : 
+                                "What customer are you doing the job for?"
+                            }
+                        </h1>
                         {
-                            showJobs ?
-                            "What job are you working on?" : 
-                            "What customer are you doing the job for?"
+                            jobs.length === 0 ? <h5 className="text-center text-muted">There are no jobs available right now...</h5> : ""
                         }
-                    </h1>
+                    </div>
 
                     <div className="jobs">
                         {   !showJobs ? 
                             <Customers  selectedJob={selectedJob} /> :
-                            jobs.length === 0 ? 
-                            <h5 className="text-center text-muted">There are no jobs available right now...</h5> :
                             jobs.map(job => {
                                 return(
                                     <button 

@@ -15,6 +15,7 @@ const { loadModels, compareFaces } = require('./facerecognition.js')
 const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 
 const { EmailClient } = require("@azure/communication-email")
+const e = require('express')
 const connectionString = `endpoint=${process.env.ENDPOINT};accesskey=${process.env.ACCESS_KEY}`
 const client = new EmailClient(connectionString)
 
@@ -182,13 +183,74 @@ app.post('/deleteinternalprocess', async (req, res) => {
 app.get('/getjobs', authenticateToken , async (req, res) => {
 
   try{
-    const query = queries('get-jobs', [])
+    const query = queries('get-jobs', [req.query.query.employee_number])
     const output = await db_query(query.query, query.parameters)
   
     return res.json({ output , status: 1  })
   }catch(error){
     return res.json({ status: -1, error })
   }
+})
+
+app.post('/assignjob', async (req, res) => {
+  
+    try{
+      const employee_number = req.body.data.employee_number
+      const process_type = req.body.data.process_type
+
+      const checkQuery = queries('check-assign-job', [employee_number, process_type])
+      const checkOutput = await db_query(checkQuery.query, checkQuery.parameters)
+
+      if (checkOutput.length > 0){
+        return res.json({ status: -1, error: 'job already assigned' })
+      }
+  
+      const query = queries('assign-job', [employee_number, process_type])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
+app.post('/requestjob', async (req, res) => {
+    
+    try{
+      const employee_number = req.body.data.employee_number
+  
+      const query = queries('request-job', [employee_number])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
+app.post('/deletejobrequest', async (req, res) => {
+      
+      try{
+    
+        const query = queries('delete-job-request', [req.body.data.employee_number])
+        await db_query(query.query, query.parameters)
+
+        return res.json({ status: 1 })
+      }catch(error){
+        return res.json({ status: -1, error })
+      }
+})
+
+app.get('/getrequests', authenticateToken, async (req, res) => {
+    
+    try{
+      const query = queries('get-requests', [])
+      const output = await db_query(query.query, query.parameters)
+
+      return res.json({ output, status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
 })
 
 app.get('/userinfo', authenticateToken, (req, res) => {
@@ -237,6 +299,9 @@ app.post('/finishjob', async (req, res) => {
 
     const finishJobQuery = queries('finish-process', [ employee_number, process_type, business_name, contact_email, start ])
     const output = await db_query(finishJobQuery.query, finishJobQuery.parameters)
+
+    const query = queries('delete-assigned-job', [req.body.data.employee_number, req.body.data.process_type])
+    await db_query(query.query, query.parameters)
 
     return res.json({ output, status: 1 })
   }catch(error){

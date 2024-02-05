@@ -41,6 +41,29 @@ const Task = () => {
                 <button
                     type='button'
                     className='btn btn-lg btn-warning'
+                    onClick={() => {
+                        const request = async () => {
+
+                            const employee_number = user.userInfo.employee_number
+
+                            const module = await import('../useDB')
+                            const makeRequest = module.makeRequest
+
+                            const output = await makeRequest({ employee_number }, '/requestjob', null)
+
+                            if (output.status === 1){
+                                import('../Alert').then(async module => {
+                                    await module.customAlert("Success!", "You have requested a job.", "success")
+                                })
+                            }else{
+                                import('../Alert').then(async module => {
+                                    await module.customAlert("Failed to Request Job!", "You have already requested a job.", "error")
+                                })
+                            }
+                        }
+
+                        request()
+                    }}
                     >
                         Ask for a Job
                 </button>
