@@ -21,6 +21,8 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
 
         setAssigned(previouslyAssignedJobs.output)
         setJobs(output.output)
+
+        //for keeping track of the selected job in the dropdown
         output.output.length > 0 ? setSelect(output.output[0].process_type) : ""
     }
 

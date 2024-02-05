@@ -58,6 +58,7 @@ const Assign = () => {
                                 <h3>{e.first_name + ' ' + e.last_name}</h3>
                                 <p>{'#' + e.employee_number}</p>
                                 {   
+                                    //checks if the employee has requested a job
                                     requests.some(req => req.employee_number === e.employee_number) ? 
                                     <p className="request">Job Requested</p> : 
                                     ""
