@@ -401,21 +401,21 @@ app.post('/removeemployee', async (req, res) => {
     try{
       const employee_number = req.body.data.employee_number
       const imageName = req.body.data.first_name + '-' + req.body.data.last_name + '-' + employee_number + '.jpg'
-
-      const connectionString = 'DefaultEndpointsProtocol=' + process.env.DEFAULT_ENDPOINTS_PROTOCOL + 
-      ';AccountName=' + process.env.ACCOUNT_NAME + ';AccountKey=' + process.env.ACCOUNT_KEY + 
-      ';EndpointSuffix=' + process.env.ENDPOINT_SUFFIX
-  
-      const container = process.env.CONTAINER_NAME
-
-      const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
-      const containerClient = blobServiceClient.getContainerClient(container)
-      const blobClient = containerClient.getBlobClient(imageName)
   
       const query = queries('delete-employee', [employee_number])
       await db_query(query.query, query.parameters)
 
       try{
+        const connectionString = 'DefaultEndpointsProtocol=' + process.env.DEFAULT_ENDPOINTS_PROTOCOL + 
+        ';AccountName=' + process.env.ACCOUNT_NAME + ';AccountKey=' + process.env.ACCOUNT_KEY + 
+        ';EndpointSuffix=' + process.env.ENDPOINT_SUFFIX
+    
+        const container = process.env.CONTAINER_NAME
+  
+        const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
+        const containerClient = blobServiceClient.getContainerClient(container)
+        const blobClient = containerClient.getBlobClient(imageName)
+
         await blobClient.delete()
       }catch(error){
         console.log('profile picture does not exist')
@@ -585,60 +585,31 @@ app.get('/getreport', authenticateToken, async (req, res) => {
     let output = {}
     const date = req.query.query.date
 
+    const employeeQuery = queries('get-all-employees', [])
+    const employeeOutput = await db_query(employeeQuery.query, employeeQuery.parameters)
+
     const clockQuery = queries('get-clock', [date])
     const clockOutput = await db_query(clockQuery.query, clockQuery.parameters)
 
-    for (const clock of clockOutput){
-      const employeeQuery = queries('employee-number', [clock.employee_number])
-      const employeeOutput = await db_query(employeeQuery.query, employeeQuery.parameters)
+    const workQuery = queries('get-process', [date])
+    const workOutput = await db_query(workQuery.query, workQuery.parameters)
 
-      if (employeeOutput.length > 0){
-        const workQuery = queries('get-process', [clock.employee_number, date])
-        const workOutput = await db_query(workQuery.query, workQuery.parameters)
+    const breakQuery = queries('get-all-timeoff', [date])
+    const breakOutput = await db_query(breakQuery.query, breakQuery.parameters)
 
-        const breakQuery = queries('get-all-timeoff', [clock.employee_number, date])
-        const breakOutput = await db_query(breakQuery.query, breakQuery.parameters)
+    for (const e in employeeOutput){
 
-        const clocks = { start: clock.clock_in, finish: clock.clock_out }
+      const employee = employeeOutput[e]
+      const employee_number = employee.employee_number
 
-        if (output.hasOwnProperty(employeeOutput[0].employee_number)){
-          output[employeeOutput[0].employee_number].clock.push(clocks)
-        }else{
+      const work = workOutput.filter(w => w.employee_number === employee_number)
+      const breaks = breakOutput.filter(b => b.employee_number === employee_number)
+      const clocks = clockOutput.filter(c => c.employee_number === employee_number)
 
-          const work = []
-          const breaks = []
-          const clock = [clocks]
-
-          for (let i = 0;i < workOutput.length;i++){
-            work.push({
-              start: workOutput[i].start,
-              finish: workOutput[i].finish,
-              process_type: workOutput[i].process_type,
-              business_name: workOutput[i].business_name,
-              contact_email: workOutput[i].contact_email
-            })
-          }
-  
-          for (let i = 0;i < breakOutput.length;i++){
-            breaks.push({
-              start: breakOutput[i].start,
-              finish: breakOutput[i].finish,
-              break_type: breakOutput[i].break_type
-            })
-          }
-
-          output[employeeOutput[0].employee_number] = {
-            first_name: employeeOutput[0].first_name,
-            last_name: employeeOutput[0].last_name,
-            email: employeeOutput[0].email,
-            hourly_wage: employeeOutput[0].hourly_wage,
-            picture: employeeOutput[0].picture,
-            work,
-            breaks,
-            clock
-          }
-        }
-      }
+      output[employee_number] = employee
+      output[employee_number].work = work || []
+      output[employee_number].breaks = breaks || []
+      output[employee_number].clocks = clocks || []
     }
 
     Object.values(output).forEach(o => {

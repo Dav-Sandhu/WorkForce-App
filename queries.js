@@ -183,13 +183,18 @@ const queries = (type, values) => {
             USE WorkForce;
 
             SELECT * FROM timeoff
-            WHERE employee_number=@employee_number
-            AND CONVERT(DATE, @date) = CONVERT(DATE, start);
+            WHERE CONVERT(DATE, @date) = CONVERT(DATE, start);
           `,
-          parameters: [
-            { name: 'employee_number', type: sql.Char, value: values[0] },
-            { name: 'date', type: sql.Date, value: values[1] }
-          ]
+          parameters: [{ name: 'date', type: sql.Date, value: values[0] }]
+        }
+      case "get-all-employees":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM employee WHERE is_admin=0;
+          `,
+          parameters: []
         }
       case "start-process":
         return{
@@ -275,6 +280,12 @@ const queries = (type, values) => {
           query: `
             USE WorkForce;
 
+            DELETE FROM assign
+            WHERE employee_number=@employee_number;
+
+            DELETE FROM requests
+            WHERE employee_number=@employee_number;
+
             DELETE FROM clock 
             WHERE employee_number=@employee_number;
 
@@ -314,13 +325,9 @@ const queries = (type, values) => {
             USE WorkForce;
 
             SELECT * FROM work
-            WHERE employee_number=@employee_number
-            AND CONVERT(DATE, @date) = CONVERT(DATE, start);
+            WHERE CONVERT(DATE, @date) = CONVERT(DATE, start);
           `,
-          parameters: [
-            { name: 'employee_number', type: sql.Char, value: values[0] },
-            { name: 'date', type: sql.Date, value: values[1] }
-          ]
+          parameters: [{ name: 'date', type: sql.Date, value: values[0] }]
         }
       case "get-internal-processes":
         return{
@@ -335,6 +342,9 @@ const queries = (type, values) => {
         return{
           query: `
             USE WorkForce;
+
+            DELETE FROM assign
+            WHERE process_type=@process_type;
 
             DELETE FROM work
             WHERE process_type=@process_type;

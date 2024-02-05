@@ -14,10 +14,10 @@ const ClockTable = ({clocks}) => {
             <tbody>{
                 clocks.map(clock => {
 
-                    const clockIn = new Date(clock.start)
-                    const clockOut = clock.finish === null ? "-" : new Date(clock.finish)
+                    const clockIn = new Date(clock.clock_in)
+                    const clockOut = clock.clock_out === null ? "-" : new Date(clock.clock_out)
 
-                    const diff = clock.finish === null ? "-" : clockOut - clockIn
+                    const diff = clock.clock_out === null ? "-" : clockOut - clockIn
 
                     const formatTime = (diff) => {
                         const hours = Math.floor(diff / 1000 / 60 / 60) 
@@ -39,8 +39,8 @@ const ClockTable = ({clocks}) => {
                                     })
                                 }}>{clock.name}</th>
                             <td>{clockIn.toLocaleTimeString()}</td>
-                            <td>{clock.finish === null ? "-" : clockOut.toLocaleString()}</td>
-                            <td>{clock.finish === null ? "-" : formatTime(diff)}</td>
+                            <td>{clock.clock_out === null ? "-" : clockOut.toLocaleString()}</td>
+                            <td>{clock.clock_out === null ? "-" : formatTime(diff)}</td>
                         </tr>
                     )
                 })

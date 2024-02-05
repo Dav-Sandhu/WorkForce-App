@@ -29,7 +29,7 @@ const Admin = () => {
         const makeRequest = module.makeRequest
 
         const output = await makeRequest({ date: selectedDate }, '/getreport', sessionStorage.getItem('token'))
-
+        console.log(output)
         //clears the footer section of the daily staffing report table
         footer = []
 
@@ -43,7 +43,7 @@ const Admin = () => {
             Object.entries(output.output).forEach(([key, value]) => {
                 if(key !== "headings"){
 
-                    const clockValues = value.clock
+                    const clockValues = value.clocks
                     const breakValues = value.breaks
 
                     clockValues.forEach(o => {
