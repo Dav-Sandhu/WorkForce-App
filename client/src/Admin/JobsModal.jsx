@@ -53,6 +53,7 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
 
     return(
         <div className="jobs-modal">
+            {/*section split to keep everything on the same row*/}
             <div className='top-section'>
                 <u><h3>Assigned Jobs</h3></u>
                 <button type="button" class="btn-close" aria-label="Close" onClick={() => setShowJobs(false)}></button>

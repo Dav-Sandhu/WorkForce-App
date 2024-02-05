@@ -8,17 +8,26 @@ const JobsModal = lazy(() => import('./JobsModal'))
 
 const Assign = () => {
 
+    //for keeping track of the employees
     const [employees, setEmployees] = useState([])  
+
+    //for keeping track of the employees who have requested a job
     const [requests, setRequests] = useState([])
+
+    //for showing the modal for assigning jobs to employees
     const [showJobs, setShowJobs] = useState(false)
-    const [currentEmployee, setCurrentEmployee] = useState('')
+
+    //for keeping track of the employee number of the employee whose jobs are being assigned
+    const [currentEmployee, setCurrentEmployee] = useState('') 
 
     const getEmployees = async () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
 
         const output = await makeRequest(null, '/getemployees', sessionStorage.getItem('token'))
-        const requestsOutput = await makeRequest(null, '/getrequests', sessionStorage.getItem('token')) //gets a list of users who have requested a job
+        
+        //gets a list of users who have requested a job
+        const requestsOutput = await makeRequest(null, '/getrequests', sessionStorage.getItem('token')) 
 
         setEmployees(output.output)
         setRequests(requestsOutput.output)
@@ -31,6 +40,7 @@ const Assign = () => {
     return(
     <>
         <Navbar />
+        {/*modal for assigning jobs to employees*/}
         { showJobs ? <JobsModal employee_number={currentEmployee} setShowJobs={setShowJobs} /> : "" }
         <div className="employees_list">
             <h1>Assign Jobs</h1>

@@ -24,7 +24,6 @@ const ClockTable = ({clocks}) => {
                         const minutes = Math.floor((diff / 1000 / 60) % 60)
                         const seconds = Math.round((diff / 1000) % 60)
                     
-                    
                         return `${hours}h: ${minutes}m: ${seconds}s`
                     }
 
