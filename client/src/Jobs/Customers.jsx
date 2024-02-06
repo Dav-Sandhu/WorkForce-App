@@ -19,6 +19,26 @@ const Customers = ({ selectedJob }) => {
         setCustomers(customers)
     }
 
+    const startJob = async (customer) => {
+        const module = await import('../useDB')
+        const makeRequest = module.makeRequest
+
+        const output = await makeRequest({
+            employee_number: user.userInfo.employee_number,
+            process_type: selectedJob,
+            business_name: customer.business_name,
+            contact_email: customer.contact_email
+        }, '/startjob', sessionStorage.getItem('token'), 'post')
+
+        if (output.status === 1){
+            navigate('/working')
+        }else{
+            import('../Alert').then(async module => {
+                await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
+            })
+        }
+    }
+
     useEffect(() => {
 
         //loads all the customers
@@ -47,31 +67,10 @@ const Customers = ({ selectedJob }) => {
                     return(
                         <div
                             className='customer' 
+                            tabindex="0"
                             key={customer.business_name + customer.contact_email}
-                            onClick={() => {
-                                const request = async () => {
-                                    const module = await import('../useDB')
-                                    const makeRequest = module.makeRequest
-
-                                    const output = await makeRequest({
-                                        employee_number: user.userInfo.employee_number,
-                                        process_type: selectedJob,
-                                        business_name: customer.business_name,
-                                        contact_email: customer.contact_email
-                                    }, '/startjob', sessionStorage.getItem('token'), 'post')
-
-                                    if (output.status === 1){
-                                        navigate('/working')
-                                    }else{
-                                        import('../Alert').then(async module => {
-                                            await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
-                                        })
-                                    }
-                                }
-
-                                request()
-                                
-                            }}>
+                            onKeyDown={e => e.key === "Enter" ? startJob(customer) : ""}
+                            onClick={() => startJob(customer)}>
                             <img
                                 className="img-fluid company-logo" 
                                 onError={(e) => {e.target.onerror = null; e.target.src="/customers.png"}}
