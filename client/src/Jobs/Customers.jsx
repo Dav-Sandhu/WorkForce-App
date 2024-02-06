@@ -67,7 +67,7 @@ const Customers = ({ selectedJob }) => {
                     return(
                         <div
                             className='customer' 
-                            aria-label="customer"
+                            aria-label={'customer: ' + customer.business_name}
                             tabindex="0"
                             key={customer.business_name + customer.contact_email}
                             onKeyDown={e => e.key === "Enter" || e.key === " " ? startJob(customer) : ""}

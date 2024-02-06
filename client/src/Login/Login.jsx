@@ -158,6 +158,7 @@ const Login = () => {
                                     className={state.empty_employee_number ? "form-control" : state.employee_number.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
                                     type="text"
                                     ref={employee_number_box}
+                                    maxLength="3"
                                     placeholder="Employee Number" 
                                     value={state.employee_number}
                                     onChange={(e) => {
