@@ -104,11 +104,11 @@ const Home = () => {
                                         */
                                         clock_in !== null ? 
                                         <button 
-                                            className="btn btn-info btn-rounded btn-lg"
+                                            className="btn btn-success btn-rounded btn-lg"
                                             onClick={() => {
                                                 navigate('/working')
                                             }}
-                                        >Agenda</button> : 
+                                        >Work</button> : 
                                         ""
                                     }
                                 </div>

@@ -58,7 +58,7 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
             {/*section split to keep everything on the same row*/}
             <div className='top-section'>
                 <u><h3>Assigned Jobs</h3></u>
-                <button type="button" class="btn-close" aria-label="Close" onClick={() => setShowJobs(false)}></button>
+                <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowJobs(false)}></button>
             </div>
             {
                 assigned.length === 0 ? <p>No jobs assigned...</p> : 
