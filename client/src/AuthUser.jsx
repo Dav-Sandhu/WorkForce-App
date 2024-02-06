@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, lazy } from "react"
 import { useUserInfo } from "./UserProvider"
 import { useNavigate } from "react-router-dom"
+
+const Spinner = lazy(() => import('./Spinner')) 
 
 const AuthUser = ({children}) => {
     const user = useUserInfo()
@@ -63,10 +65,7 @@ const AuthUser = ({children}) => {
         <>
             {loggedIn ? 
                 children : 
-                <div class="spinner-border" role="status">
-                    {/*spinner shows while the page loads*/}
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+                <Spinner />
             }
         </>
     )
