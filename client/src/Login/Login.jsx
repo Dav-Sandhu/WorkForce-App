@@ -122,7 +122,8 @@ const Login = () => {
                                         password: state.password
                                     },
                                     '/login',
-                                    null
+                                    null,
+                                    ""
                                 )
 
                                 if (res.status === 1){

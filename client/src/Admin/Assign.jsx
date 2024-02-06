@@ -24,10 +24,10 @@ const Assign = () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
 
-        const output = await makeRequest(null, '/getemployees', sessionStorage.getItem('token'))
+        const output = await makeRequest(null, '/getemployees', sessionStorage.getItem('token'), 'get')
         
         //gets a list of users who have requested a job
-        const requestsOutput = await makeRequest(null, '/getrequests', sessionStorage.getItem('token')) 
+        const requestsOutput = await makeRequest(null, '/getrequests', sessionStorage.getItem('token'), 'get') 
 
         setEmployees(output.output)
         setRequests(requestsOutput.output)

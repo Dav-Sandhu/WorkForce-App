@@ -76,14 +76,14 @@ const Home = () => {
                                                     const makeRequest = module.makeRequest
                                                     
                                                     //clocks the user in
-                                                    const res = await makeRequest({ employee_number: employee_number }, '/clockin', null)
+                                                    const res = await makeRequest({ employee_number: employee_number }, '/clockin', sessionStorage.getItem('token'), 'post')
 
                                                     //updates the current state of the logged in user
                                                     const updatedUserValues = { ...user.userInfo, clock_in: res.output[0].clock_in }
                                                     user.setUserInfo(updatedUserValues)
 
                                                     //updates the token in the session storage
-                                                    const updatedToken = await makeRequest(updatedUserValues, '/updateToken', null)
+                                                    const updatedToken = await makeRequest(updatedUserValues, '/updateToken', null, "")
 
                                                     //removes the old token and adds the new one to session storage
                                                     sessionStorage.removeItem('token')

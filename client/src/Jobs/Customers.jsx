@@ -29,7 +29,7 @@ const Customers = ({ selectedJob }) => {
                 const module = await import('../useDB')
                 const makeRequest = module.makeRequest
 
-                const customersList = await makeRequest(null, '/getcustomers', token)
+                const customersList = await makeRequest(null, '/getcustomers', token, "get")
                 customersList.status === 1 ? loaded(customersList.output) : navigate('/')
             }else{navigate('/login')}
         }
@@ -58,7 +58,7 @@ const Customers = ({ selectedJob }) => {
                                         process_type: selectedJob,
                                         business_name: customer.business_name,
                                         contact_email: customer.contact_email
-                                    }, '/startjob', null)
+                                    }, '/startjob', sessionStorage.getItem('token'), 'post')
 
                                     if (output.status === 1){
                                         navigate('/working')

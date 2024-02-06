@@ -97,7 +97,7 @@ app.get('/getcustomers', authenticateToken, async (req, res) => {
   }
 })
 
-app.post('/addcustomer', async (req, res) => {
+app.post('/addcustomer', authenticateToken, async (req, res) => {
 
   try{
     const business_name = req.body.data.business_name
@@ -123,7 +123,7 @@ app.post('/addcustomer', async (req, res) => {
   }
 })
 
-app.post('/deletecustomer', async (req, res) => {
+app.post('/deletecustomer', authenticateToken, async (req, res) => {
     
     try{
       const business_name = req.body.data.business_name
@@ -150,7 +150,7 @@ app.get('/getinternalprocesses' , authenticateToken, async (req, res) => {
     }
 })
 
-app.post('/addinternalprocess', async (req, res) => {
+app.post('/addinternalprocess', authenticateToken, async (req, res) => {
 
       try{
         const process_type = req.body.data.process_type
@@ -166,7 +166,7 @@ app.post('/addinternalprocess', async (req, res) => {
       }
 })
 
-app.post('/deleteinternalprocess', async (req, res) => {
+app.post('/deleteinternalprocess', authenticateToken, async (req, res) => {
     
     try{
       const process_type = req.body.data.process_type
@@ -192,7 +192,7 @@ app.get('/getjobs', authenticateToken , async (req, res) => {
   }
 })
 
-app.post('/assignjob', async (req, res) => {
+app.post('/assignjob', authenticateToken, async (req, res) => {
   
     try{
       const employee_number = req.body.data.employee_number
@@ -214,7 +214,7 @@ app.post('/assignjob', async (req, res) => {
     }
 })
 
-app.post('/requestjob', async (req, res) => {
+app.post('/requestjob', authenticateToken, async (req, res) => {
     
     try{
       const employee_number = req.body.data.employee_number
@@ -228,7 +228,7 @@ app.post('/requestjob', async (req, res) => {
     }
 })
 
-app.post('/deletejobrequest', async (req, res) => {
+app.post('/deletejobrequest', authenticateToken, async (req, res) => {
       
       try{
     
@@ -271,7 +271,7 @@ app.get('/getunfinishedprocesses', authenticateToken, async (req, res) => {
   }
 })
 
-app.post('/startjob', async (req, res) => {
+app.post('/startjob', authenticateToken, async (req, res) => {
 
   try{
     const employee_number = req.body.data.employee_number
@@ -288,7 +288,7 @@ app.post('/startjob', async (req, res) => {
   }
 })
 
-app.post('/finishjob', async (req, res) => {
+app.post('/finishjob', authenticateToken, async (req, res) => {
 
   try{
     const employee_number = req.body.data.employee_number
@@ -309,7 +309,7 @@ app.post('/finishjob', async (req, res) => {
   }
 })
 
-app.post('/deletejob', async (req, res) => {
+app.post('/deletejob', authenticateToken, async (req, res) => {
 
   try{
     const employee_number = req.body.data.employee_number
@@ -327,7 +327,7 @@ app.post('/deletejob', async (req, res) => {
   }
 })
 
-app.post('/upload-image', async (req, res) => {
+app.post('/upload-image', authenticateToken, async (req, res) => {
 
   try{
 
@@ -396,7 +396,7 @@ app.get('/getemployees', authenticateToken, async (req, res) => {
   }
 })
 
-app.post('/removeemployee', async (req, res) => {
+app.post('/removeemployee', authenticateToken, async (req, res) => {
   
     try{
       const employee_number = req.body.data.employee_number
@@ -427,7 +427,7 @@ app.post('/removeemployee', async (req, res) => {
     }
 })
 
-app.post('/updatewage', async (req, res) => {
+app.post('/updatewage', authenticateToken, async (req, res) => {
   
     try{
       const employee_number = req.body.data.employee_number
@@ -454,7 +454,7 @@ app.post('/checkemployee', async (req, res) => {
   }
 })
 
-app.post('/sendemail', async (req, res) => {
+app.post('/sendemail', authenticateToken, async (req, res) => {
 
   try{
     const subject = req.body.data.subject
@@ -526,22 +526,7 @@ app.post('/registeremployee', async (req, res) => {
   }
 })
 
-app.post('/update-password', async (req, res) => {
-
-  try{
-    const password = req.body.data.password
-    const email = req.body.data.email
-
-    const query = queries('update-password', [email, password])
-    await db_query(query.query, query.parameters)
-  
-    return res.json({ status: 1 })
-  }catch(error){
-    return res.json({ status: -1, error })
-  }
-})
-
-app.post('/clockin', async (req, res) => {
+app.post('/clockin', authenticateToken, async (req, res) => {
 
   try{
     const query = queries('clock-in', [req.body.data.employee_number])
@@ -553,7 +538,7 @@ app.post('/clockin', async (req, res) => {
   }
 })
 
-app.post('/clockout', async (req, res) => {
+app.post('/clockout', authenticateToken, async (req, res) => {
   
   try{
     const query = queries('clock-out', [req.body.data.employee_number])
@@ -565,7 +550,7 @@ app.post('/clockout', async (req, res) => {
   }
 })
 
-app.post('/checkclockin', async (req, res) => {
+app.post('/checkclockin', authenticateToken, async (req, res) => {
   
   try{
     const query = queries('check-clocked-in', [req.body.data.employee_number])
@@ -637,7 +622,7 @@ app.get('/getreport', authenticateToken, async (req, res) => {
   }
 })
 
-app.post('/startbreak', async (req, res) => {
+app.post('/startbreak', authenticateToken, async (req, res) => {
   
   try{
     const query = queries('start-time-off', [req.body.data.employee_number, req.body.data.break_type])
@@ -649,7 +634,7 @@ app.post('/startbreak', async (req, res) => {
   }
 })
 
-app.post('/endbreak', async (req, res) => {
+app.post('/endbreak', authenticateToken, async (req, res) => {
 
   try{
     const query = queries('finish-time-off', [req.body.data.employee_number, req.body.data.start])
@@ -661,7 +646,7 @@ app.post('/endbreak', async (req, res) => {
   }
 })
 
-app.post('/deletebreak', async (req, res) => {
+app.post('/deletebreak', authenticateToken, async (req, res) => {
   try{
 
     const employee_number = req.body.data.employee_number
@@ -690,7 +675,7 @@ app.get('/getbreaks', authenticateToken, async (req, res) => {
 
 })
 
-app.post('/updateemployeewage', async (req, res) => {
+app.post('/updateemployeewage', authenticateToken, async (req, res) => {
 
   try{
     const employee_number = req.body.data.employee_number

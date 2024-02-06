@@ -18,7 +18,8 @@ const Task = () => {
                 break_type: type
             },
             '/startbreak',
-            null
+            sessionStorage.getItem('token'),
+            'post'
         )
 
         navigate('/working')
@@ -49,7 +50,7 @@ const Task = () => {
                             const module = await import('../useDB')
                             const makeRequest = module.makeRequest
 
-                            const output = await makeRequest({ employee_number }, '/requestjob', null)
+                            const output = await makeRequest({ employee_number }, '/requestjob', sessionStorage.getItem('token'), 'post')
 
                             if (output.status === 1){
                                 import('../Alert').then(async module => {
@@ -98,13 +99,13 @@ const Task = () => {
                             const module = await import('../useDB')
                             const makeRequest = module.makeRequest
 
-                            await makeRequest({ employee_number: user.userInfo.employee_number }, '/clockout', null)
+                            await makeRequest({ employee_number: user.userInfo.employee_number }, '/clockout', sessionStorage.getItem('token'), 'post')
+
+                            sessionStorage.removeItem('token')
+                            window.location.reload()
                         }
 
                         request()
-
-                        sessionStorage.removeItem('token')
-                        window.location.reload()
                     }}
                     >
                         Finish Shift

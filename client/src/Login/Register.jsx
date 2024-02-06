@@ -94,11 +94,11 @@ const Register = () => {
                                                         //checks if the email is already registered
                                                         const check = await makeRequest({ 
                                                             email: state.email
-                                                        }, '/checkemployee', null)
+                                                        }, '/checkemployee', null, "")
 
                                                         //if the email is not registered it will proceed to register the user
                                                         if (check.status === 1 && check.found){
-                                                            const res = await makeRequest(state, '/registeremployee', null)
+                                                            const res = await makeRequest(state, '/registeremployee', null, "")
 
                                                             if (res.status === 1){
                                                                 const token = res.token

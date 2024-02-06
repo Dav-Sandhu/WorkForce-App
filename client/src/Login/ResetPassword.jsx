@@ -64,7 +64,7 @@ const ResetPassword = ({dispatch, reset_password}) => {
                                     email: email,
                                     name: "Password Reset"
 
-                                }, '/sendemail', null)
+                                }, '/sendemail', sessionStorage.getItem('token'), 'post')
                             }   
 
                             request()

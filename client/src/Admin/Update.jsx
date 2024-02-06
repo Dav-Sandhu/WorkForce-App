@@ -66,6 +66,8 @@ const reducer = (state, {type, payload}) => {
 
 const Update = () => {
 
+    const token = sessionStorage.getItem('token')
+
     const [state, dispatch] = useReducer(reducer, {
         business_name:"",
         logo: "",
@@ -92,11 +94,9 @@ const Update = () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
     
-        const token = sessionStorage.getItem('token')
-    
-        const getCustomers = await makeRequest(null, '/getcustomers', token)
-        const getEmployees = await makeRequest(null, '/getemployees', token)
-        const getProcesses = await makeRequest(null, '/getinternalprocesses', token)
+        const getCustomers = await makeRequest(null, '/getcustomers', token, "get")
+        const getEmployees = await makeRequest(null, '/getemployees', token, "get")
+        const getProcesses = await makeRequest(null, '/getinternalprocesses', token, "get")
     
         setDisplayItems({
             customers: getCustomers.output,
@@ -128,14 +128,14 @@ const Update = () => {
             const output = await makeRequest({
                 business_name: item.business_name,
                 contact_email: item.contact_email
-            }, '/deletecustomer', null)
+            }, '/deletecustomer', token, "post")
 
             await statusCheck(output.status, "Customer Deleted!")
 
         }else if (type === "processes"){
             const output = await makeRequest({
                 process_type: item.process_type
-            }, '/deleteinternalprocess', null)
+            }, '/deleteinternalprocess', token, "post")
 
             await statusCheck(output.status, "Process Deleted!")
 
@@ -144,7 +144,7 @@ const Update = () => {
                 employee_number: item.employee_number,
                 first_name: item.first_name,
                 last_name: item.last_name 
-            }, '/removeemployee', null)
+            }, '/removeemployee', token, "post")
 
             await statusCheck(output.status, "Employee Deleted!")
 
@@ -169,7 +169,7 @@ const Update = () => {
                 contact_name: state.contact_name,
                 contact_email: state.contact_email,
                 currency: state.currency
-            }, '/addcustomer', null)
+            }, '/addcustomer', token, "post")
 
             await statusCheck(output.status, "Customer Added!")
 
@@ -179,7 +179,7 @@ const Update = () => {
                 process_type: state.process_type,
                 billable: state.billable ? 1 : 0,
                 hourly_rate: state.billable ? state.hourly_rate : null 
-            }, '/addinternalprocess', null)
+            }, '/addinternalprocess', token, "post")
 
             await statusCheck(output.status, "Process Added!")
 
@@ -188,7 +188,7 @@ const Update = () => {
             const output = state.employee_number.length > 0 ? await makeRequest({
                 employee_number: state.employee_number,
                 hourly_wage: state.hourly_wage
-            }, '/updateemployeewage', null) : { status: -1 }
+            }, '/updateemployeewage', token, "post") : { status: -1 }
             
             await statusCheck(output.status, "Employee Updated!")
 

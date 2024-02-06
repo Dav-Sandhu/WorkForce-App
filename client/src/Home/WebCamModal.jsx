@@ -69,7 +69,7 @@ const WebCamModal = ({ setWebcamActive }, ref) => {
                                 image: resizedImage, 
                                 employee_number, 
                                 token: sessionStorage.getItem('token') 
-                            }, '/upload-image', null)
+                            }, '/upload-image', sessionStorage.getItem('token'), 'post')
                             
                             if (output.status === 1){
                                 //if the upload was successful it will update the user's profile picture

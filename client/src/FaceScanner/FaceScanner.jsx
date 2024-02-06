@@ -31,7 +31,7 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                 const makeRequest = module.makeRequest
 
                 //sends image to backend to compare to all images in database to determine if it matches
-                const res = await makeRequest({ image }, '/facematch', null)
+                const res = await makeRequest({ image }, '/facematch', null, "")
 
                 if (res.status === 1){
 

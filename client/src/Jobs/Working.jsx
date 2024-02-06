@@ -15,13 +15,15 @@ const Working = () => {
     const user = useUserInfo()
     const employee_number = user.userInfo.employee_number
 
+    const token = sessionStorage.getItem('token')
+
     //gets all the tasks/breaks that the user is currently working on
     const getTasks = async () => {
         const module = await import("../useDB")
         const makeRequest = module.makeRequest
 
-        const processes = await makeRequest({ employee_number }, '/getunfinishedprocesses', sessionStorage.getItem('token'))
-        const breaks = await makeRequest({ employee_number }, '/getbreaks', sessionStorage.getItem('token'))
+        const processes = await makeRequest({ employee_number }, '/getunfinishedprocesses', token, "get")
+        const breaks = await makeRequest({ employee_number }, '/getbreaks', token, "get")
         
         const output = [...processes.output, ...breaks.output]
         output.sort((a, b) => new Date(a.start) - new Date(b.start))
@@ -41,11 +43,11 @@ const Working = () => {
             business_name: task.business_name,
             contact_email: task.contact_email,
             start: task.start
-        }, '/finishjob', null) : 
+        }, '/finishjob', token, "post") : 
         await makeRequest({
             employee_number,
             start: task.start 
-        }, '/endbreak', null)
+        }, '/endbreak', token, "post")
 
         //alerts the user if something went wrong with the requests
         output.status === 1 ? getTasks() : 
@@ -65,11 +67,11 @@ const Working = () => {
             business_name: task.business_name,
             contact_email: task.contact_email,
             start: task.start
-        }, '/deletejob', null) : await makeRequest({
+        }, '/deletejob', token, "post") : await makeRequest({
             employee_number,
             break_type: task.break_type,
             start: task.start 
-        }, '/deletebreak', null)
+        }, '/deletebreak', token, "post")
 
         output.status === 1 ? getTasks() :
         import('../Alert').then(async module => {

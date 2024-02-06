@@ -28,8 +28,7 @@ const Admin = () => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
 
-        const output = await makeRequest({ date: selectedDate }, '/getreport', sessionStorage.getItem('token'))
-        console.log(output)
+        const output = await makeRequest({ date: selectedDate }, '/getreport', sessionStorage.getItem('token'), 'get')
         //clears the footer section of the daily staffing report table
         footer = []
 

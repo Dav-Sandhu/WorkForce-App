@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 
 const JobsModal = ({ employee_number, setShowJobs }) => {
 
+    const token = sessionStorage.getItem('token')
+
     const [jobs, setJobs] = useState([])
     const [assigned, setAssigned] = useState([])
     const [select, setSelect] = useState("")
@@ -14,10 +16,8 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
 
-        const token = sessionStorage.getItem('token')
-
-        const previouslyAssignedJobs = await makeRequest({ employee_number }, '/getjobs', token)
-        const output = await makeRequest(null, '/getinternalprocesses', token)
+        const previouslyAssignedJobs = await makeRequest({ employee_number }, '/getjobs', token, "get")
+        const output = await makeRequest(null, '/getinternalprocesses', token, "get")
 
         setAssigned(previouslyAssignedJobs.output)
         setJobs(output.output)
@@ -31,7 +31,7 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
         const module = await import('../useDB')
         const makeRequest = module.makeRequest
 
-        const output = await makeRequest({ employee_number, process_type: select }, '/assignjob', null)
+        const output = await makeRequest({ employee_number, process_type: select }, '/assignjob', token, "post")
 
         if (output.status === -1){
             import('../Alert').then(async module => {
@@ -39,7 +39,7 @@ const JobsModal = ({ employee_number, setShowJobs }) => {
             })
         }else{
 
-            await makeRequest({employee_number}, '/deletejobrequest', null)
+            await makeRequest({employee_number}, '/deletejobrequest', token, "post")
 
             import('../Alert').then(async module => {
                 await module.customAlert("Success!", "Job was successfully assigned to employee.", "success")

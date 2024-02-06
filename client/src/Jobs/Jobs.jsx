@@ -36,7 +36,7 @@ const Jobs = () => {
                 const module = await import('../useDB')
                 const makeRequest = module.makeRequest
 
-                const output = await makeRequest({ employee_number: user.userInfo.employee_number }, '/getjobs', token)
+                const output = await makeRequest({ employee_number: user.userInfo.employee_number }, '/getjobs', token, "get")
                 output.status === 1 ? loaded(output.output) : navigate('/')
             }else{navigate('/login')}
         }

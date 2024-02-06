@@ -9,7 +9,7 @@ const TokenLogin = async (token, makeRequest, navigate, user) => {
         backend method is used to authenticate the token and will return an object with
         a status property that is set to either 1 for success or -1 for failure.
         */
-        const res = await makeRequest(null, '/userinfo', token)
+        const res = await makeRequest(null, '/userinfo', token, 'get')
         const token_decoded = res.output
 
         //if the user is verified it will set the user context to the given information
