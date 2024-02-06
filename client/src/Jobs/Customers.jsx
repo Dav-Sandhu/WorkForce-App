@@ -67,9 +67,10 @@ const Customers = ({ selectedJob }) => {
                     return(
                         <div
                             className='customer' 
+                            aria-label="customer"
                             tabindex="0"
                             key={customer.business_name + customer.contact_email}
-                            onKeyDown={e => e.key === "Enter" ? startJob(customer) : ""}
+                            onKeyDown={e => e.key === "Enter" || e.key === " " ? startJob(customer) : ""}
                             onClick={() => startJob(customer)}>
                             <img
                                 className="img-fluid company-logo" 
