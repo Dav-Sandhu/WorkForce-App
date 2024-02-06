@@ -58,13 +58,13 @@ const ResetPassword = ({dispatch, reset_password}) => {
                                 })
 
                                 //sends an email to the given employee (first checks to see if they are registered.)
-                                await makeRequest({
+                                const output = await makeRequest({
                                     sendInfo: "Reset",
                                     subject: "Password Reset",
                                     email: email,
                                     name: "Password Reset"
 
-                                }, '/sendemail', sessionStorage.getItem('token'), 'post')
+                                }, '/sendemail', null, '')
                             }   
 
                             request()

@@ -15,9 +15,6 @@ const { loadModels, compareFaces } = require('./facerecognition.js')
 const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob")
 
 const { EmailClient } = require("@azure/communication-email")
-const e = require('express')
-const connectionString = `endpoint=${process.env.ENDPOINT};accesskey=${process.env.ACCESS_KEY}`
-const client = new EmailClient(connectionString)
 
 const app = express()
 
@@ -454,12 +451,15 @@ app.post('/checkemployee', async (req, res) => {
   }
 })
 
-app.post('/sendemail', authenticateToken, async (req, res) => {
+app.post('/sendemail', async (req, res) => {
 
   try{
     const subject = req.body.data.subject
     const email = req.body.data.email
     const name = req.body.data.name
+
+    const connectionString = `endpoint=${process.env.ENDPOINT};accesskey=${process.env.ACCESS_KEY}`
+    const client = new EmailClient(connectionString)
 
     const query = queries('email', [email])
     const output = await db_query(query.query, query.parameters)
@@ -480,7 +480,7 @@ app.post('/sendemail', authenticateToken, async (req, res) => {
       return res.json({ status: 1 })
     }
   
-    return res.json({ status: -1 , error: 'output is empty' })
+    return res.json({ status: -1 , error: 'email is not in database' })
   }catch(error){
     return res.json({ status: -1, error })
   }
