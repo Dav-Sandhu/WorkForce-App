@@ -93,8 +93,10 @@ const Admin = () => {
 
                                 if (key !== 'headings'){
                                     
+                                    //to keep track of the index of the headings array
                                     let hours = new Array(headings.length).fill(0)
                                     
+                                    //inserts the work hours for each company at the correct index
                                     profiles[key].work.forEach(task => {
                                         const index = headings.indexOf(task.business_name)
 
@@ -104,8 +106,10 @@ const Admin = () => {
                                         }
                                     })
 
+                                    //adds the total hours worked at each company for each employee
                                     hours[hours.length - 1] = hours.reduce((a, b) => a + b, 0)
 
+                                    //formats the output
                                     for (let i = 1;i < hours.length;i++){
                                         
                                         if (i - 1 > footer.length - 1){

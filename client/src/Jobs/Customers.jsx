@@ -87,4 +87,4 @@ const Customers = ({ selectedJob }) => {
     )
 }
 
-export default Customers;
+export default Customers
