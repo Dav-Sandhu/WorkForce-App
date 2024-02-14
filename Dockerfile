@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy the package.json and package-lock.json files to the working directory
 COPY package*.json ./
 
-# Install the application dependencies
-RUN npm install
+# Install the application dependencies and change the ownership in the same layer
+RUN npm install && chown -R 999:999 /app/node_modules
 
 # Copy the application code to the working directory
 COPY . .
