@@ -24,7 +24,6 @@ const Customers = ({ selectedJob }) => {
         const makeRequest = module.makeRequest
 
         const output = await makeRequest({
-            employee_number: user.userInfo.employee_number,
             process_type: selectedJob,
             business_name: customer.business_name,
             contact_email: customer.contact_email

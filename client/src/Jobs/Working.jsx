@@ -22,8 +22,8 @@ const Working = () => {
         const module = await import("../useDB")
         const makeRequest = module.makeRequest
 
-        const processes = await makeRequest({ employee_number }, '/getunfinishedprocesses', token, "get")
-        const breaks = await makeRequest({ employee_number }, '/getbreaks', token, "get")
+        const processes = await makeRequest(null, '/getunfinishedprocesses', token, "get")
+        const breaks = await makeRequest(null, '/getbreaks', token, "get")
         
         const output = [...processes.output, ...breaks.output]
         output.sort((a, b) => new Date(a.start) - new Date(b.start))
@@ -38,14 +38,12 @@ const Working = () => {
         const makeRequest = module.makeRequest
 
         const output = !task.break_type ? await makeRequest({
-            employee_number, 
             process_type: task.process_type, 
             business_name: task.business_name,
             contact_email: task.contact_email,
             start: task.start
         }, '/finishjob', token, "post") : 
         await makeRequest({
-            employee_number,
             start: task.start 
         }, '/endbreak', token, "post")
 
@@ -62,13 +60,11 @@ const Working = () => {
         const makeRequest = module.makeRequest
 
         const output = !task.break_type ? await makeRequest({
-            employee_number, 
             process_type: task.process_type, 
             business_name: task.business_name,
             contact_email: task.contact_email,
             start: task.start
         }, '/deletejob', token, "post") : await makeRequest({
-            employee_number,
             break_type: task.break_type,
             start: task.start 
         }, '/deletebreak', token, "post")

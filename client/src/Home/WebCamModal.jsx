@@ -36,12 +36,6 @@ const WebCamModal = ({ setWebcamActive }, ref) => {
                 <button
                     className='take-picture btn btn-success btn-rounded btn-lg'
                     onClick={() => {
-
-                        //needed to uniquely identify the user
-                        const employee_number = user.userInfo.employee_number
-
-                        //consistent naming scheme for the uploaded images
-                        const name = user.userInfo.first_name + '-' + user.userInfo.last_name + '-' + employee_number + '.jpg'
                         
                         //gets the screenshot from the webcam
                         const src = ref.current.getScreenshot()
@@ -65,9 +59,7 @@ const WebCamModal = ({ setWebcamActive }, ref) => {
 
                             //once the image is processed and resized it will upload the image to the server
                             const output = await makeRequest({ 
-                                name, 
                                 image: resizedImage, 
-                                employee_number, 
                                 token: sessionStorage.getItem('token') 
                             }, '/upload-image', sessionStorage.getItem('token'), 'post')
                             

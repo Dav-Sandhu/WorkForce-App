@@ -257,7 +257,7 @@ app.get('/userinfo', authenticateToken, (req, res) => {
 app.get('/getunfinishedprocesses', authenticateToken, async (req, res) => {
 
   try{
-    const employee_number = req.query.query.employee_number
+    const employee_number = req.output.output[0].employee_number
 
     const query = queries('get-unfinished-processes', [employee_number])
     const output = await db_query(query.query, query.parameters)
@@ -271,7 +271,7 @@ app.get('/getunfinishedprocesses', authenticateToken, async (req, res) => {
 app.post('/startjob', authenticateToken, async (req, res) => {
 
   try{
-    const employee_number = req.body.data.employee_number
+    const employee_number = req.output.output[0].employee_number
     const process_type = req.body.data.process_type
     const business_name = req.body.data.business_name
     const contact_email = req.body.data.contact_email
@@ -288,7 +288,7 @@ app.post('/startjob', authenticateToken, async (req, res) => {
 app.post('/finishjob', authenticateToken, async (req, res) => {
 
   try{
-    const employee_number = req.body.data.employee_number
+    const employee_number = req.output.output[0].employee_number
     const process_type = req.body.data.process_type
     const business_name = req.body.data.business_name
     const contact_email = req.body.data.contact_email
@@ -297,7 +297,7 @@ app.post('/finishjob', authenticateToken, async (req, res) => {
     const finishJobQuery = queries('finish-process', [ employee_number, process_type, business_name, contact_email, start ])
     const output = await db_query(finishJobQuery.query, finishJobQuery.parameters)
 
-    const query = queries('delete-assigned-job', [req.body.data.employee_number, req.body.data.process_type])
+    const query = queries('delete-assigned-job', [employee_number, process_type])
     await db_query(query.query, query.parameters)
 
     return res.json({ output, status: 1 })
@@ -309,7 +309,7 @@ app.post('/finishjob', authenticateToken, async (req, res) => {
 app.post('/deletejob', authenticateToken, async (req, res) => {
 
   try{
-    const employee_number = req.body.data.employee_number
+    const employee_number = req.output.output[0].employee_number
     const process_type = req.body.data.process_type
     const business_name = req.body.data.business_name
     const contact_email = req.body.data.contact_email
@@ -328,9 +328,9 @@ app.post('/upload-image', authenticateToken, async (req, res) => {
 
   try{
 
-    const employee_number = req.body.data.employee_number
+    const employee_number = req.output.output[0].employee_number
     const token = req.body.data.token
-    const name = req.body.data.name
+    const name = req.output.output[0].first_name + '-' + req.output.output[0].last_name + '-' + employee_number + '.jpg'
     const file = req.body.data.image
     const image = Buffer.from(file.split(';base64,').pop(), 'base64') //converts the image file into a buffer for the azure storage
 
@@ -395,33 +395,33 @@ app.get('/getemployees', authenticateToken, async (req, res) => {
 
 app.post('/removeemployee', authenticateToken, async (req, res) => {
   
+  try{
+    const employee_number = req.body.data.employee_number
+    const imageName = req.body.data.first_name + '-' + req.body.data.last_name + '-' + employee_number + '.jpg'
+
+    const query = queries('delete-employee', [employee_number])
+    await db_query(query.query, query.parameters)
+
     try{
-      const employee_number = req.body.data.employee_number
-      const imageName = req.body.data.first_name + '-' + req.body.data.last_name + '-' + employee_number + '.jpg'
+      const connectionString = 'DefaultEndpointsProtocol=' + process.env.DEFAULT_ENDPOINTS_PROTOCOL + 
+      ';AccountName=' + process.env.ACCOUNT_NAME + ';AccountKey=' + process.env.ACCOUNT_KEY + 
+      ';EndpointSuffix=' + process.env.ENDPOINT_SUFFIX
   
-      const query = queries('delete-employee', [employee_number])
-      await db_query(query.query, query.parameters)
+      const container = process.env.CONTAINER_NAME
 
-      try{
-        const connectionString = 'DefaultEndpointsProtocol=' + process.env.DEFAULT_ENDPOINTS_PROTOCOL + 
-        ';AccountName=' + process.env.ACCOUNT_NAME + ';AccountKey=' + process.env.ACCOUNT_KEY + 
-        ';EndpointSuffix=' + process.env.ENDPOINT_SUFFIX
-    
-        const container = process.env.CONTAINER_NAME
-  
-        const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
-        const containerClient = blobServiceClient.getContainerClient(container)
-        const blobClient = containerClient.getBlobClient(imageName)
+      const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
+      const containerClient = blobServiceClient.getContainerClient(container)
+      const blobClient = containerClient.getBlobClient(imageName)
 
-        await blobClient.delete()
-      }catch(error){
-        console.log('profile picture does not exist')
-      }
-    
-      return res.json({ status: 1 })
+      await blobClient.delete()
     }catch(error){
-      return res.json({ status: -1, error })
+      console.log('profile picture does not exist')
     }
+  
+    return res.json({ status: 1 })
+  }catch(error){
+    return res.json({ status: -1, error })
+  }
 })
 
 app.post('/updatewage', authenticateToken, async (req, res) => {
@@ -529,10 +529,15 @@ app.post('/registeremployee', async (req, res) => {
 app.post('/clockin', authenticateToken, async (req, res) => {
 
   try{
-    const query = queries('clock-in', [req.body.data.employee_number])
-    const output = await db_query(query.query, query.parameters)
+
+    const output = req.output.output[0]
+
+    const query = queries('clock-in', [output.employee_number])
+    const queryOutput = await db_query(query.query, query.parameters)
+
+    const token = jwt.sign({ output: [{ ...output, clock_in: queryOutput[0].clock_in }] }, process.env.JWT_KEY, { expiresIn: '1h' })
   
-    return res.json({ status: 1, output })
+    return res.json({ status: 1, token })
   }catch(error){
     return res.json({ status: -1, error })
   }
@@ -541,7 +546,7 @@ app.post('/clockin', authenticateToken, async (req, res) => {
 app.post('/clockout', authenticateToken, async (req, res) => {
   
   try{
-    const query = queries('clock-out', [req.body.data.employee_number])
+    const query = queries('clock-out', [req.output.output[0].employee_number])
     await db_query(query.query, query.parameters)
   
     return res.json({ status: 1 })
@@ -553,7 +558,7 @@ app.post('/clockout', authenticateToken, async (req, res) => {
 app.post('/checkclockin', authenticateToken, async (req, res) => {
   
   try{
-    const query = queries('check-clocked-in', [req.body.data.employee_number])
+    const query = queries('check-clocked-in', [req.output.output[0].employee_number])
     const output = await db_query(query.query, query.parameters)
 
     return res.json({ status: 1, output })
@@ -625,7 +630,7 @@ app.get('/getreport', authenticateToken, async (req, res) => {
 app.post('/startbreak', authenticateToken, async (req, res) => {
   
   try{
-    const query = queries('start-time-off', [req.body.data.employee_number, req.body.data.break_type])
+    const query = queries('start-time-off', [req.output.output[0].employee_number, req.body.data.break_type])
     const output = await db_query(query.query, query.parameters)
 
     return res.json({ status: 1, output })
@@ -637,7 +642,7 @@ app.post('/startbreak', authenticateToken, async (req, res) => {
 app.post('/endbreak', authenticateToken, async (req, res) => {
 
   try{
-    const query = queries('finish-time-off', [req.body.data.employee_number, req.body.data.start])
+    const query = queries('finish-time-off', [req.output.output[0].employee_number, req.body.data.start])
     const output = await db_query(query.query, query.parameters)
   
     return res.json({ status: 1, output })
@@ -649,7 +654,7 @@ app.post('/endbreak', authenticateToken, async (req, res) => {
 app.post('/deletebreak', authenticateToken, async (req, res) => {
   try{
 
-    const employee_number = req.body.data.employee_number
+    const employee_number = req.output.output[0].employee_number
     const break_type = req.body.data.break_type
     const start = req.body.data.start
 
@@ -665,7 +670,7 @@ app.post('/deletebreak', authenticateToken, async (req, res) => {
 app.get('/getbreaks', authenticateToken, async (req, res) => {
 
   try{
-    const query = queries('get-timeoff', [req.query.query.employee_number])
+    const query = queries('get-timeoff', [req.output.output[0].employee_number])
     const output = await db_query(query.query, query.parameters)
   
     return res.json({ status: 1, output })
@@ -685,22 +690,6 @@ app.post('/updateemployeewage', authenticateToken, async (req, res) => {
     await db_query(query.query, query.parameters)
   
     return res.json({ status: 1 })
-  }catch(error){
-    return res.json({ status: -1, error })
-  }
-})
-
-app.post('/updateToken', async (req, res) => {
-
-  try{
-    // Get the new data from the request
-    const newData = req.body.data
-
-    // Create a new token with the updated data
-    const token = jwt.sign({ output: [newData] }, process.env.JWT_KEY, { expiresIn: '1h' })
-
-    // Send the new token back to the client
-    return res.json({ token, status: 1 })
   }catch(error){
     return res.json({ status: -1, error })
   }
