@@ -28,7 +28,7 @@ function authenticateToken(req, res, next) {
   if (token == null) return res.json({ status: -1, error: 'token is NULL' })
   
   jwt.verify(token, process.env.JWT_KEY, (err, output) => {
-    if (err) return res.json({ status: -1, error: err })
+    if (err) return res.json({ status: -1, error: 'token authentication failed.' })
 
     req.output = output
 
