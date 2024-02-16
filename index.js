@@ -424,21 +424,6 @@ app.post('/removeemployee', authenticateToken, async (req, res) => {
   }
 })
 
-app.post('/updatewage', authenticateToken, async (req, res) => {
-  
-    try{
-      const employee_number = req.body.data.employee_number
-      const hourly_wage = req.body.data.hourly_wage
-  
-      const query = queries('update-wage', [employee_number, hourly_wage])
-      await db_query(query.query, query.parameters)
-    
-      return res.json({ status: 1 })
-    }catch(error){
-      return res.json({ status: -1, error })
-    }
-})
-
 app.post('/checkemployee', async (req, res) => {
   
   try{
