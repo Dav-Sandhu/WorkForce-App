@@ -23,6 +23,7 @@ const TokenLogin = async (token, makeRequest, navigate, user) => {
                 hourly_wage: token_decoded[0].hourly_wage,
                 picture: token_decoded[0].picture,
                 is_admin: token_decoded[0].is_admin,
+                is_supervisor: token_decoded[0].is_supervisor,
                 clock_in: token_decoded[0].clock_in,
                 clock_out: token_decoded[0].clock_out
             })
@@ -30,7 +31,7 @@ const TokenLogin = async (token, makeRequest, navigate, user) => {
             //calls the given callback function to navigate to a given page
             navigate()
 
-            return { status: 1, clock_in: token_decoded[0].clock_in, is_admin: token_decoded[0].is_admin }
+            return { status: 1, clock_in: token_decoded[0].clock_in, is_admin: token_decoded[0].is_admin, is_supervisor: token_decoded[0].is_supervisor }
         }
 
     }catch(e){

@@ -23,6 +23,7 @@ const UserProvider = ({children}) => {
         hourly_wage: 0.0,
         picture: "",
         is_admin: 0,
+        is_supervisor: 0,
         clock_in: null,
         clock_out: null
     })

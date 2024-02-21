@@ -490,6 +490,7 @@ app.post('/registeremployee', async (req, res) => {
       state.password,
       0.0,
       "",
+      0,
       0
     ])
   

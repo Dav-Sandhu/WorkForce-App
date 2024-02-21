@@ -546,8 +546,8 @@ const queries = (type, values) => {
             BEGIN
               IF NOT EXISTS(SELECT * FROM employee WHERE employee_number=@employee_number)
               BEGIN
-                INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture, is_admin)
-                VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture, @is_admin);
+                INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture, is_admin, is_supervisor)
+                VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture, @is_admin, @is_supervisor);
               END
             END
 
@@ -561,7 +561,8 @@ const queries = (type, values) => {
             { name: 'password', type: sql.VarChar, value: values[4] },
             { name: 'hourly_wage', type: sql.Float, value: values[5] },
             { name: 'picture', type: sql.VarChar, value: values[6] },
-            { name: 'is_admin', type: sql.Bit, value: values[7]}
+            { name: 'is_admin', type: sql.Bit, value: values[7]},
+            { name: 'is_supervisor', type: sql.Bit, value: values[8] }
           ]
         }
       case "generate-employee-number":

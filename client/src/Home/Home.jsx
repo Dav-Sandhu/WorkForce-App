@@ -23,14 +23,26 @@ const Home = () => {
     const picture = user.userInfo.picture
     const name = user.userInfo.first_name + ' ' + user.userInfo.last_name
     const email = user.userInfo.email
-    const wage = '$' + user.userInfo.hourly_wage + '/hour'
     const employee_number = user.userInfo.employee_number
     const clock_in = user.userInfo.clock_in
     const clock_out = user.userInfo.clock_out
+    const is_supervisor = user.userInfo.is_supervisor
 
     return(
         <section className="vh-100" style={{backgroundColor: '#eee'}}>
             
+            {
+                is_supervisor && clock_in !== null ? 
+                    <button 
+                        type="button" 
+                        style={{
+                            backgroundColor: "#343a40",
+                            color: "#FFFFFF"
+                        }}
+                        onClick={() => navigate('/admin')}
+                    >Admin</button>: ""
+            }
+
             {/*if the user is clocked in it will show how long the user has been clocked in*/}
             {clock_in !== null && clock_out === null ? <Clock /> :  ""}
 

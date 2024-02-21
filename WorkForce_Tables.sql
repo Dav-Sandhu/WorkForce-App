@@ -9,6 +9,7 @@ CREATE TABLE employee(
 	hourly_wage FLOAT,
 	picture VARCHAR(255),
 	is_admin BIT,
+	is_supervisor BIT,
 	PRIMARY KEY(employee_number)
 );
 
