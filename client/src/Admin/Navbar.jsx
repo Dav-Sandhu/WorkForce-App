@@ -1,38 +1,57 @@
-const Navbar = () => {
+import "./Navbar.scss"
+
+const Navbar = ({ children }) => {
     return(
-        <nav className="navbar navbar-expand-md navbar-dark bg-dark">
-            <a className="navbar-brand ms-2">Admin</a>
-
-            <button 
-                className="navbar-toggler" 
-                type="button" 
-                data-bs-toggle="collapse" 
-                data-bs-target="#navContent" 
-                aria-controls="navContent" 
-                aria-expanded="false" 
-                aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-
-            <div className="collapse navbar-collapse" id="navContent">
-                <ul className="navbar-nav mr-auto">
-                    <li className="nav-item active">
-                        <a className="nav-link" href="/admin">Daily Reports</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link" href="/update">Update Information</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link" href="/assign">Assign Jobs</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link" onClick={() => {
-                            sessionStorage.removeItem("token")
-                        }} href='/login'>Log Out</a>
-                    </li>
-                </ul>
+        <>
+            <nav class="navbar navbar-dark bg-dark">
+                <div class="container-fluid"><span className="navbar-brand">SFM WORKFORCE</span></div>
+            </nav>
+            <div className="container-fluid">
+                <div className="row flex-nowrap">
+                    <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-purple">
+                        <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                            <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                                <li className="nav-item active navHeading">
+                                    <a className="nav-link align-middle px-0" href="/admin">
+                                        <span className="ms-1 d-none d-sm-inline navBtn">Reports</span>
+                                    </a>
+                                </li>
+                                <li className="nav-item navHeading">
+                                    <a className="nav-link align-middle px-0" href="/employees">
+                                        <span className="ms-1 d-none d-sm-inline navBtn">Employees</span>
+                                    </a>
+                                </li>
+                                <li className="nav-item navHeading">
+                                    <a className="nav-link align-middle px-0"  href="/customers">
+                                        <span className="ms-1 d-none d-sm-inline navBtn">Customers</span>
+                                    </a>
+                                </li>
+                                <li className="nav-item navHeading">
+                                    <a className="nav-link align-middle px-0" href="/processes">
+                                        <span className="ms-1 d-none d-sm-inline navBtn">Processes</span>
+                                    </a>
+                                </li>
+                                <li className="nav-item navHeading">
+                                    <a className="nav-link align-middle px-0" href="/assign">
+                                        <span className="ms-1 d-none d-sm-inline navBtn">Jobs</span>
+                                    </a>
+                                </li>
+                                <li className="nav-item navHeading">
+                                    <a className="nav-link align-middle px-0" onClick={() => {
+                                        sessionStorage.removeItem("token")
+                                    }} href='/login'>
+                                        <span className="ms-1 d-none d-sm-inline navBtn">Log Out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="col content-section min-vh-100">
+                        {children}
+                    </div>
+                </div>
             </div>
-        </nav>
+        </>
     )
 }
 

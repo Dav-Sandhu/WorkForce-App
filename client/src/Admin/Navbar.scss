@@ -1,0 +1,22 @@
+.bg-purple{
+    height: 100%;
+    background-color: #3f47cc;
+}
+
+.navHeading{
+
+    .navBtn{
+        color: white;
+        font-size: 18px;
+
+        &:hover{
+            color: yellow;
+        }
+    }
+}
+
+.content-section{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}

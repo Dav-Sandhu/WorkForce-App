@@ -69,8 +69,7 @@ const Admin = () => {
     }
 
     return(
-        <>
-            <Navbar />
+        <Navbar>
             <label htmlFor="datePicker">Select A Date:</label>
             <DatePicker id="datePicker" selected={startDate} onChange={(date) => {
                 setStartDate(date)
@@ -184,7 +183,7 @@ const Admin = () => {
                     }
                 </div>
             }
-        </>
+        </Navbar>
     )
 }
 

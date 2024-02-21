@@ -1,7 +1,7 @@
 .update-section{
 
     background-color: #8fc4b7;
-    min-height: 100vh;
+
 
     .display-items {
         display: flex;
@@ -31,12 +31,6 @@
 
         .display-item{ 
             width: 200px;
-        }
-    }
-
-    @media (min-width: 1025px) {
-        .h-custom {
-            height: 100vh !important;
         }
     }
 }

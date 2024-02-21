@@ -92,23 +92,9 @@ const Task = () => {
                 <button
                     type='button'
                     className='btn btn-lg btn-info'
-                    onClick={() => {
-
-                        const request = async () => {
-
-                            const module = await import('../useDB')
-                            const makeRequest = module.makeRequest
-
-                            await makeRequest({ employee_number: user.userInfo.employee_number }, '/clockout', sessionStorage.getItem('token'), 'post')
-
-                            sessionStorage.removeItem('token')
-                            window.location.reload()
-                        }
-
-                        request()
-                    }}
-                    >
-                        Finish Shift
+                    onClick={() => navigate('/working')}
+                >
+                    Work
                 </button>
             </div>
         </div>

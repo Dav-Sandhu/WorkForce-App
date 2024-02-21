@@ -32,7 +32,7 @@ const Home = () => {
         <section className="vh-100" style={{backgroundColor: '#eee'}}>
             
             {/*if the user is clocked in it will show how long the user has been clocked in*/}
-            {clock_in !== null && clock_out === null ? <Clock /> : ""}
+            {clock_in !== null && clock_out === null ? <Clock /> :  ""}
 
             {/*webcam modal which is only enabled when the profile picture is clicked*/}
             {webcamActive ? <WebCamModal ref={ref} setWebcamActive={setWebcamActive} /> : ""}
@@ -99,14 +99,26 @@ const Home = () => {
                                             if the user is clocked in it will show the agenda button which 
                                             shows what the user is working on
                                         */
-                                        clock_in !== null ? 
-                                        <button 
-                                            className="btn btn-success btn-rounded btn-lg"
+                                        clock_in !== null ?
+                                        <button
+                                            className="btn btn-danger btn-rounded btn-lg"
                                             onClick={() => {
-                                                navigate('/working')
+                                                const request = async () => {
+                
+                                                    const module = await import('../useDB')
+                                                    const makeRequest = module.makeRequest
+                        
+                                                    await makeRequest(null, '/clockout', sessionStorage.getItem('token'), 'post')
+                        
+                                                    sessionStorage.removeItem('token')
+                                                    window.location.reload()
+                                                }
+                        
+                                                request()
                                             }}
-                                        >Work</button> : 
-                                        ""
+                                        >
+                                            Clock Out
+                                        </button> : ""
                                     }
                                 </div>
                                 {/*
@@ -120,10 +132,6 @@ const Home = () => {
                                     <div>
                                         <p className="mb-2 mr-3 h5 text-nowrap ">{clock_in === null ? <Clock /> : clock_out === null ? convertToTime(clock_in) : convertToTime(clock_out)}</p>
                                         <p className="text-muted mb-0">{clock_in === null ? "Current Time" : clock_out === null ? "Clocked In" : "Clocked Out"}</p>
-                                    </div>
-                                    <div className="px-3">
-                                        <p className="mb-2 mr-3 h5 text-nowrap ">{wage}</p>
-                                        <p className="text-muted mb-0">Hourly Wage</p>
                                     </div>
                                 </div>
                             </div>

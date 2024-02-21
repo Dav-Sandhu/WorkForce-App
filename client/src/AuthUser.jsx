@@ -36,15 +36,14 @@ const AuthUser = ({children}) => {
                     const is_admin = res.is_admin
                     const clock_in = res.clock_in
 
+                    const isNotAdminScreen = pathName !== '/admin' && pathName !== '/employees' && pathName !== '/assign' && pathName !== '/customers' && pathName !== '/processes'
+
                     /* 
                     if the user is an admin it will redirect them to the admin page
                     otherwise it makes sure the user is clocked in before allowing them to 
                     access other pages besides the home page
                     */
-                    is_admin ? 
-                    (pathName !== '/admin' && pathName !== '/update' && pathName !== '/assign' ? navigate('/admin') : "") :  
-                    (clock_in === null && pathName !== '/' ? navigate('/') : 
-                    (pathName === '/admin' || pathName === '/update' || pathName === '/assign' ? navigate('/') : ""))
+                    is_admin ? (isNotAdminScreen ? navigate('/admin') : "") : (clock_in === null && pathName !== '/' ? navigate('/') : (!isNotAdminScreen ? navigate('/') : ""))
 
                 }else{
                     sessionStorage.removeItem('token')

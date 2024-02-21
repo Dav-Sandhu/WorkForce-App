@@ -38,8 +38,7 @@ const Assign = () => {
     }, [])
 
     return(
-    <>
-        <Navbar />
+    <Navbar>
         {/*modal for assigning jobs to employees*/}
         { showJobs ? <JobsModal employee_number={currentEmployee} setShowJobs={setShowJobs} /> : "" }
         <div className="employees_list">
@@ -79,7 +78,7 @@ const Assign = () => {
                 })
             }
         </div>
-    </>
+    </Navbar>
     )
 }
 
