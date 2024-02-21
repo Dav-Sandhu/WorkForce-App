@@ -18,6 +18,19 @@ const queries = (type, values) => {
             { name: 'password', type: sql.VarChar, value: values[1] }
           ]
         }
+      case "upgrade-user":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE employee
+            SET is_supervisor=1
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] }
+          ]
+        }
       case "employee-number":
         return {
           query: `

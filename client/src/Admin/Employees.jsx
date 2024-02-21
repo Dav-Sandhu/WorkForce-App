@@ -7,6 +7,7 @@ const Employees = () => {
     const token = sessionStorage.getItem('token')
 
     const [display, setDisplay] = useState([])
+    const [select, setSelect] = useState("wage")
 
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [hourlyWage, setHourlyWage] = useState(0.0)
@@ -58,6 +59,7 @@ const Employees = () => {
                                                     </div>
                                                     <div className="card-body">
                                                         <h5 className="card-title overflow-hidden">{item.first_name + ' ' + item.last_name}</h5>
+                                                        {item.is_supervisor ? <p className="mb-0 overflow-hidden">Supervisor</p> : <p className="mb-0 overflow-hidden">Employee</p>}
                                                         <p className="mb-0 overflow-hidden">{'#' + item.employee_number}</p>
                                                         <p className="mb-0 overflow-hidden">{item.email}</p>
                                                         <p className="mb-0 overflow-hidden">{'Hourly Wage: $' + item.hourly_wage}</p>
@@ -119,20 +121,38 @@ const Employees = () => {
                                         </div>
 
                                         <div className="form-outline mb-4">
-                                            <div className="input-group mb-2">
-                                                <div className="input-group-prepend">
-                                                    <div className="input-group-text">$</div>
-                                                </div>
+                                            <div className="form-check mb-2">
                                                 <input 
-                                                    type="number" 
-                                                    step="0.01"
-                                                    id="hourly_wage" 
-                                                    className="form-control"
-                                                    value={hourlyWage}
-                                                    onChange={(e) => setHourlyWage(e.target.value)} />
+                                                    className="form-check-input" 
+                                                    type="checkbox" 
+                                                    id="select"
+                                                    checked={select === "supervisor"}
+                                                    onChange={() => {setSelect(select === "wage" ? "supervisor" : "wage")}} />
+                                                <label className="form-check-label" htmlFor="select">
+                                                    Upgrade to Supervisor
+                                                </label>
                                             </div>
-                                            <label className="form-label" htmlFor="hourly_wage">Hourly Wage</label>
                                         </div>
+
+                                        {
+                                            select === "wage" ? 
+                                            <div className="form-outline mb-4">
+                                                <div className="input-group mb-2">
+                                                    <div className="input-group-prepend">
+                                                        <div className="input-group-text">$</div>
+                                                    </div>
+                                                    <input 
+                                                        type="number" 
+                                                        step="0.01"
+                                                        id="hourly_wage" 
+                                                        className="form-control"
+                                                        value={hourlyWage}
+                                                        onChange={(e) => setHourlyWage(e.target.value)} />
+                                                </div>
+                                                <label className="form-label" htmlFor="hourly_wage">Hourly Wage</label>
+                                            </div> : ""
+                                        }
+
                                     </form>
 
                                     <button type="button" className="btn btn-success btn-lg mb-1" onClick={() => {
@@ -140,12 +160,18 @@ const Employees = () => {
                                             const module = await import('../useDB')
                                             const makeRequest = module.makeRequest
 
-                                            const output = employeeNumber.length > 0 ? await makeRequest({
-                                                employee_number: employeeNumber,
-                                                hourly_wage: hourlyWage
-                                            }, '/updateemployeewage', token, "post") : { status: -1 }
+                                            if (select === "wage"){
+                                                const output = employeeNumber.length > 0 ? await makeRequest({
+                                                    employee_number: employeeNumber,
+                                                    hourly_wage: hourlyWage
+                                                }, '/updateemployeewage', token, "post") : { status: -1 }
+
+                                                await statusCheck(output.status, "Employee Updated!")
+                                            }else if (select === "supervisor"){
+                                                const output = await makeRequest({ employee_number: employeeNumber }, '/upgradeuser', token, "post")
+                                                await statusCheck(output.status, "Employee Updated!")
+                                            }
                                             
-                                            await statusCheck(output.status, "Employee Updated!")
                                             window.location.reload()
                                         }
 

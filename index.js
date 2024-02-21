@@ -393,6 +393,20 @@ app.get('/getemployees', authenticateToken, async (req, res) => {
   }
 })
 
+app.post('/upgradeuser', authenticateToken, async (req, res) => {
+  
+    try{
+      const employee_number = req.body.data.employee_number
+  
+      const query = queries('upgrade-user', [employee_number])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
 app.post('/removeemployee', authenticateToken, async (req, res) => {
   
   try{
