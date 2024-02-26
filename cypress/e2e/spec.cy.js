@@ -16,6 +16,48 @@ describe('logs into the website using both user and admin accounts and tests all
     expect(cy.get('div[class="image-area"]')).to.exist
   })
 
+  it('should log in as the admin, update employee information, and create/delete customers and processes', () => {
+    cy.visit('localhost:3000')
+
+    cy.get('input[id="employee_number"]').type('wfc').should('have.value', 'wfc')
+    cy.get('input[id="password"]').type('12345').should('have.value', '12345')
+    cy.get('input[value="Login"]').click()
+
+    cy.url().should('include', '/admin')
+
+    cy.get('a[href="/employees"]').click()
+    cy.get('#employee_number').select('333').should('have.value', '333')
+    cy.get('input[id="hourly_wage"]').clear().type('14.52').should('have.value', '14.52')
+    cy.get('button[class="btn btn-success btn-lg mb-1"]').click()
+    cy.get('.swal2-confirm').click()
+    cy.get('#employee_number').select('333').should('have.value', '333')
+    cy.get('input[id="hourly_wage"]').clear().type('16.55').should('have.value', '16.55')
+    cy.get('button[class="btn btn-success btn-lg mb-1"]').click()
+    cy.get('.swal2-confirm').click()
+
+
+    cy.get('a[href="/customers"]').click()
+    cy.get('input[id="business_name"]').type('business name').should('have.value', 'business name')
+    cy.get('input[id="logo"]').type('my logo').should('have.value', 'my logo')
+    cy.get('input[id="contact_name"]').type('contact name').should('have.value', 'contact name')
+    cy.get('input[id="contact_email"]').type('contact@email.com').should('have.value', 'contact@email.com')
+    cy.get('#currency').select('USD').should('have.value', 'USD')
+    cy.get('button[class="btn btn-success btn-lg mb-1"]').click()
+    cy.get('.swal2-confirm').click()
+    cy.contains('p', 'contact@email.com').should('exist').nextAll().eq(1).click() //deletes the newly created customer
+    cy.get('.swal2-confirm').click()
+
+    cy.get('a[href="/processes"]').click()
+    cy.get('input[id="process_type"]').type('process type').should('have.value', 'process type')
+    cy.get('#billable').check().should('be.checked')
+    cy.get('input[id="hourly_rate"]').clear().type('17.33').should('have.value', '17.33')
+    cy.get('button[class="btn btn-success btn-lg mb-1"]').click()
+    cy.get('.swal2-confirm').click()
+    cy.contains('h3', 'process type').closest('.card-header').next().find('button.btn.btn-danger').click()
+    cy.get('.swal2-confirm').click()
+
+  })
+
   it('should create a new user, then delete the newly created user', () => {
     cy.visit('localhost:3000')
 
