@@ -35,7 +35,6 @@ describe('logs into the website using both user and admin accounts and tests all
     cy.get('button[class="btn btn-success btn-lg mb-1"]').click()
     cy.get('.swal2-confirm').click()
 
-
     cy.get('a[href="/customers"]').click()
     cy.get('input[id="business_name"]').type('business name').should('have.value', 'business name')
     cy.get('input[id="logo"]').type('my logo').should('have.value', 'my logo')
@@ -55,6 +54,10 @@ describe('logs into the website using both user and admin accounts and tests all
     cy.get('.swal2-confirm').click()
     cy.contains('h3', 'process type').closest('.card-header').next().find('button.btn.btn-danger').click()
     cy.get('.swal2-confirm').click()
+
+    cy.get('a[href="/assign"]').click()
+    cy.contains('p', '#333').closest('.left-section').next().find('button.btn.btn-dark').click()
+    cy.get('button[class="btn btn-success"]').click()
 
   })
 
@@ -114,12 +117,27 @@ describe('logs into the website using both user and admin accounts and tests all
         $btn.click()
       }
 
+      //ensures the supervisor user has proper access to the admin page
       cy.contains('button', 'Admin').should('exist')
       cy.contains('button', 'Admin').click()
       cy.url().should('include', '/admin')
 
-      cy.get('a[href="/"]').click()
+      cy.get('a[href="/"]').click() //returns to the home page
 
+      cy.contains('button', 'Tasks').click() //goes to tasks page
+      cy.url().should('include', '/tasks')
+
+      cy.contains('button', 'Join a Job').click()
+      cy.url().should('include', '/jobs')
+
+      cy.contains('button', 'Packing').click()
+      cy.get('div[class="customer"]').first().click()
+
+      cy.url().should('include', '/working')
+      cy.get('button[class="finish-button btn btn-danger"]').first().click()
+
+      cy.get('button[class="user-button btn btn-outline-secondary rounded-pill"]').click()
+      cy.url().should('include', '/')
       cy.contains('button', 'Clock Out').click()
     })
   })
