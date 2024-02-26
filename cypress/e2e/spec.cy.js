@@ -138,6 +138,20 @@ describe('logs into the website using both user and admin accounts and tests all
 
       cy.get('button[class="user-button btn btn-outline-secondary rounded-pill"]').click()
       cy.url().should('include', '/')
+
+      cy.contains('button', 'Tasks').click() 
+      cy.url().should('include', '/tasks')
+
+      cy.contains('button', 'Ask for a Job').click()
+      cy.get('.swal2-confirm').click()
+
+      cy.contains('button', 'Take a Break').click()
+      cy.url().should('include', '/working')
+      cy.get('div[class="work-description"]').first().trigger('mouseover')
+      cy.get('button[class="close-button-left btn-close"]').first().click({ force: true })
+
+      cy.get('button[class="user-button btn btn-outline-secondary rounded-pill"]').click()
+      cy.url().should('include', '/')
       cy.contains('button', 'Clock Out').click()
     })
   })
