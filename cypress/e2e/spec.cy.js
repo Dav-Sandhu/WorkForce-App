@@ -56,6 +56,8 @@ describe('logs into the website using both user and admin accounts and tests all
     cy.get('input[id="employee_number"]').type('404').should('have.value', '404')
     cy.get('input[id="password"]').type('1').should('have.value', '1')
     cy.get('input[value="Login"]').click()
+
+    cy.contains('button', 'Admin').should('not.exist')
   })
   
   it('should log in to the website as a supervisor user', () => {
@@ -64,6 +66,20 @@ describe('logs into the website using both user and admin accounts and tests all
     cy.get('input[id="employee_number"]').type('333').should('have.value', '333')
     cy.get('input[id="password"]').type('11111').should('have.value', '11111')
     cy.get('input[value="Login"]').click()
+
+    cy.get('button:contains("Clock In")').then($btn => {
+      if ($btn) {
+        $btn.click()
+      }
+
+      cy.contains('button', 'Admin').should('exist')
+      cy.contains('button', 'Admin').click()
+      cy.url().should('include', '/admin')
+
+      cy.get('a[href="/"]').click()
+
+      cy.contains('button', 'Clock Out').click()
+    })
   })
 
 })
