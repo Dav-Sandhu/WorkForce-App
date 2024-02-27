@@ -1,5 +1,9 @@
 describe('logs into the website using both user and admin accounts and tests all their functionality', () => {
   
+  beforeEach(() => {
+    cy.visit('localhost:3000')
+  })
+
   // it('should test the password reset functionality', () => {
   //   cy.visit('localhost:3000')
 
@@ -10,15 +14,11 @@ describe('logs into the website using both user and admin accounts and tests all
   // })
 
   it('should show the face scanner', () => {
-    cy.visit('localhost:3000')
-
     cy.get('button[class="btn btn-danger"]').click()
     expect(cy.get('div[class="image-area"]')).to.exist
   })
 
   it('should log in as the admin, update employee information, and create/delete customers and processes', () => {
-    cy.visit('localhost:3000')
-
     cy.get('input[id="employee_number"]').type('wfc').should('have.value', 'wfc')
     cy.get('input[id="password"]').type('12345').should('have.value', '12345')
     cy.get('input[value="Login"]').click()
@@ -62,8 +62,6 @@ describe('logs into the website using both user and admin accounts and tests all
   })
 
   it('should create a new user, then delete the newly created user', () => {
-    cy.visit('localhost:3000')
-
     cy.get('a[href="/register"]').click()
     cy.url().should('include', '/register')
 
@@ -96,8 +94,6 @@ describe('logs into the website using both user and admin accounts and tests all
   })
 
   it('should log in to the website as a regular user', () => {
-    cy.visit('localhost:3000')
-
     cy.get('input[id="employee_number"]').type('404').should('have.value', '404')
     cy.get('input[id="password"]').type('1').should('have.value', '1')
     cy.get('input[value="Login"]').click()
@@ -106,8 +102,6 @@ describe('logs into the website using both user and admin accounts and tests all
   })
   
   it('should log in to the website as a supervisor user', () => {
-    cy.visit('localhost:3000')
-
     cy.get('input[id="employee_number"]').type('333').should('have.value', '333')
     cy.get('input[id="password"]').type('11111').should('have.value', '11111')
     cy.get('input[value="Login"]').click()
