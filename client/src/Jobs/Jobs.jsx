@@ -69,7 +69,7 @@ const Jobs = () => {
                             jobs.map(job => {
                                 return(
                                     <button 
-                                        className="btn btn-lg job-button" 
+                                        className="btn btn-lg job-button mb-3" 
                                         key={job.process_type} 
                                         onClick={() => {
                                             setSelectedJob(job.process_type)

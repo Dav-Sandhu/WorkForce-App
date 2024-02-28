@@ -116,6 +116,45 @@ const queries = (type, values) => {
           `,
           parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]  
         }
+      case "get-clocks-range":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM clock
+            WHERE clock_in BETWEEN @start AND DATEADD(day, 1, @finish);
+          `,
+          parameters: [
+            { name: 'start', type: sql.Date, value: values[0] },
+            { name: 'finish', type: sql.Date, value: values[1] }
+          ]
+        }
+      case "get-time-off-range":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM timeoff
+            WHERE start BETWEEN @start AND DATEADD(day, 1, @finish);
+          `,
+          parameters: [
+            { name: 'start', type: sql.Date, value: values[0] },
+            { name: 'finish', type: sql.Date, value: values[1] }
+          ]
+        }
+      case "get-work-range":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM work
+            WHERE start BETWEEN @start AND DATEADD(day, 1, @finish);
+          `,
+          parameters: [
+            { name: 'start', type: sql.Date, value: values[0] },
+            { name: 'finish', type: sql.Date, value: values[1] }
+          ]
+        }
       case "start-time-off":
         return{
           query: `

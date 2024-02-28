@@ -573,51 +573,55 @@ app.get('/getreport', authenticateToken, async (req, res) => {
   try{
 
     let output = {}
-    const date = req.query.query.date
+    let selectedOutput = []
+
+    const start = req.query.query.start
+    const finish = req.query.query.finish
+    const selectedTable = req.query.query.selectedTable
 
     const employeeQuery = queries('get-all-employees', [])
     const employeeOutput = await db_query(employeeQuery.query, employeeQuery.parameters)
 
-    const clockQuery = queries('get-clock', [date])
-    const clockOutput = await db_query(clockQuery.query, clockQuery.parameters)
-
-    const workQuery = queries('get-process', [date])
-    const workOutput = await db_query(workQuery.query, workQuery.parameters)
-
-    const breakQuery = queries('get-all-timeoff', [date])
-    const breakOutput = await db_query(breakQuery.query, breakQuery.parameters)
+    if(selectedTable === 'clocks'){
+      const clockQuery = queries('get-clocks-range', [start, finish])
+      selectedOutput = await db_query(clockQuery.query, clockQuery.parameters)
+    }else if(selectedTable === 'employees'){
+      const workQuery = queries('get-work-range', [start, finish])
+      selectedOutput = await db_query(workQuery.query, workQuery.parameters)
+    }else if(selectedTable === 'breaks'){
+      const breakQuery = queries('get-time-off-range', [start, finish])
+      selectedOutput = await db_query(breakQuery.query, breakQuery.parameters)
+    }
 
     for (const e in employeeOutput){
 
       const employee = employeeOutput[e]
       const employee_number = employee.employee_number
 
-      const work = workOutput.filter(w => w.employee_number === employee_number)
-      const breaks = breakOutput.filter(b => b.employee_number === employee_number)
-      const clocks = clockOutput.filter(c => c.employee_number === employee_number)
+      const select = selectedOutput.filter(o => o.employee_number === employee_number)
 
       output[employee_number] = employee
-      output[employee_number].work = work || []
-      output[employee_number].breaks = breaks || []
-      output[employee_number].clocks = clocks || []
+      output[employee_number].values = select || []
     }
 
-    Object.values(output).forEach(o => {
-      o.work.sort((a, b) => {
-        if (a.start < b.start){
-          return -1
-        }else if (a.start > b.start){
-          return 1
-        }
-        return 0
+    if (selectedTable === 'employees'){
+      Object.values(output).forEach(o => {
+        o.values.sort((a, b) => {
+          if (a.start < b.start){
+            return -1
+          }else if (a.start > b.start){
+            return 1
+          }
+          return 0
+        })
       })
-    })
 
-    const customersQuery = queries('get-customers', [])
-    const customersOutput = await db_query(customersQuery.query, customersQuery.parameters)
-    const businessNames = customersOutput.map(customer => customer.business_name)
-
-    output['headings'] = ['employee', ...businessNames, 'total']
+      const customersQuery = queries('get-customers', [])
+      const customersOutput = await db_query(customersQuery.query, customersQuery.parameters)
+      const businessNames = customersOutput.map(customer => customer.business_name)
+  
+      output['headings'] = ['employee', ...businessNames, 'total']
+    }
 
     return res.json({ status: 1, output })
 

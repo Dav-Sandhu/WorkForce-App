@@ -37,7 +37,7 @@ const ClockTable = ({clocks}) => {
                                         await module.customAlert("Employee Number: " + clock.employee_number, "", "info")
                                     })
                                 }}>{clock.name}</th>
-                            <td>{clockIn.toLocaleTimeString()}</td>
+                            <td>{clockIn.toLocaleString()}</td>
                             <td>{clock.clock_out === null ? "-" : clockOut.toLocaleString()}</td>
                             <td>{clock.clock_out === null ? "-" : formatTime(diff)}</td>
                         </tr>

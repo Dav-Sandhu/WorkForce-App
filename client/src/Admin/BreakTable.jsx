@@ -43,7 +43,7 @@ const BreakTable = ({breaks}) => {
                                 }}
                             >{b.name}</th>
                             <td>{b.break_type}</td>
-                            <td>{start.toLocaleTimeString()}</td>
+                            <td>{start.toLocaleString()}</td>
                             <td>{b.finish === null ? "-" : finish.toLocaleString()}</td>
                             <td>{b.finish === null ? "-" : formatTime(diff)}</td>
                         </tr>

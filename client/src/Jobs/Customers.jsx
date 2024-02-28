@@ -65,7 +65,7 @@ const Customers = ({ selectedJob }) => {
                     //outputs all the customers for the user to select from
                     return(
                         <div
-                            className='customer' 
+                            className='customer mb-2' 
                             aria-label={'customer: ' + customer.business_name}
                             tabindex="0"
                             key={customer.business_name + customer.contact_email}
