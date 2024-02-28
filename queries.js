@@ -124,6 +124,16 @@ const queries = (type, values) => {
             DECLARE @current_date DATETIME
             SET @current_date = GETUTCDATE()
 
+            UPDATE timeoff
+            SET finish=@current_date
+            WHERE employee_number=@employee_number
+            AND finish IS NULL;
+
+            UPDATE work
+            SET finish=@current_date
+            WHERE employee_number=@employee_number
+            AND finish IS NULL;
+
             INSERT INTO timeoff(employee_number, break_type, start, finish)
             VALUES(@employee_number, @break_type, @current_date, NULL);
 
@@ -202,6 +212,16 @@ const queries = (type, values) => {
 
             DECLARE @current_date DATETIME
             SET @current_date = GETUTCDATE()
+
+            UPDATE work
+            SET finish=@current_date
+            WHERE employee_number=@employee_number
+            AND finish IS NULL;
+
+            UPDATE timeoff
+            SET finish=@current_date
+            WHERE employee_number=@employee_number
+            AND finish IS NULL;
 
             INSERT INTO work(employee_number, process_type, business_name, contact_email, start, finish)
             VALUES(@employee_number, @process_type, @business_name, @contact_email, @current_date, NULL);
