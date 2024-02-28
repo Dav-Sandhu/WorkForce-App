@@ -36,7 +36,7 @@ const Jobs = () => {
                 const module = await import('../useDB')
                 const makeRequest = module.makeRequest
 
-                const output = await makeRequest({ employee_number: user.userInfo.employee_number }, '/getjobs', token, "get")
+                const output = await makeRequest(null, '/getinternalprocesses', token, "get")
                 output.status === 1 ? loaded(output.output) : navigate('/')
             }else{navigate('/login')}
         }
@@ -69,7 +69,7 @@ const Jobs = () => {
                             jobs.map(job => {
                                 return(
                                     <button 
-                                        className="btn btn-lg btn-secondary" 
+                                        className="btn btn-lg job-button" 
                                         key={job.process_type} 
                                         onClick={() => {
                                             setSelectedJob(job.process_type)
