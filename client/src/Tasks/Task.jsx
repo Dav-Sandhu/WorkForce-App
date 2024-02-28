@@ -70,7 +70,17 @@ const Task = () => {
 
             {
                 clock_in === null ?
-                <div className="not_clocked_in">
+                <>
+                    <button 
+                        type="button" 
+                        style={{ backgroundColor: "#3f47cc", color: "#FFFFFF" }}
+                        onClick={() => {
+                            setWebcamActive(true)
+                        }} 
+                    >
+                        Update Profile Picture
+                    </button>
+                    <div className="not_clocked_in">
                     <div className="mt-3 mb-4">
                         <img 
                             src={ picture } 
@@ -78,9 +88,6 @@ const Task = () => {
                             loading="lazy"
                             style={{width: '100px'}}
                             onError={(e) => {e.target.onerror = null; e.target.src="/default profile picture.jpg"}}
-                            onClick={() => {
-                                setWebcamActive(true)
-                            }} 
                         />
                     </div>
                     <div>
@@ -89,7 +96,7 @@ const Task = () => {
                     </div>
                     <button 
                         type="button" 
-                        className="btn btn-primary btn-rounded btn-lg"
+                        className="btn btn-primary btn-rounded btn-lg m-2"
                         onClick={() => {
                             
                             const request = async () => {
@@ -114,8 +121,9 @@ const Task = () => {
                             
                         }}> 
                         Clock In
-                    </button>
+                    </button> 
                 </div>
+                </>
                 : 
                 <>
                     <h1 className='tasks-title fw-bold fs-25 mb-4 text-center text-dark title'>What do you want to do?</h1> <br />
