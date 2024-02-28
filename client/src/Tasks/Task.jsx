@@ -72,7 +72,8 @@ const Task = () => {
                 clock_in === null ?
                 <>
                     <button 
-                        type="button" 
+                        type="button"
+                        className='m-1' 
                         style={{ backgroundColor: "#3f47cc", color: "#FFFFFF" }}
                         onClick={() => {
                             setWebcamActive(true)
