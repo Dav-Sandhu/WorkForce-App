@@ -7,7 +7,6 @@ import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 
 //lazy loads the components so that they are only loaded when needed
-const Home = lazy(() => import('./Home/Home'))
 const Login = lazy(() => import('./Login/Login'))
 const Register = lazy(() => import('./Login/Register'))
 const Jobs = lazy(() => import('./Jobs/Jobs'))
@@ -31,11 +30,10 @@ export default function App(){
             <UserProvider>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={AuthWrapper(Home)}/>
+                        <Route path="/" element={AuthWrapper(Task)}/>
                         <Route path="/login" element={<Login />}/>
                         <Route path="/register" element={<Register/>}/>
                         <Route path="/jobs" element={AuthWrapper(Jobs)}/>
-                        <Route path="/tasks" element={AuthWrapper(Task)}/>
                         <Route path='/working' element={AuthWrapper(Working)} />
                         <Route path='/admin' element={AuthWrapper(Admin)} />
                         <Route path='/employees' element={AuthWrapper(Employees)} />

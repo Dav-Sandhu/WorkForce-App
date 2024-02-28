@@ -45,11 +45,11 @@ const Navbar = ({ children }) => {
                                         <span className="ms-1 d-none d-sm-inline navBtn">Processes</span>
                                     </a>
                                 </li>
-                                <li className="nav-item navHeading">
+                                {/* <li className="nav-item navHeading">
                                     <a className="nav-link align-middle px-0" href="/assign">
                                         <span className="ms-1 d-none d-sm-inline navBtn">Jobs</span>
                                     </a>
-                                </li>
+                                </li> */}
                                 <li className="nav-item navHeading">
                                     <a className="nav-link align-middle px-0" onClick={() => {
                                         sessionStorage.removeItem("token")
