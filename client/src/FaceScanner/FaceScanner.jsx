@@ -39,17 +39,26 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
                     const customQuestionBox = alertModule.customQuestionBox
 
                     const ans = await customQuestionBox("Is This You?", res.name, "Yes", "No")
+                    
+                    const handler = async (password, token, user) => {
+                        const module = await import('../useDB')
+                        const makeRequest = module.makeRequest
+
+                        const output = await makeRequest({ name: res.name, password }, '/checkpassword', null, "")
+                        
+                        if (output.output){
+                            sessionStorage.setItem('token', token)
+
+                            //decyphers the token and updates the current user state object to the values of the token
+                            const tokenLogin = await import("../TokenLogin")
+                            tokenLogin.default(token, makeRequest, () => navigate('/'), user)   
+                        }else{
+                            window.location.reload()
+                        }
+                    }
 
                     if (ans){
-                        const token = res.token
-
-                        sessionStorage.setItem('token', token)
-    
-                        //decyphers the token and updates the current user state object to the values of the token
-                        const tokenLogin = await import("../TokenLogin")
-                        tokenLogin.default(token, makeRequest, () => navigate('/'), user)    
-                    }else{
-                        window.location.reload()
+                        await alertModule.customInputAlert("Enter Your Password", handler, { token: res.token, user }) 
                     }
 
                 }else{

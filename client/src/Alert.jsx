@@ -28,6 +28,19 @@ export async function customQuestionBox(title, msg, confirmBtn, rejectBtn){
     return result
 }
 
+//creates an alert with a text input
+export async function customInputAlert(title, handler, options){
+    const { value } = await Swal.fire({
+        title: title,
+        input: 'text',
+        confirmButtonText: 'Submit'
+    })
+
+    if (value) {
+        handler(value, options.token, options.user)
+    }
+}
+
 //function checks to see if the break time is over, if so it will notify the user
 export async function checkBreakStatus(timerId, seconds){
     const module = await import("./useDB")

@@ -437,6 +437,22 @@ app.post('/updatebreaktimes', authenticateToken, async (req, res) => {
     }
 })
 
+app.post('/checkpassword', async (req, res) => {
+
+  try{
+
+    const first_name = req.body.data.name.split(' ')[0]
+    const last_name = req.body.data.name.split(' ')[1]
+
+    const query = queries('check-password', [first_name, last_name, req.body.data.password])
+    const output = await db_query(query.query, query.parameters)
+
+    return res.json({ status: 1, output: output.length > 0 })
+  }catch(error){
+    return res.json({ status: -1, error })
+  }
+})
+
 app.post('/updateadpnumber', authenticateToken, async (req, res) => {
       
     try{

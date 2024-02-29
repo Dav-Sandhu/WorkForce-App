@@ -739,6 +739,22 @@ const queries = (type, values) => {
           `,
           parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]
         }
+      case "check-password":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT * FROM employee
+            WHERE first_name=@first_name 
+            AND last_name=@last_name
+            AND password=@password;
+          `,
+          parameters: [
+            { name: 'first_name', type: sql.VarChar, value: values[0] },
+            { name: 'last_name', type: sql.VarChar, value: values[1] },
+            { name: 'password', type: sql.VarChar, value: values[2] }
+          ]
+        }
       default:
         return
     }
