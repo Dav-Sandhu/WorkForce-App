@@ -109,8 +109,21 @@ const queries = (type, values) => {
           query: `
             USE WorkForce;
 
+            DECLARE @current_date DATETIME
+            SET @current_date = GETUTCDATE()
+
+            UPDATE work
+            SET finish=@current_date
+            WHERE employee_number=@employee_number
+            AND finish IS NULL;
+
+            UPDATE timeoff
+            SET finish=@current_date
+            WHERE employee_number=@employee_number
+            AND finish IS NULL;
+
             UPDATE clock
-            SET clock_out=GETUTCDATE()
+            SET clock_out=@current_date
             WHERE clock_out IS NULL
             AND employee_number=@employee_number;
           `,
@@ -181,6 +194,21 @@ const queries = (type, values) => {
           parameters: [
             { name: 'employee_number', type: sql.Char, value: values[0] },
             { name: 'break_type', type: sql.Char, value: values[1] }
+          ]
+        }
+      case "auto-time-off-finish":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE timeoff
+            SET finish=DATEADD(second, @seconds, start)
+            WHERE employee_number = @employee_number
+            AND finish IS NULL;
+          `, 
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'seconds', type: sql.Int, value: values[1] } 
           ]
         }
       case "finish-time-off":
@@ -618,8 +646,8 @@ const queries = (type, values) => {
             BEGIN
               IF NOT EXISTS(SELECT * FROM employee WHERE employee_number=@employee_number)
               BEGIN
-                INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture, is_admin, is_supervisor)
-                VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture, @is_admin, @is_supervisor);
+                INSERT INTO employee(first_name, last_name, employee_number, email, password, hourly_wage, picture, is_admin, is_supervisor, break_time, lunch_time)
+                VALUES(@first_name, @last_name, @employee_number, @email, @password, @hourly_wage, @picture, @is_admin, @is_supervisor, 15, 30);
               END
             END
 

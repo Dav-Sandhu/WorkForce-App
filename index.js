@@ -643,6 +643,34 @@ app.post('/startbreak', authenticateToken, async (req, res) => {
   }
 })
 
+app.post('/autoendbreak', authenticateToken, async (req, res) => {
+    
+    try{
+
+      let finishBreak = false
+      const seconds = req.body.data.seconds
+
+      const onTimeOffQuery = queries('get-timeoff', [req.output.output[0].employee_number])
+      const onTimeOffOutput = await db_query(onTimeOffQuery.query, onTimeOffQuery.parameters)
+
+      if (onTimeOffOutput.length > 0){
+        const startTime = new Date(onTimeOffOutput[0].start)
+        const endTime = new Date(startTime.getTime() + seconds * 1000)
+
+        finishBreak = new Date() > endTime
+      }
+
+      if (finishBreak){
+        const query = queries('auto-time-off-finish', [req.output.output[0].employee_number, seconds])
+        await db_query(query.query, query.parameters)
+      }
+
+      return res.json({ status: 1, finishBreak })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
 app.post('/endbreak', authenticateToken, async (req, res) => {
 
   try{

@@ -1,10 +1,11 @@
 import "./Working.scss"
 
 import { useEffect, useState, lazy } from "react"
-import { useUserInfo } from "../UserProvider"
 
 const UserButton = lazy(() => import('../UserButton/UserButton'))
 const Spinner = lazy(() => import('../Spinner'))
+
+import { useUserInfo } from "../UserProvider"
 
 //showcases what the user is currently working on and allows the user to finish the job or remove said jobs/breaks
 const Working = () => {
@@ -12,10 +13,8 @@ const Working = () => {
     const [loading, setLoading] = useState(true)
     const [tasks, setTasks] = useState([])
 
-    const user = useUserInfo()
-    const employee_number = user.userInfo.employee_number
-
     const token = sessionStorage.getItem('token')
+    const user = useUserInfo()
 
     //gets all the tasks/breaks that the user is currently working on
     const getTasks = async () => {
@@ -24,6 +23,9 @@ const Working = () => {
 
         const processes = await makeRequest(null, '/getunfinishedprocesses', token, "get")
         const breaks = await makeRequest(null, '/getbreaks', token, "get")
+
+        const alertModule = await import('../Alert')
+        alertModule.createBreakTimer(user.userInfo.break_time, user.userInfo.lunch_time)
         
         const output = [...processes.output, ...breaks.output]
         output.sort((a, b) => new Date(a.start) - new Date(b.start))
@@ -54,26 +56,26 @@ const Working = () => {
         })
     }
 
-    //removes the selected task/break
-    const removeTask = async (task) => {   
-        const module = await import("../useDB")
-        const makeRequest = module.makeRequest
+    // //removes the selected task/break
+    // const removeTask = async (task) => {   
+    //     const module = await import("../useDB")
+    //     const makeRequest = module.makeRequest
 
-        const output = !task.break_type ? await makeRequest({
-            process_type: task.process_type, 
-            business_name: task.business_name,
-            contact_email: task.contact_email,
-            start: task.start
-        }, '/deletejob', token, "post") : await makeRequest({
-            break_type: task.break_type,
-            start: task.start 
-        }, '/deletebreak', token, "post")
+    //     const output = !task.break_type ? await makeRequest({
+    //         process_type: task.process_type, 
+    //         business_name: task.business_name,
+    //         contact_email: task.contact_email,
+    //         start: task.start
+    //     }, '/deletejob', token, "post") : await makeRequest({
+    //         break_type: task.break_type,
+    //         start: task.start 
+    //     }, '/deletebreak', token, "post")
 
-        output.status === 1 ? getTasks() :
-        import('../Alert').then(async module => {
-            await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
-        })
-    }
+    //     output.status === 1 ? getTasks() :
+    //     import('../Alert').then(async module => {
+    //         await module.customAlert("Something Went Wrong!", "Please try again later.", "error")
+    //     })
+    // }
 
     useEffect(() => {
         getTasks()
@@ -96,20 +98,10 @@ const Working = () => {
                                 return (
                                     <div className="ongoing-task mb-4" key={task.start}>
                                         <div className="work-information">
-                                            <button 
-                                                type="button" 
-                                                className="close-button-left btn-close" 
-                                                onClick={() => { removeTask(task) }}></button>
-
                                             <div className="work-description">
                                                 <h3>{content}</h3>
                                                 <p>{date.toLocaleString()}</p>
                                             </div>
-
-                                            <button 
-                                                type="button" 
-                                                className="close-button-right btn btn-light" 
-                                                onClick={() => { removeTask(task) }}>Remove</button>
                                         </div>
                                         <button 
                                             className="finish-button btn btn-danger"

@@ -11,6 +11,9 @@ const Employees = () => {
 
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [hourlyWage, setHourlyWage] = useState(0.0)
+    const [breakTime, setBreakTime] = useState(0)
+    const [lunchTime, setLunchTime] = useState(0)
+    const [adpNumber, setAdpNumber] = useState("")
 
     //returns the status of the request
     const statusCheck = async (status, msg) => {
@@ -60,7 +63,7 @@ const Employees = () => {
                                                     <div className="card-body">
                                                         <h5 className="card-title overflow-hidden">{item.first_name + ' ' + item.last_name}</h5>
                                                         {item.is_supervisor ? <p className="mb-0 overflow-hidden">Supervisor</p> : <p className="mb-0 overflow-hidden">Employee</p>}
-                                                        <p className="mb-0 overflow-hidden">{'#' + item.employee_number}</p>
+                                                        <p className="mb-0 overflow-hidden">{"ADP Number: " + item.adp_number || "Not Assigned"}</p>
                                                         <p className="mb-0 overflow-hidden">{item.email}</p>
                                                         <p className="mb-0 overflow-hidden">{'Hourly Wage: $' + item.hourly_wage}</p>
                                                         <button 
@@ -109,11 +112,13 @@ const Employees = () => {
                                                 name="employee_number"
                                                 value={employeeNumber}
                                                 onChange={(e) => setEmployeeNumber(e.target.value)}>
-                                                    <option>select employee number</option>
+                                                    <option>select employee</option>
                                                     {
                                                     display.map(item => {
                                                         return(
-                                                            <option key={item.employee_number} value={item.employee_number}>{item.employee_number}</option>
+                                                            <option key={item.employee_number} value={item.employee_number}>{
+                                                                item.first_name + ' ' + item.last_name + ' (' + item.email + ')'
+                                                            }</option>
                                                         )
                                                     })
                                                     }
@@ -136,21 +141,64 @@ const Employees = () => {
 
                                         {
                                             select === "wage" ? 
-                                            <div className="form-outline mb-4">
-                                                <div className="input-group mb-2">
-                                                    <div className="input-group-prepend">
-                                                        <div className="input-group-text">$</div>
+                                            <>
+
+                                                <div className="input-group mb-3">
+                                                    <span className="input-group-text" id="adp">Update ADP Number</span>
+                                                    <input 
+                                                        type="text" 
+                                                        className="form-control"
+                                                        maxLength="3"
+                                                        value={adpNumber}
+                                                        onChange={(e) => setAdpNumber(e.target.value)} />
+                                                </div>
+
+                                                <div className="form-outline mb-4">
+                                                    <div className="input-group mb-2">
+                                                        <div className="input-group-prepend">
+                                                            <div className="input-group-text">$</div>
+                                                        </div>
+                                                        <input 
+                                                            type="number" 
+                                                            step="0.01"
+                                                            id="hourly_wage" 
+                                                            className="form-control"
+                                                            value={hourlyWage}
+                                                            onChange={(e) => setHourlyWage(e.target.value)} />
                                                     </div>
+                                                    <label className="form-label" htmlFor="hourly_wage">Hourly Wage</label>
+                                                </div> 
+
+                                                <div className="input-group mb-3">
+                                                    <span className="input-group-text" id="break_time">Break Minutes</span>
                                                     <input 
                                                         type="number" 
-                                                        step="0.01"
-                                                        id="hourly_wage" 
-                                                        className="form-control"
-                                                        value={hourlyWage}
-                                                        onChange={(e) => setHourlyWage(e.target.value)} />
+                                                        className="form-control" 
+                                                        step="1"
+                                                        value={breakTime}
+                                                        onChange={(e) => {
+
+                                                            const value = parseInt(e.target.value) || 0
+
+                                                            value >= 0 ? setBreakTime(value) : setBreakTime(0)
+                                                        }} /> 
                                                 </div>
-                                                <label className="form-label" htmlFor="hourly_wage">Hourly Wage</label>
-                                            </div> : ""
+                                                <div className="input-group mb-3">
+                                                    <span className="input-group-text" id="lunch_time">Lunch Minutes</span>
+                                                    <input 
+                                                        type="number" 
+                                                        className="form-control"
+                                                        step="1"
+                                                        value={lunchTime}
+                                                        onChange={(e) => {
+
+                                                            const value = parseInt(e.target.value) || 0
+
+                                                            value >= 0 ? setLunchTime(value) : setLunchTime(0)
+                                                        }} /> 
+                                                </div>
+
+                                            </> : ""
                                         }
 
                                     </form>

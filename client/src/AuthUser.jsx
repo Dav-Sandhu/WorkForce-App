@@ -41,6 +41,9 @@ const AuthUser = ({children}) => {
                     const isNotOnAdminScreen = pathName !== '/admin' && pathName !== '/employees' && pathName !== '/assign' && pathName !== '/customers' && pathName !== '/processes'
                     const isNotSupervisorAndOnAdminScreen = !isNotOnAdminScreen && !is_supervisor
 
+                    const alertModule = await import('./Alert')
+                    alertModule.createBreakTimer(res.break_time, res.lunch_time)
+
                     /* 
                     if the user is an admin it will redirect them to the admin page
                     otherwise it makes sure the user is clocked in before allowing them to 

@@ -10,6 +10,9 @@ CREATE TABLE employee(
 	picture VARCHAR(255),
 	is_admin BIT,
 	is_supervisor BIT,
+	break_time INT,
+	lunch_time INT,
+	adp_number CHAR(3),
 	PRIMARY KEY(employee_number)
 );
 

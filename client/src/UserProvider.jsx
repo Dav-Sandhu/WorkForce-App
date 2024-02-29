@@ -24,6 +24,8 @@ const UserProvider = ({children}) => {
         picture: "",
         is_admin: 0,
         is_supervisor: 0,
+        break_time: 0,
+        lunch_time: 0,
         clock_in: null,
         clock_out: null
     })
