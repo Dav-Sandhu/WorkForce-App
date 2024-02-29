@@ -14,6 +14,7 @@ const Employees = () => {
     const [breakTime, setBreakTime] = useState(0)
     const [lunchTime, setLunchTime] = useState(0)
     const [adpNumber, setAdpNumber] = useState("")
+    const [supervisor, setSupervisor] = useState(false)
 
     //returns the status of the request
     const statusCheck = async (status, msg) => {
@@ -63,8 +64,10 @@ const Employees = () => {
                                                     <div className="card-body">
                                                         <h5 className="card-title overflow-hidden">{item.first_name + ' ' + item.last_name}</h5>
                                                         {item.is_supervisor ? <p className="mb-0 overflow-hidden">Supervisor</p> : <p className="mb-0 overflow-hidden">Employee</p>}
-                                                        <p className="mb-0 overflow-hidden">{"ADP Number: " + item.adp_number || "Not Assigned"}</p>
+                                                        <p className="mb-0 overflow-hidden">{"ADP Number: " + (item.adp_number || "NA")}</p>
                                                         <p className="mb-0 overflow-hidden">{item.email}</p>
+                                                        <p className="mb-0 overflow-hidden">{'Break Time: ' + item.break_time + ' min'}</p>
+                                                        <p className="mb-0 overflow-hidden">{'Lunch Time: ' + item.lunch_time + ' min'}</p>
                                                         <p className="mb-0 overflow-hidden">{'Hourly Wage: $' + item.hourly_wage}</p>
                                                         <button 
                                                             type="button" 
@@ -125,50 +128,37 @@ const Employees = () => {
                                             </select>
                                         </div>
 
+                                        <h5>Select What to Update</h5>
                                         <div className="form-outline mb-4">
-                                            <div className="form-check mb-2">
-                                                <input 
-                                                    className="form-check-input" 
-                                                    type="checkbox" 
-                                                    id="select"
-                                                    checked={select === "supervisor"}
-                                                    onChange={() => {setSelect(select === "wage" ? "supervisor" : "wage")}} />
-                                                <label className="form-check-label" htmlFor="select">
-                                                    Upgrade to Supervisor
-                                                </label>
-                                            </div>
+                                            <select 
+                                                className="form-select" 
+                                                id="select-updated-form"
+                                                name="select-updated-form"
+                                                value={select}
+                                                onChange={(e) => setSelect(e.target.value)}>
+                                                    <option value="wage">Hourly Wage</option>
+                                                    <option value="supervisor">Employee Rank</option>
+                                                    <option value="break">Break Times</option>
+                                                    <option value="adp">ADP Number</option>
+                                            </select>
                                         </div>
 
                                         {
-                                            select === "wage" ? 
-                                            <>
-
-                                                <div className="input-group mb-3">
-                                                    <span className="input-group-text" id="adp">Update ADP Number</span>
+                                            select === "supervisor" ?
+                                            <div className="form-outline mb-4">
+                                                <div className="form-check mb-2">
                                                     <input 
-                                                        type="text" 
-                                                        className="form-control"
-                                                        maxLength="3"
-                                                        value={adpNumber}
-                                                        onChange={(e) => setAdpNumber(e.target.value)} />
+                                                        className="form-check-input" 
+                                                        type="checkbox" 
+                                                        id="select"
+                                                        checked={supervisor}
+                                                        onChange={() => setSupervisor(prev => !prev)} />
+                                                    <label className="form-check-label" htmlFor="select">
+                                                        Upgrade to Supervisor
+                                                    </label>
                                                 </div>
-
-                                                <div className="form-outline mb-4">
-                                                    <div className="input-group mb-2">
-                                                        <div className="input-group-prepend">
-                                                            <div className="input-group-text">$</div>
-                                                        </div>
-                                                        <input 
-                                                            type="number" 
-                                                            step="0.01"
-                                                            id="hourly_wage" 
-                                                            className="form-control"
-                                                            value={hourlyWage}
-                                                            onChange={(e) => setHourlyWage(e.target.value)} />
-                                                    </div>
-                                                    <label className="form-label" htmlFor="hourly_wage">Hourly Wage</label>
-                                                </div> 
-
+                                            </div> : select === "break" ?
+                                            <>
                                                 <div className="input-group mb-3">
                                                     <span className="input-group-text" id="break_time">Break Minutes</span>
                                                     <input 
@@ -197,7 +187,34 @@ const Employees = () => {
                                                             value >= 0 ? setLunchTime(value) : setLunchTime(0)
                                                         }} /> 
                                                 </div>
-
+                                            </> : select === "adp" ?
+                                            <>
+                                                <div className="input-group mb-3">
+                                                    <span className="input-group-text" id="adp">Update ADP Number</span>
+                                                    <input 
+                                                        type="text" 
+                                                        className="form-control"
+                                                        maxLength="3"
+                                                        value={adpNumber}
+                                                        onChange={(e) => setAdpNumber(e.target.value)} />
+                                                </div>
+                                            </> : select === "wage" ? 
+                                            <>
+                                                <div className="form-outline mb-4">
+                                                    <div className="input-group mb-2">
+                                                        <div className="input-group-prepend">
+                                                            <div className="input-group-text">$</div>
+                                                        </div>
+                                                        <input 
+                                                            type="number" 
+                                                            step="0.01"
+                                                            id="hourly_wage" 
+                                                            className="form-control"
+                                                            value={hourlyWage}
+                                                            onChange={(e) => setHourlyWage(e.target.value)} />
+                                                    </div>
+                                                    <label className="form-label" htmlFor="hourly_wage">Hourly Wage</label>
+                                                </div> 
                                             </> : ""
                                         }
 
@@ -216,7 +233,25 @@ const Employees = () => {
 
                                                 await statusCheck(output.status, "Employee Updated!")
                                             }else if (select === "supervisor"){
-                                                const output = await makeRequest({ employee_number: employeeNumber }, '/upgradeuser', token, "post")
+                                                const output = supervisor ? 
+                                                await makeRequest({ employee_number: employeeNumber }, '/upgradeuser', token, "post") : 
+                                                await makeRequest({ employee_number: employeeNumber }, '/downgradeuser', token, "post")
+                                                
+                                                await statusCheck(output.status, "Employee Updated!")
+                                            }else if (select === "break"){
+                                                const output = await makeRequest({ 
+                                                    employee_number: employeeNumber,
+                                                    break_time: breakTime,
+                                                    lunch_time: lunchTime
+                                                }, '/updatebreaktimes', token, "post")
+
+                                                await statusCheck(output.status, "Employee Updated!")
+                                            }else if (select === "adp"){
+                                                const output = await makeRequest({
+                                                    employee_number: employeeNumber,
+                                                    adp_number: adpNumber
+                                                }, '/updateadpnumber', token, "post")
+
                                                 await statusCheck(output.status, "Employee Updated!")
                                             }
                                             

@@ -407,6 +407,51 @@ app.post('/upgradeuser', authenticateToken, async (req, res) => {
     }
 })
 
+app.post('/downgradeuser', authenticateToken, async (req, res) => {
+    
+    try{
+      const employee_number = req.body.data.employee_number
+  
+      const query = queries('downgrade-user', [employee_number])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
+app.post('/updatebreaktimes', authenticateToken, async (req, res) => {
+    
+    try{
+      const employee_number = req.body.data.employee_number
+      const break_time = req.body.data.break_time
+      const lunch_time = req.body.data.lunch_time
+  
+      const query = queries('update-break-times', [employee_number, break_time, lunch_time])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
+app.post('/updateadpnumber', authenticateToken, async (req, res) => {
+      
+    try{
+      const employee_number = req.body.data.employee_number
+      const adp_number = req.body.data.adp_number
+  
+      const query = queries('update-adp-number', [employee_number, adp_number])
+      await db_query(query.query, query.parameters)
+    
+      return res.json({ status: 1 })
+    }catch(error){
+      return res.json({ status: -1, error })
+    }
+})
+
 app.post('/removeemployee', authenticateToken, async (req, res) => {
   
   try{

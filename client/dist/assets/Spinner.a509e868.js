@@ -1,0 +1,1 @@
+import{j as s}from"./index.e4031f32.js";const r=()=>s("div",{className:"spinner-border",role:"status",children:s("span",{className:"visually-hidden",children:"Loading..."})});export{r as default};

@@ -31,6 +31,48 @@ const queries = (type, values) => {
             { name: 'employee_number', type: sql.Char, value: values[0] }
           ]
         }
+      case "downgrade-user":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE employee
+            SET is_supervisor=0
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] }
+          ]
+        }
+      case "update-break-times":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE employee
+            SET break_time=@break_time, lunch_time=@lunch_time
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'break_time', type: sql.Int, value: values[1] },
+            { name: 'lunch_time', type: sql.Int, value: values[2] }
+          ]
+        }
+      case "update-adp-number":
+        return{
+          query: `
+            USE WorkForce;
+
+            UPDATE employee
+            SET adp_number=@adp_number
+            WHERE employee_number=@employee_number;
+          `,
+          parameters: [
+            { name: 'employee_number', type: sql.Char, value: values[0] },
+            { name: 'adp_number', type: sql.Char, value: values[1] }
+          ]
+        }
       case "employee-number":
         return {
           query: `
