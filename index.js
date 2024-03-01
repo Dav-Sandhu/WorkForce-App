@@ -652,6 +652,40 @@ app.get('/getreport', authenticateToken, async (req, res) => {
     }else if(selectedTable === 'breaks'){
       const breakQuery = queries('get-time-off-range', [start, finish])
       selectedOutput = await db_query(breakQuery.query, breakQuery.parameters)
+    }else if (selectedTable === 'customers'){
+      const workQuery = queries('get-work-range', [start, finish])
+      selectedOutput = await db_query(workQuery.query, workQuery.parameters)
+
+      const internalProcessQuery = queries('get-internal-processes', [])
+      const internalProcessOutput = await db_query(internalProcessQuery.query, internalProcessQuery.parameters)
+
+      const mergedOutput = {}
+
+      internalProcessOutput.forEach(p => {
+        mergedOutput[p.process_type] = p
+        mergedOutput[p.process_type].totalWork = 0
+      })
+
+      output.work = []
+
+      selectedOutput.forEach(w => {
+        const startTime = new Date(w.start)
+        const finishTime = w.finish !== null ? new Date(w.finish) : 0
+        const seconds = w.finish !== null ? (finishTime.getTime() - startTime.getTime()) / 1000 : 0
+
+        output.work.push({ time: seconds, process_type: w.process_type, business_name: w.business_name })
+        mergedOutput[w.process_type].totalWork += seconds
+      })
+
+      output['data'] = mergedOutput
+
+      const customersQuery = queries('get-customers', [])
+      const customersOutput = await db_query(customersQuery.query, customersQuery.parameters)
+      const businessNames = customersOutput.map(customer => customer.business_name)
+
+      output['headings'] = ['hours by activity', ...businessNames, 'total hours', 'hourly rate', 'total revenue']
+
+      return res.json({ status: 1, output })
     }
 
     for (const e in employeeOutput){
@@ -681,7 +715,7 @@ app.get('/getreport', authenticateToken, async (req, res) => {
       const customersOutput = await db_query(customersQuery.query, customersQuery.parameters)
       const businessNames = customersOutput.map(customer => customer.business_name)
   
-      output['headings'] = ['employee', ...businessNames, 'total']
+      output['headings'] = ['employee', ...businessNames, 'total'] 
     }
 
     return res.json({ status: 1, output })

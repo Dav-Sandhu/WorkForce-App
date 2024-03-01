@@ -177,11 +177,11 @@ const queries = (type, values) => {
             USE WorkForce;
 
             SELECT * FROM clock
-            WHERE clock_in BETWEEN @start AND DATEADD(day, 1, @finish);
+            WHERE clock_in BETWEEN DATEADD(hour, 5, @start) AND DATEADD(day, 1, @finish);
           `,
           parameters: [
-            { name: 'start', type: sql.Date, value: values[0] },
-            { name: 'finish', type: sql.Date, value: values[1] }
+            { name: 'start', type: sql.DateTime, value: values[0] },
+            { name: 'finish', type: sql.DateTime, value: values[1] }
           ]
         }
       case "get-time-off-range":
@@ -190,11 +190,11 @@ const queries = (type, values) => {
             USE WorkForce;
 
             SELECT * FROM timeoff
-            WHERE start BETWEEN @start AND DATEADD(day, 1, @finish);
+            WHERE start BETWEEN DATEADD(hour, 5, @start) AND DATEADD(hour, 29, @finish);
           `,
           parameters: [
-            { name: 'start', type: sql.Date, value: values[0] },
-            { name: 'finish', type: sql.Date, value: values[1] }
+            { name: 'start', type: sql.DateTime, value: values[0] },
+            { name: 'finish', type: sql.DateTime, value: values[1] }
           ]
         }
       case "get-work-range":
@@ -203,11 +203,11 @@ const queries = (type, values) => {
             USE WorkForce;
 
             SELECT * FROM work
-            WHERE start BETWEEN @start AND DATEADD(day, 1, @finish);
+            WHERE start BETWEEN DATEADD(hour, 5, @start) AND DATEADD(hour, 29, @finish);
           `,
           parameters: [
-            { name: 'start', type: sql.Date, value: values[0] },
-            { name: 'finish', type: sql.Date, value: values[1] }
+            { name: 'start', type: sql.DateTime, value: values[0] },
+            { name: 'finish', type: sql.DateTime, value: values[1] }
           ]
         }
       case "start-time-off":
