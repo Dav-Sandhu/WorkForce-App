@@ -20,9 +20,9 @@
         .scan-text {
             position: absolute;
             
-            font-size: 8em;
+            font-size: 5em;
 
-            @media(max-width: 1600px){
+            @media(max-width: 1200px){
                 font-size: 8vw;
             }
         }

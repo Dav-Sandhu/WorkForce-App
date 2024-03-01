@@ -19,6 +19,7 @@ const Login = () => {
     const navigate = useNavigate()
 
     const [loading, setLoading] = useState(false)
+    const [faceRec, setFaceRec] = useState(true)
 
     /*
     if the session storage holds a valid token object, it will bypass the login screen, 
@@ -50,11 +51,13 @@ const Login = () => {
     //local state object to handle all of the state updates on this page
     const [state, dispatch] = useReducer(reducer, {
         employee_number: '',
+        adp_number: '',
+        email: '',
         password: localStorage.getItem('password') || '',
         image: null,
         alert: false,
         valid: true,
-        empty_employee_number: true,
+        empty_email: true,
         empty_password: true,
         reset_password: false
     })
@@ -68,17 +71,19 @@ const Login = () => {
 
     useEffect(() => {
         //this will let the user know if their input is valid or not (at least one character long)
-        if(employee_number_box.current.className.includes("is-invalid") || 
-        password_box.current.className.includes("is-invalid")){
-            dispatch({
-                type: "valid",
-                payload: false
-            })
-        }else{
-            dispatch({
-                type: "valid",
-                payload: true
-            })
+        if(!faceRec){
+            if(employee_number_box.current.className.includes("is-invalid") || 
+            password_box.current.className.includes("is-invalid")){
+                dispatch({
+                    type: "valid",
+                    payload: false
+                })
+            }else{
+                dispatch({
+                    type: "valid",
+                    payload: true
+                })
+            }
         }
         
     }, [state.employee_number, state.password])
@@ -88,6 +93,24 @@ const Login = () => {
             {loading ?                 
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
+                </div>
+                : faceRec ?
+                <div className="face-recognition-section">
+                    <FaceScanner 
+                        state={state} 
+                        dispatch={dispatch}
+                        navigate={navigate} 
+                        user={user}
+                    />
+                    <div className="d-grid gap-2">
+                        <button 
+                            className="btn btn-primary" 
+                            type="button"
+                            onClick={(e) => {
+                                setFaceRec(false)
+                            }}
+                        >Email Login</button>
+                    </div>
                 </div>
                 :
                 <div className="login container">
@@ -118,13 +141,16 @@ const Login = () => {
                                 //looks for employee in database
                                 const res = await makeRequest(
                                     {
-                                        employee_number: state.employee_number,
+                                        email: state.email,
                                         password: state.password
                                     },
                                     '/login',
                                     null,
                                     ""
                                 )
+
+                                console.log(state.email, state.password)
+                                console.log(res)
 
                                 if (res.status === 1){
 
@@ -154,25 +180,24 @@ const Login = () => {
                             {/*form floating reference the placeholder text getting out of the way of the input when the input box is clicked*/}
                             <div className="form-floating">
                                 <input
-                                    id="employee_number"
-                                    className={state.empty_employee_number ? "form-control" : state.employee_number.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
+                                    id="email"
+                                    className={state.empty_email ? "form-control" : state.email.length > 0 ? "form-control is-valid" : "form-control is-invalid"} 
                                     type="text"
                                     ref={employee_number_box}
-                                    maxLength="3"
-                                    placeholder="Employee Number" 
-                                    value={state.employee_number}
+                                    placeholder="Email" 
+                                    value={state.email}
                                     onChange={(e) => {
                                         handleUpdate(e)
         
                                         //this flag is to prevent the input from immediately being invalid when you load the page
                                         dispatch({
-                                            type: "empty_employee_number",
+                                            type: "empty_email",
                                             payload: false
                                         })
                                     }} 
                                     required 
                                 />
-                                <label htmlFor="employee_number">Employee Number: </label>
+                                <label htmlFor="employee_number">Email: </label>
                                 <div className="invalid-feedback user-invalid">Invalid input</div>
                             </div>
                         </div>
@@ -232,13 +257,6 @@ const Login = () => {
                         })
                     }}>Forgot password?</a>
                     <p>Not a member? <a href="/register">Register</a></p>
-                    
-                    <FaceScanner 
-                        state={state} 
-                        dispatch={dispatch}
-                        navigate={navigate} 
-                        user={user}
-                    />
         
                     {/*
                     A separate box for sending password reset request to email, this box can be turned on and off 

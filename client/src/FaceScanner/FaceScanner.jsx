@@ -89,21 +89,20 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
     return(
         <>
-            <hr className="mt-2 mb-3"/>
             {/*
             button will prompt the user if they would like to instead scan their face to login rather 
             than manually sign in. 
             */}
             {
                 !scanner ? 
-                <div className="d-grid gap-2">
+                <div className="d-grid gap-2 mb-5">
                     <button 
                         className="btn btn-danger" 
                         type="button"
                         onClick={(e) => {
                             setScanner(true)
                         }}
-                    >Or Scan your face to login!</button>
+                    >Scan your face to login!</button>
                 </div>
 
                 :

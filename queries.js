@@ -18,6 +18,21 @@ const queries = (type, values) => {
             { name: 'password', type: sql.VarChar, value: values[1] }
           ]
         }
+      case "find-employee-by-email":
+        return {
+          query: `
+            USE WorkForce;
+
+            SELECT * 
+            FROM employee
+            WHERE email=@email
+            AND password=@password;
+          `,
+          parameters: [
+            { name: 'email', type: sql.VarChar, value: values[0] },
+            { name: 'password', type: sql.VarChar, value: values[1] }
+          ]
+        }
       case "upgrade-user":
         return{
           query: `
@@ -119,6 +134,24 @@ const queries = (type, values) => {
             AND employee_number=@employee_number;
           `,
           parameters: [{ name: 'employee_number', type: sql.Char, value: values[0] }]  
+        }
+      case "check-clocked-in-by-email":
+        return{
+          query: `
+            USE WorkForce;
+
+            SELECT clock_in
+            FROM clock
+            WHERE clock_out IS NULL
+            AND employee_number IN (
+              SELECT employee_number
+              FROM employee
+              WHERE email=@email
+            );
+          `,
+          parameters: [
+            { name: 'email', type: sql.VarChar, value: values[0] }
+          ]
         }
       case "get-clock":
         return{

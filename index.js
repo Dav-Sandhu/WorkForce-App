@@ -48,16 +48,16 @@ app.post('/login', async (req, res) => {
 
   //every request is wrapped in a try and catch to ensure that the server does not crash
   try{
-    const employee_number = req.body.data.employee_number
+    const email = req.body.data.email
     const password = req.body.data.password
 
     //makes sure the employee is in the database
-    const query = queries("find-employee", [employee_number, password]) //queries is for formatting the query with the parameters
+    const query = queries("find-employee-by-email", [email, password]) //queries is for formatting the query with the parameters
     const output = await db_query(query.query, query.parameters) //db_query is for executing the queries
   
     if (output.length > 0){
   
-      const clockInQuery = queries("check-clocked-in", [employee_number])
+      const clockInQuery = queries("check-clocked-in-by-email", [email])
       const clockIn = await db_query(clockInQuery.query, clockInQuery.parameters)
     
       //adds the clockin information to the output

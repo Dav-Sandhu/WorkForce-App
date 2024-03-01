@@ -2,6 +2,10 @@ const reducer = (state, {type, payload}) => {
     switch(type){
         case "employee_number":
             return {...state, employee_number: payload}
+        case "email":
+            return {...state, email: payload}
+        case "adp_number":
+            return {...state, adp_number: payload}
         case "password":
             return {...state, password: payload}
         case "image":
@@ -10,8 +14,8 @@ const reducer = (state, {type, payload}) => {
             return {...state, alert: !state.alert}
         case "valid":
             return {...state, valid: Boolean(payload)}
-        case "empty_employee_number":
-            return {...state, empty_employee_number: Boolean(payload)}
+        case "empty_email":
+            return {...state, empty_email: Boolean(payload)}
         case "empty_password":
             return {...state, empty_password: Boolean(payload)}
         case "checked":
