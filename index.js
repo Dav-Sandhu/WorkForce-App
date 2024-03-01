@@ -652,7 +652,7 @@ app.get('/getreport', authenticateToken, async (req, res) => {
     }else if(selectedTable === 'breaks'){
       const breakQuery = queries('get-time-off-range', [start, finish])
       selectedOutput = await db_query(breakQuery.query, breakQuery.parameters)
-    }else if (selectedTable === 'customers'){
+    }else if (selectedTable === 'customers' || selectedTable === 'employeebycustomer'){
       const workQuery = queries('get-work-range', [start, finish])
       selectedOutput = await db_query(workQuery.query, workQuery.parameters)
 
@@ -668,25 +668,52 @@ app.get('/getreport', authenticateToken, async (req, res) => {
 
       output.work = []
 
-      selectedOutput.forEach(w => {
-        const startTime = new Date(w.start)
-        const finishTime = w.finish !== null ? new Date(w.finish) : 0
-        const seconds = w.finish !== null ? (finishTime.getTime() - startTime.getTime()) / 1000 : 0
-
-        output.work.push({ time: seconds, process_type: w.process_type, business_name: w.business_name })
-        mergedOutput[w.process_type].totalWork += seconds
-      })
-
-      output['data'] = mergedOutput
-
       const customersQuery = queries('get-customers', [])
       const customersOutput = await db_query(customersQuery.query, customersQuery.parameters)
       const businessNames = customersOutput.map(customer => customer.business_name)
 
       output['headings'] = ['hours by activity', ...businessNames, 'total hours', 'hourly rate', 'total revenue']
 
-      return res.json({ status: 1, output })
+      if(selectedTable === 'customers'){
+      
+        selectedOutput.forEach(w => {
+          const startTime = new Date(w.start)
+          const finishTime = w.finish !== null ? new Date(w.finish) : 0
+          const seconds = w.finish !== null ? (finishTime.getTime() - startTime.getTime()) / 1000 : 0
+  
+          output.work.push({ time: seconds, process_type: w.process_type, business_name: w.business_name })
+          mergedOutput[w.process_type].totalWork += seconds
+        })
+  
+        output['data'] = mergedOutput
+        
+        return res.json({ status: 1, output })
+      }else if (selectedTable === 'employeebycustomer'){
+
+        employeeOutput.forEach(e => {
+
+          output[e.employee_number] = e
+          output[e.employee_number].work = []
+
+          const dataOutput = JSON.parse(JSON.stringify(mergedOutput))
+          const matchingWork = selectedOutput.filter(w => w.employee_number === e.employee_number)
+
+          matchingWork.forEach(w => {
+            const startTime = new Date(w.start)
+            const finishTime = w.finish !== null ? new Date(w.finish) : 0
+            const seconds = w.finish !== null ? (finishTime.getTime() - startTime.getTime()) / 1000 : 0
+
+            output[e.employee_number].work.push({ time: seconds, process_type: w.process_type, business_name: w.business_name })
+            dataOutput[w.process_type].totalWork += seconds
+          })
+
+          output[e.employee_number].data = dataOutput
+        })
+
+        return res.json({ status: 1, output })
+      }
     }
+
 
     for (const e in employeeOutput){
 

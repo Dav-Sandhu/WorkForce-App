@@ -17,11 +17,20 @@ const Admin = () => {
     const [startDate, setStartDate] = useState(new Date())
     const [finishDate, setFinishDate] = useState(new Date())
     const [selectedTable, setSelectedTable] = useState('employees')
+    const [employeeSelector, setEmployeeSelector] = useState('')
     const [clockTimes, setClockTimes] = useState([])
     const [breakTimes, setBreakTimes] = useState([])
     const [profiles, setProfiles] = useState({})
     const [headings, setHeadings] = useState([])
     const [selectFlag, setSelectFlag] = useState('')
+
+    const formatTime = (s) => {
+        const h = Math.floor(s / 3600)
+        const m = Math.floor((s % 3600) / 60)
+        const remaining = Math.round(s % 60)
+        
+        return `${h}h:${m}m:${remaining}s`
+    }
 
     //footer section of the daily staffing report table which displays the total hours for each column
     let footer = []
@@ -46,14 +55,12 @@ const Admin = () => {
 
         if (output.status === 1){
 
-            console.log(output.output)
-
             //clears the clock and break times
             let temp = []
 
             //loops through the output and adds the clock and break times to the tempClock and tempBreak arrays
             Object.entries(output.output).forEach(([key, value]) => {
-                if(key !== "headings" && selectedTable !== 'customers'){
+                if(key !== "headings" && selectedTable !== 'customers' && selectedTable !== 'employeebycustomer'){
 
                     const values = value.values
 
@@ -70,7 +77,7 @@ const Admin = () => {
             setProfiles(output.output)
             setSelectFlag(selectedTable)
 
-            if(selectedTable === 'employees' || selectedTable === 'customers'){
+            if(selectedTable === 'employees' || selectedTable === 'customers' || selectedTable === 'employeebycustomer'){
                 setBreakTimes([])
                 setClockTimes([])
                 setHeadings(output.output.headings)
@@ -114,6 +121,7 @@ const Admin = () => {
                         onChange={(e) => setSelectedTable(e.target.value)}>
                         <option value="employees">Employee Staffing Report</option>
                         <option value="customers">Customer Report</option>
+                        <option value="employeebycustomer">Employee By Customer Report</option>
                         <option value="clocks">Employee Clock Times</option>
                         <option value="breaks">Employee Break Times</option>
                     </select>
@@ -238,14 +246,6 @@ const Admin = () => {
                                     {
                                         Object.keys(profiles.data).map((key) => {
 
-                                            const formatTime = (s) => {
-                                                const h = Math.floor(s / 3600)
-                                                const m = Math.floor((s % 3600) / 60)
-                                                const remaining = Math.round(s % 60)
-                                                
-                                                return `${h}h:${m}m:${remaining}s`
-                                            }
-
                                             return(
                                                 <>
                                                     <tr>
@@ -280,6 +280,75 @@ const Admin = () => {
                                                 </>
                                             )
                                         })
+                                    }
+                                </tbody>
+                            </table>
+                        </> : selectFlag === 'employeebycustomer' && headings.length > 0 ? 
+                        <>
+                            <h3>Employee By Customer Report</h3> 
+
+                            <select 
+                                name="employeeSelector" 
+                                id="employeeSelector"
+                                value={employeeSelector}
+                                onChange={(e) => setEmployeeSelector(e.target.value)}>
+                                <option>Select an Employee</option>
+                                {Object.keys(profiles).map((key) => {
+
+                                    if (key === 'headings' || key === 'data' || key === 'work'){return <></>}
+                                    
+                                    return (
+                                        <option value={key}>
+                                            {profiles[key].first_name + ' ' + profiles[key].last_name}
+                                        </option>
+                                    )
+                                })}
+                            </select>
+
+                            <table className="table">
+                                <thead className="table-dark">
+                                    <tr>
+                                        { headings.length > 0 ? headings.map(h => { return <th scope="col">{h}</th> }) : "" }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        profiles[employeeSelector] !== undefined ?
+                                        Object.keys(profiles[employeeSelector].data).map((key) => {
+                                            return(
+                                                <tr>
+                                                    <th className="table-active" scope="row">{key}</th>
+                                                    {
+                                                        profiles['headings'].map(h => {
+
+                                                            const seconds = profiles[employeeSelector].work.filter(w => w.business_name === h && w.process_type === key).reduce((total, w) => total + w.time, 0)
+                                                            
+                                                            if(h === 'hours by activity'){return ""}
+                                                            else if (h === 'total hours'){ return <td>{formatTime(profiles[employeeSelector].data[key].totalWork)}</td>}
+                                                            else if (h === 'hourly rate'){ 
+
+                                                                const hourly_rate = profiles[employeeSelector].data[key].hourly_rate || "-"
+
+                                                                return <td>{hourly_rate !== "-" ? '$' + hourly_rate : "-"}</td> 
+                                                            }else if (h === 'total revenue'){ 
+
+                                                                const hourly_rate = profiles[employeeSelector].data[key].hourly_rate
+                                                                const totalWork = profiles[employeeSelector].data[key].totalWork
+
+                                                                const revenue = hourly_rate !== null ? 
+                                                                '$' + (hourly_rate * (totalWork / 60 / 60)).toFixed(2) : '-'
+
+                                                                return <td>{revenue}</td> 
+                                                            }
+
+                                                            return(
+                                                                <td>{seconds > 0 ? formatTime(seconds) : "0h:0m:0s"}</td>
+                                                            )
+                                                        })
+                                                    }
+                                                </tr>
+                                            )
+                                        }) : ""
                                     }
                                 </tbody>
                             </table>
