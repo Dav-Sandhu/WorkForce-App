@@ -59,7 +59,7 @@ const FaceScanner = ({state, dispatch, navigate, user}) => {
 
                     if (ans){
                         await alertModule.customInputAlert("Enter Your Password", handler, { token: res.token, user }) 
-                    }
+                    }else{ window.location.reload() }
 
                 }else{
                     //if face is not recognized it will alert the user and refresh the page

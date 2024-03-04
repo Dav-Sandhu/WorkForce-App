@@ -9,6 +9,7 @@ import { useUserInfo } from "../UserProvider"
 import ResetPassword from "./ResetPassword"
 
 import reducer from "./LoginReducer"
+import Spinner from "../Spinner"
 
 const Login = () => {
 
@@ -91,9 +92,7 @@ const Login = () => {
     return(
         <>
             {loading ?                 
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+                <Spinner />
                 : faceRec ?
                 <div className="face-recognition-section">
                     <FaceScanner 
@@ -102,15 +101,13 @@ const Login = () => {
                         navigate={navigate} 
                         user={user}
                     />
-                    <div className="d-grid gap-2">
-                        <button 
-                            className="btn btn-primary" 
-                            type="button"
-                            onClick={(e) => {
-                                setFaceRec(false)
-                            }}
-                        >Email Login</button>
-                    </div>
+                    <button 
+                        className="btn btn-primary" 
+                        type="button"
+                        onClick={(e) => {
+                            setFaceRec(false)
+                        }}
+                    >Email Login</button>
                 </div>
                 :
                 <div className="login container">
