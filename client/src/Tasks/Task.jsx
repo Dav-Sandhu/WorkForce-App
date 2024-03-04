@@ -92,8 +92,8 @@ const Task = () => {
                         />
                     </div>
                     <div>
-                        <h4 className="mb-2">{name}</h4>
-                        <p className="text-muted mb-4">{email}</p>
+                        <h4 className="mb-2 text-center">{name}</h4>
+                        <p className="text-muted text-center mb-4">{email}</p>
                     </div>
                     <button 
                         type="button" 
