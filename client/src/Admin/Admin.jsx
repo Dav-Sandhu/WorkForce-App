@@ -1,6 +1,9 @@
 import './Admin.scss'
 
-import { useState, lazy } from "react" 
+import { useState, useEffect, lazy } from "react" 
+
+//for downloading the table data as a csv file
+import { CSVLink } from 'react-csv'
 
 //imports the date picker library which is used to select a date for the daily reports
 import DatePicker from "react-datepicker"
@@ -24,13 +27,206 @@ const Admin = () => {
     const [headings, setHeadings] = useState([])
     const [selectFlag, setSelectFlag] = useState('')
 
+    const [csvData, setCsvData] = useState([])
+    const [csvHeaders, setCsvHeaders] = useState([])
+
     const formatTime = (s) => {
         const h = Math.floor(s / 3600)
         const m = Math.floor((s % 3600) / 60)
         const remaining = Math.round(s % 60)
+
+        let outputStr = ``
+        h > 0 ? outputStr += `${h}h:` : ""
+        m > 0 ? outputStr += `${m}m:` : ""
+        remaining > 0 ? outputStr += `${remaining}s` : ""
         
-        return `${h}h:${m}m:${remaining}s`
+        return outputStr
     }
+
+    useEffect(() => {
+        if (selectFlag === 'employees' && headings.length > 0){
+            const data = Object.keys(profiles).map((key) => {
+                if (key !== 'headings') {
+                    const row = {}
+                    const hours = new Array(headings.length).fill(0)
+            
+                    profiles[key].values.forEach(task => {
+                        const index = headings.indexOf(task.business_name)
+            
+                        if (task.finish !== null) {
+                            const diff = new Date(task.finish) - new Date(task.start)
+                            hours[index] += diff
+                        }
+                    })
+            
+                    hours[hours.length - 1] = hours.reduce((a, b) => a + b, 0)
+                    let total = 0
+                    for (let i = 0; i < hours.length; i++) {
+
+                        total += headings[i] !== 'total' && headings[i] !== 'employee' ? hours[i] : 0
+                        let t = headings[i] === 'total' ? total : hours[i]
+
+                        const h = Math.floor(t / 1000 / 60 / 60)
+                        const m = Math.floor((t / 1000 / 60) % 60)
+                        const s = Math.round((t / 1000) % 60)
+
+                        let outputStr = ``
+                        h > 0 ? outputStr += `${h}h:` : ""
+                        m > 0 ? outputStr += `${m}m:` : ""
+                        s > 0 ? outputStr += `${s}s` : ""
+
+                        const convertedTime = hours[i] === 0 ? '' : outputStr
+                        row[headings[i]] = headings[i] === 'employee' ? 
+                        profiles[key].first_name + ' ' + profiles[key].last_name : 
+                        convertedTime
+                    }
+            
+                    return row
+                }
+            }).filter(Boolean)
+
+                // Create a new row for the footer
+                const footerRow = {}
+                footerRow[headings[0]] = "Total"
+                footer.forEach((f, i) => {
+                    const h = Math.floor(f / 1000 / 60 / 60)
+                    const m = Math.floor((f / 1000 / 60) % 60)
+                    const s = Math.round((f / 1000) % 60)
+                    let timeStr = ``
+                    h > 0 ? timeStr += `${h}h:` : ""
+                    m > 0 ? timeStr += `${m}m:` : ""
+                    s > 0 ? timeStr += `${s}s` : ""
+                    footerRow[headings[i + 1]] = timeStr
+                })
+
+                // Add the footer row to the data
+                data.push(footerRow)
+
+            const headers = headings.map(h => ({ label: h, key: h }))
+
+            setCsvData(data)
+            setCsvHeaders(headers)
+        }else if (selectFlag === 'customers' && headings.length > 0){
+            const data = Object.keys(profiles.data).map((key) => {
+                const row = {}
+                row['hours by activity'] = key
+
+                profiles['headings'].forEach(h => {
+                    const seconds = profiles.work.filter(w => w.business_name === h && w.process_type === key).reduce((total, w) => total + w.time, 0)
+
+                    if (h === 'total hours'){
+                        row[h] = formatTime(profiles.data[key].totalWork)
+                    }else if (h === 'hourly rate'){
+                        const hourly_rate = profiles.data[key].hourly_rate || ""
+                        row[h] = hourly_rate > 0 ? '$' + hourly_rate : ""
+                    }else if (h === 'total revenue'){
+                        const hourly_rate = profiles.data[key].hourly_rate
+                        const totalWork = profiles.data[key].totalWork
+                        const revenue = hourly_rate !== null ? '$' + (hourly_rate * (totalWork / 60 / 60)).toFixed(2) : ''
+                        
+                        row[h] = revenue
+                    }else if (h !== 'hours by activity'){
+                        row[h] = seconds > 0 ? formatTime(seconds) : ""
+                    }
+                })
+
+                return row
+            }).filter(Boolean)
+
+            const headers = headings.map(h => ({ label: h, key: h }))
+
+            setCsvData(data)
+            setCsvHeaders(headers)
+        }else if (selectFlag === 'employeebycustomer' && headings.length > 0 && profiles[employeeSelector] !== undefined){
+            const data = Object.keys(profiles[employeeSelector].data).map((key) => {
+                const row = {}
+                row['hours by activity'] = key 
+
+                profiles['headings'].forEach(h => {
+                    const seconds = profiles[employeeSelector].work.filter(w => w.business_name === h && w.process_type === key).reduce((total, w) => total + w.time, 0)
+
+                    if (h === 'total hours'){
+                        row[h] = formatTime(profiles[employeeSelector].data[key].totalWork)
+                    }else if (h === 'hourly rate'){
+                        const hourly_rate = profiles[employeeSelector].data[key].hourly_rate || ""
+                        row[h] = hourly_rate > 0 ? '$' + hourly_rate : ""
+                    }else if (h === 'total revenue'){
+                        const hourly_rate = profiles[employeeSelector].data[key].hourly_rate
+                        const totalWork = profiles[employeeSelector].data[key].totalWork
+                        const revenue = hourly_rate !== null ? '$' + (hourly_rate * (totalWork / 60 / 60)).toFixed(2) : ''
+                        
+                        row[h] = revenue
+                    }else if (h !== 'hours by activity'){
+                        row[h] = seconds > 0 ? formatTime(seconds) : ""
+                    }
+                })
+
+                return row
+            }).filter(Boolean)
+
+            const headers = headings.map(h => ({ label: h, key: h }))
+
+            setCsvData(data)
+            setCsvHeaders(headers)
+        }else if (clockTimes.length > 0){
+            const data = clockTimes.map(clock => {
+                const clockIn = new Date(clock.clock_in)
+                const clockOut = clock.clock_out === null ? "" : new Date(clock.clock_out)
+                const diff = clock.clock_out === null ? "" : clockOut - clockIn
+
+                const h = Math.floor(diff / 1000 / 60 / 60) 
+                const m = Math.floor((diff / 1000 / 60) % 60)
+                const s = Math.round((diff / 1000) % 60)
+
+                return {
+                    Employee: clock.name,
+                    'Clock In': clockIn.toLocaleString(),
+                    'Clock Out': clock.clock_out === null ? "" : clockOut.toLocaleString(),
+                    Total: clock.clock_out === null ? "" : `${h}h: ${m}m: ${s}s`
+                }
+            })
+
+            const headers = [
+                { label: 'Employee', key: 'Employee' },
+                { label: 'Clock In', key: 'Clock In' },
+                { label: 'Clock Out', key: 'Clock Out' },
+                { label: 'Total', key: 'Total' }
+            ]
+
+            setCsvData(data)
+            setCsvHeaders(headers)
+        }else if (breakTimes.length > 0){
+
+            const data = breakTimes.map(b => {
+                const start = new Date(b.start)
+                const finish = b.finish === null ? "-" : new Date(b.finish)
+                const diff = b.finish === null ? "-" : finish - start
+
+                const h = Math.floor(diff / 1000 / 60 / 60) 
+                const m = Math.floor((diff / 1000 / 60) % 60)
+                const s = Math.round((diff / 1000) % 60)
+
+                return {
+                    Employee: b.name,
+                    'Break Type': b.break_type,
+                    Start: start.toLocaleString(),
+                    Finish: b.finish === null ? "" : finish.toLocaleString(),
+                    Total: b.finish === null ? "" : `${h}h: ${m}m: ${s}s`
+                }
+            })
+
+            const headers = [
+                { label: 'Employee', key: 'Employee' },
+                { label: 'Break Type', key: 'Break Type' },
+                { label: 'Start', key: 'Start' },
+		        { label: 'Finish', key: 'Finish' },
+                { label: 'Total', key: 'Total' }
+            ]
+
+            setCsvData(data)
+            setCsvHeaders(headers)
+        }
+    }, [profiles, employeeSelector])
 
     //footer section of the daily staffing report table which displays the total hours for each column
     let footer = []
@@ -72,6 +268,10 @@ const Admin = () => {
                     temp = temp.concat(values)
                 }
             })  
+
+            //clears the downloadable csv data
+            setCsvData([])
+            setCsvHeaders([])
 
             //sets the profiles, headings, clock times, and break times
             setProfiles(output.output)
@@ -142,6 +342,15 @@ const Admin = () => {
                         <>
                             <h3>Employee Staffing Report</h3> 
 
+                            <CSVLink
+                                data={csvData}
+                                headers={csvHeaders}
+                                filename={"employees.csv"}
+                                target="_blank"
+                            >
+                                Download table
+                            </CSVLink>
+
                             <table className="table">
                                 <thead className="table-dark">
                                     <tr>
@@ -200,7 +409,7 @@ const Admin = () => {
                                                         onClick={() => {
 
                                                             import('../Alert').then(async module => {
-                                                                await module.customAlert("Employee Information", 'Employee Number: ' + key + '\n' + 'Email: ' + profiles[key].email + '\nHourly Wage: $' + profiles[key].hourly_wage, "info")
+                                                                await module.customAlert("Employee Information", 'Email: ' + profiles[key].email, "info")
                                                             })
 
                                                         }}>{
@@ -236,6 +445,15 @@ const Admin = () => {
                         <>
                             <h3>Customer Report</h3> 
 
+                            <CSVLink
+                                data={csvData}
+                                headers={csvHeaders}
+                                filename={"customers.csv"}
+                                target="_blank"
+                            >
+                                Download table
+                            </CSVLink>
+
                             <table className="table">
                                 <thead className="table-dark">
                                     <tr>
@@ -255,7 +473,10 @@ const Admin = () => {
                                                             const seconds = profiles.work.filter(w => w.business_name === h && w.process_type === key).reduce((total, w) => total + w.time, 0)
                                                         
                                                             if(h === 'hours by activity'){return ""}
-                                                            else if (h === 'total hours'){ return <td>{formatTime(profiles.data[key].totalWork)}</td>}
+                                                            else if (h === 'total hours'){ 
+                                                                const totalTimeFormatted = formatTime(profiles.data[key].totalWork)
+                                                                return <td>{totalTimeFormatted.length > 0 ? totalTimeFormatted : "-"}</td>
+                                                            }
                                                             else if (h === 'hourly rate'){ 
 
                                                                 const hourly_rate = profiles.data[key].hourly_rate || "-"
@@ -273,7 +494,7 @@ const Admin = () => {
                                                             }
 
                                                             return(
-                                                                <td>{seconds > 0 ? formatTime(seconds) : "0h:0m:0s"}</td>
+                                                                <td>{seconds > 0 ? formatTime(seconds) : "-"}</td>
                                                             )
                                                         })}
                                                     </tr>
@@ -303,7 +524,19 @@ const Admin = () => {
                                         </option>
                                     )
                                 })}
-                            </select>
+                            </select> <br />
+
+                            {
+                                profiles[employeeSelector] !== undefined ?
+                                <CSVLink
+                                    data={csvData}
+                                    headers={csvHeaders}
+                                    filename={profiles[employeeSelector].first_name + " " + profiles[employeeSelector].last_name + " By Customer.csv"}
+                                    target="_blank"
+                                >
+                                    Download table
+                                </CSVLink> : ""
+                            }
 
                             <table className="table">
                                 <thead className="table-dark">
@@ -342,7 +575,7 @@ const Admin = () => {
                                                             }
 
                                                             return(
-                                                                <td>{seconds > 0 ? formatTime(seconds) : "0h:0m:0s"}</td>
+                                                                <td>{seconds > 0 ? formatTime(seconds) : "-"}</td>
                                                             )
                                                         })
                                                     }
@@ -358,6 +591,14 @@ const Admin = () => {
                         clockTimes.length > 0 ? 
                             <>
                                 <h3>Clock In Table</h3>
+                                <CSVLink
+                                    data={csvData}
+                                    headers={csvHeaders}
+                                    filename={"clock_ins.csv"}
+                                    target="_blank"
+                                >
+                                    Download table
+                                </CSVLink>
                                 <ClockTable clocks={clockTimes} />
                             </> : "" 
                     }
@@ -365,6 +606,14 @@ const Admin = () => {
                         breakTimes.length > 0 ?
                             <>
                                 <h3>Breaks Table</h3>
+                                <CSVLink
+                                    data={csvData}
+                                    headers={csvHeaders}
+                                    filename={"breaks.csv"}
+                                    target="_blank"
+                                >
+                                    Download table
+                                </CSVLink>
                                 <BreakTable breaks={breakTimes} />
                             </> : ""
                     }
