@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
       }
   
       //creates a token with the employee's profile
-      const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
+      const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '24h' })
       return res.json({ token, status: 1 }) //a status flag is added to every response to indicate if the request was successful or not
     }else{
       //if the employee is not in the database, it will return an error
@@ -370,7 +370,7 @@ app.post('/upload-image', authenticateToken, async (req, res) => {
       const profile = output.output[0]
       profile.picture = picture
 
-      const token = jwt.sign({ output: [profile] }, process.env.JWT_KEY, { expiresIn: '1h' })
+      const token = jwt.sign({ output: [profile] }, process.env.JWT_KEY, { expiresIn: '24h' })
 
       return res.json({ status: 1, token })
     })
@@ -576,7 +576,7 @@ app.post('/registeremployee', async (req, res) => {
       output[0].clock_in = null
       output[0].clock_out = null
       
-      const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '1h' })
+      const token = jwt.sign({ output }, process.env.JWT_KEY, { expiresIn: '24h' })
       return res.json({ token, status: 1 })
     }else{
       
@@ -596,7 +596,7 @@ app.post('/clockin', authenticateToken, async (req, res) => {
     const query = queries('clock-in', [output.employee_number])
     const queryOutput = await db_query(query.query, query.parameters)
 
-    const token = jwt.sign({ output: [{ ...output, clock_in: queryOutput[0].clock_in }] }, process.env.JWT_KEY, { expiresIn: '1h' })
+    const token = jwt.sign({ output: [{ ...output, clock_in: queryOutput[0].clock_in }] }, process.env.JWT_KEY, { expiresIn: '24h' })
   
     return res.json({ status: 1, token })
   }catch(error){
@@ -904,7 +904,7 @@ app.post('/facematch', async (req, res) => {
       }
   
       //creates a token with the matched face's profile
-      const token = jwt.sign({ output: [output] }, process.env.JWT_KEY, { expiresIn: '1h' })
+      const token = jwt.sign({ output: [output] }, process.env.JWT_KEY, { expiresIn: '24h' })
       return res.json({ token, status: 1, name: output.first_name + " " + output.last_name })
     }
   
